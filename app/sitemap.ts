@@ -1,22 +1,39 @@
 import type { MetadataRoute } from 'next';
-import { articles, sections } from '@/lib/content';
+import { sections } from '@/lib/content';
+import { listPublished } from '@/lib/repository';
 
 const origin =
   process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+const institutionalModified = new Date('2026-09-13T00:00:00.000Z');
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = [
-    '',
-    '/about',
-    '/standards',
-    '/corrections',
-    '/privacy',
-  ].map((path) => ({
-    url: `${origin}${path}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: path ? 0.5 : 1,
-  }));
+export const revalidate = 900;
+
+function latestUpdate(values: Array<{ updatedAt: string }>) {
+  const timestamps = values
+    .map((value) => Date.parse(value.updatedAt))
+    .filter(Number.isFinite);
+  return timestamps.length
+    ? new Date(Math.max(...timestamps))
+    : institutionalModified;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const articles = await listPublished();
+  const publicationModified = latestUpdate(articles);
+  const staticPages: MetadataRoute.Sitemap = [
+    {
+      url: origin,
+      lastModified: publicationModified,
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    ...['/about', '/standards', '/corrections', '/privacy'].map((path) => ({
+      url: `${origin}${path}`,
+      lastModified: institutionalModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    })),
+  ];
   const storyPages = articles.map((article) => ({
     url: `${origin}/article/${article.slug}`,
     lastModified: new Date(article.updatedAt),
@@ -25,7 +42,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
   const sectionPages = sections.map((section) => ({
     url: `${origin}/section/${section.toLowerCase()}`,
-    lastModified: new Date(),
+    lastModified: latestUpdate(
+      articles.filter((article) => article.section === section),
+    ),
     changeFrequency: 'daily' as const,
     priority: 0.7,
   }));

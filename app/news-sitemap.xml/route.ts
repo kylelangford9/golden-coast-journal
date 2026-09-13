@@ -1,4 +1,4 @@
-import { articles } from '@/lib/content';
+import { listPublished } from '@/lib/repository';
 
 const origin =
   process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
@@ -13,6 +13,7 @@ function escapeXml(value: string) {
 }
 
 export async function GET() {
+  const articles = await listPublished();
   const cutoff = Date.now() - 2 * 24 * 60 * 60 * 1000;
   const latest = articles.filter(
     (article) =>

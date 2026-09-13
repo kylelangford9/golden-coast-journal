@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    unwrap(
+    const result = unwrap(
       await getSupabase()
         .from('gcj_subscribers')
         .upsert(
@@ -64,10 +64,15 @@ export async function POST(request: Request) {
             created_at: new Date().toISOString(),
           },
           { onConflict: 'email', ignoreDuplicates: true },
-        ),
+        )
+        .select('id')
+        .maybeSingle(),
       'Unable to add subscriber',
     );
-    return NextResponse.json({ ok: true }, { status: 201 });
+    return NextResponse.json(
+      { ok: true, created: Boolean(result) },
+      { status: 201 },
+    );
   } catch {
     return NextResponse.json(
       { error: 'Subscription service is unavailable' },

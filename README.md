@@ -28,11 +28,13 @@ Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer crede
 
 The Journal is a disclosed, editorially independent member of the Kyle Langford project
 network. Its footer uses campaign-tagged links and records `Network Referral` events;
-arrivals from the network record `Network Arrival`; successful subscriptions record
-`Newsletter Signup`. These three actions are delivered to both Vercel Analytics and the
-privacy-light first-party portfolio scorecard; a small in-browser queue prevents events
-from being lost while the shared collector loads. Standard page views and performance
-data use Vercel Analytics and Speed Insights.
+arrivals from the network record `Network Arrival`; newly created subscriptions record
+`Newsletter Signup`; and post-signup invitations record `Newsletter Invite Started`.
+Duplicate addresses are acknowledged without recording a second conversion. These
+actions are delivered to both Vercel Analytics and the privacy-light first-party
+portfolio scorecard; a small in-browser queue prevents events from being lost while the
+shared collector loads. Standard page views and performance data use Vercel Analytics
+and Speed Insights.
 
 The protected `/api/editorial/metrics` route returns publication, review queue, source
 candidate, section and subscriber totals without exposing subscriber identities. It uses

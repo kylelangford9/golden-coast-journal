@@ -207,6 +207,12 @@ button { color: inherit; }
 .newsletter-form input { flex: 1; min-width: 0; height: 46px; padding: 0 14px; border: 0; background: white; color: var(--ink); }
 .newsletter-form button { border: 0; background: var(--rust); color: white; padding: 0 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .newsletter-form output { display: block; min-height: 18px; margin-top: 10px; color: #d5e1e7; font-size: 11px; }
+.newsletter-form .newsletter-invite { display: block; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .22); }
+.newsletter-invite > p { margin: 0; color: #e7edf0; font-family: var(--font-serif), Georgia, serif; font-size: 16px; line-height: 1.35; }
+.newsletter-invite > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.newsletter-invite button { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 13px; border: 1px solid rgba(255, 255, 255, .5); background: transparent; color: white; }
+.newsletter-invite button:first-child { background: var(--rust); border-color: var(--rust); }
+.newsletter-invite output { margin-top: 7px; }
 .form-trap { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important; }
 .newsletter-band { padding: 70px 0; background: #ded6c8; border-top: 1px solid var(--ink); }
 .newsletter-band-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }

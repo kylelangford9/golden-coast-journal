@@ -81,6 +81,7 @@ export async function GET(request: Request) {
             'Network Arrival',
             'Network Referral',
             'Newsletter Signup',
+            'Newsletter Invite Started',
           ],
         },
       },

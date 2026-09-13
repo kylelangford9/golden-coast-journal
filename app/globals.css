@@ -132,6 +132,11 @@ button { color: inherit; }
 .article-header h1 { margin: 18px auto 23px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(52px, 7.2vw, 102px); line-height: .92; font-weight: 560; letter-spacing: -.05em; }
 .article-dek { max-width: 850px; margin: 0 auto; color: #42433e; font-family: var(--font-serif), Georgia, serif; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.36; }
 .article-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 24px; margin-top: 30px; color: var(--muted); font-size: 11px; }
+.article-share { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+.article-share > span { margin-right: 3px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.article-share button { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 14px; border: 1px solid var(--line); background: transparent; color: var(--ink); font-size: 11px; font-weight: 700; cursor: pointer; }
+.article-share button:hover, .article-share button:focus-visible { border-color: var(--navy); background: var(--navy); color: white; }
+.article-share output { flex-basis: 100%; min-height: 16px; color: var(--muted); font-size: 10px; }
 .article-hero { position: relative; min-height: min(68vw, 780px); margin-bottom: 0; background: #d9d1c3; }
 .article-hero img { object-fit: cover; }
 .article-hero figcaption { position: absolute; bottom: 0; right: 0; z-index: 1; margin: 0; background: rgba(22,23,19,.84); color: white; padding: 9px 12px; font-size: 10px; }
@@ -249,6 +254,8 @@ button { color: inherit; }
   .article-header { text-align: left; }
   .article-header h1 { font-size: 58px; }
   .article-meta { justify-content: flex-start; }
+  .article-share { justify-content: flex-start; }
+  .article-share output { text-align: left; }
   .article-hero { width: 100%; min-height: 360px; }
   .article-layout { padding-top: 38px; }
   .section-story { grid-template-columns: 1fr; gap: 24px; }

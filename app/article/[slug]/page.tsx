@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
+import { ArticleShare } from '@/components/article-share';
 import { formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -93,6 +94,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <span>Published {formatArticleDate(article.publishedAt)}</span>
             <span>{article.readingMinutes} min read</span>
           </div>
+          <ArticleShare
+            origin={origin}
+            slug={article.slug}
+            title={article.title}
+          />
         </header>
         <figure className="article-hero shell">
           <Image

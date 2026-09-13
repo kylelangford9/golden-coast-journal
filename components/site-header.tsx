@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Menu, Search } from 'lucide-react';
 import { sections } from '@/lib/content';
 
-const nav = ['Latest', ...sections];
+const nav = ['Latest', 'Live Desk', ...sections];
 
 export function SiteHeader() {
   const editionDate = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Los_Angeles' }).format(new Date());
@@ -46,7 +46,7 @@ export function SiteHeader() {
       </div>
       <nav className="primary-nav" aria-label="Primary navigation">
         <div className="shell nav-track">
-          {nav.map((item) => <Link key={item} href={item === 'Latest' ? '/#latest' : `/section/${item.toLowerCase()}`}>{item}</Link>)}
+          {nav.map((item) => <Link key={item} href={item === 'Latest' ? '/#latest' : item === 'Live Desk' ? '/#live-desk' : `/section/${item.toLowerCase()}`}>{item}</Link>)}
         </div>
       </nav>
     </header>

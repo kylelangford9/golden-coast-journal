@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { getDb } from '@/db';
-import { articles as articleTable, sources as sourceTable } from '@/db/schema';
+import { articles as articleTable, sources as sourceTable, storyCandidates } from '@/db/schema';
 import { articles, type Article } from '@/lib/content';
 import { getApprovedEditorialAsset } from '@/lib/imagery';
 
@@ -53,7 +53,15 @@ function fromRow(row: typeof articleTable.$inferSelect): Article {
 export async function seedDatabase() {
   const db = getDb();
   for (const article of articles) {
-    await db.insert(articleTable).values(toRow(article)).onConflictDoNothing();
+    await db.insert(articleTable).values(toRow(article)).onConflictDoUpdate({
+      target: articleTable.id,
+      set: {
+        author: article.author,
+        imageUrl: article.imageUrl,
+        imageAlt: article.imageAlt,
+        imageCredit: article.imageCredit,
+      },
+    });
   }
   const publicationSources = [
     { id: 'govca', name: 'Office of the Governor of California', feedUrl: 'https://www.gov.ca.gov/feed/', homepageUrl: 'https://www.gov.ca.gov/newsroom/', section: 'California', trustTier: 1, active: true },
@@ -61,6 +69,38 @@ export async function seedDatabase() {
   ];
   for (const source of publicationSources) {
     await db.insert(sourceTable).values(source).onConflictDoUpdate({ target: sourceTable.id, set: source });
+  }
+}
+
+export type DevelopingSignal = {
+  id: string;
+  title: string;
+  url: string;
+  sourceName: string;
+  sourceHomepage: string;
+  publishedAt: string | null;
+  discoveredAt: string;
+};
+
+export async function listDevelopingSignals(limit = 5): Promise<DevelopingSignal[]> {
+  try {
+    await seedDatabase();
+    return await getDb()
+      .select({
+        id: storyCandidates.id,
+        title: storyCandidates.title,
+        url: storyCandidates.externalUrl,
+        sourceName: sourceTable.name,
+        sourceHomepage: sourceTable.homepageUrl,
+        publishedAt: storyCandidates.publishedAt,
+        discoveredAt: storyCandidates.discoveredAt,
+      })
+      .from(storyCandidates)
+      .innerJoin(sourceTable, eq(storyCandidates.sourceId, sourceTable.id))
+      .orderBy(desc(storyCandidates.score), desc(storyCandidates.publishedAt))
+      .limit(Math.max(1, Math.min(limit, 10)));
+  } catch {
+    return [];
   }
 }
 

@@ -1,15 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
-import { listPublished } from '@/lib/repository';
+import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
 export default async function Home() {
-  const articles = await listPublished();
+  const [articles, developing] = await Promise.all([listPublished(), listDevelopingSignals(5)]);
   const [lead, ...rest] = articles;
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
@@ -32,9 +32,9 @@ export default async function Home() {
       <SiteHeader />
       <div className="ticker">
         <div className="shell ticker-inner">
-          <strong>Developing</strong>
-          <span>Red-flag warnings prompt expanded fire readiness across Northern California</span>
-          <Link href={`/article/${lead.slug}`}>Full report <ArrowRight size={14} /></Link>
+          <strong>Live desk</strong>
+          <span>{developing[0]?.title || 'Red-flag warnings prompt expanded fire readiness across Northern California'}</span>
+          {developing[0] ? <a href={developing[0].url} target="_blank" rel="noreferrer">Official source <ExternalLink size={13} /></a> : <Link href={`/article/${lead.slug}`}>Full report <ArrowRight size={14} /></Link>}
         </div>
       </div>
 
@@ -55,6 +55,29 @@ export default async function Home() {
           <Image src={leadImage.url} alt={leadImage.alt} fill priority sizes="(max-width: 900px) 100vw, 62vw" />
           <span className="photo-caption">{editorialAssetLabel(leadImage)} · {leadImage.credit}</span>
         </Link>
+      </section>
+
+      <section className="live-desk shell" id="live-desk" aria-labelledby="live-desk-title">
+        <div className="live-desk-heading">
+          <div>
+            <p className="eyebrow">Source monitor</p>
+            <h2 id="live-desk-title">Developing across California</h2>
+          </div>
+          <p>Fresh signals from official primary sources, before the Journal’s reporting is complete.</p>
+        </div>
+        {developing.length ? (
+          <ol className="signal-list">
+            {developing.map((signal, index) => (
+              <li key={signal.id}>
+                <span className="signal-index">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <a href={signal.url} target="_blank" rel="noreferrer">{signal.title} <ExternalLink size={13} /></a>
+                  <p>{signal.sourceName}{signal.publishedAt ? ` · ${formatArticleDate(signal.publishedAt)}` : ''}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : <p className="signal-empty">The live desk is checking official sources. Published reporting remains available below.</p>}
       </section>
 
       <section className="shell top-stories" aria-labelledby="top-stories-title">

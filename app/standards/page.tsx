@@ -6,6 +6,7 @@ export const metadata = { title: 'Standards & AI Policy', description: 'The sour
 const standards = [
   ['Source first', 'Every factual report begins with attributable material. Primary records, public data and direct statements are preferred, and source links remain attached to the published story.'],
   ['Automation with accountability', 'Software may discover stories, compare records and draft original language. It does not change our obligation to distinguish fact, analysis and uncertainty. The publisher remains accountable for everything on this site.'],
+  ['Honest bylines', 'Automated and collaborative work is published under clearly institutional Golden Coast Journal desk bylines. We do not invent reporter identities or imply that a fictional person performed interviews or witnessed events.'],
   ['No invented certainty', 'Names, figures, dates and quotations must be supported. When information is incomplete or changing, the story says so plainly.'],
   ['Independent writing', 'We summarize and synthesize; we do not republish another newsroom’s article. Original reporting and source material receive visible credit.'],
   ['Real photographs, always', 'Photographs of people, places and events must be authentic, attributable camera-made images from approved sources. We do not publish AI-generated or synthetic imagery as photography. AI may assist with logos, typography and clearly designed graphics, but never with a scene that readers could mistake for documentary evidence.'],

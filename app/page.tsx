@@ -61,9 +61,9 @@ export default async function Home() {
         <div className="live-desk-heading">
           <div>
             <p className="eyebrow">Source monitor</p>
-            <h2 id="live-desk-title">Developing across California</h2>
+            <h2 id="live-desk-title">Developing now</h2>
           </div>
-          <p>Fresh signals from official primary sources, before the Journal’s reporting is complete.</p>
+          <p>Fresh signals from California, national, world, business, climate and science primary sources—before the Journal’s reporting is complete.</p>
         </div>
         {developing.length ? (
           <ol className="signal-list">
@@ -72,7 +72,7 @@ export default async function Home() {
                 <span className="signal-index">{String(index + 1).padStart(2, '0')}</span>
                 <div>
                   <a href={signal.url} target="_blank" rel="noreferrer">{signal.title} <ExternalLink size={13} /></a>
-                  <p>{signal.sourceName}{signal.publishedAt ? ` · ${formatArticleDate(signal.publishedAt)}` : ''}</p>
+                  <p>{signal.section} · {signal.sourceName}{signal.publishedAt ? ` · ${formatArticleDate(signal.publishedAt)}` : ''}</p>
                 </div>
               </li>
             ))}

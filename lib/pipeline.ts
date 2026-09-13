@@ -4,16 +4,14 @@ import { getDb } from '@/db';
 import { articles, pipelineRuns, requestLimits, sources, storyCandidates } from '@/db/schema';
 import { seedDatabase } from '@/lib/repository';
 import { editorialAssets } from '@/lib/imagery';
+import { decodeHtmlEntities } from '@/lib/text';
 
 type FeedEntry = { title: string; url: string; summary: string; publishedAt?: string };
-
-function decodeXml(value: string) {
-  return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
+const autoPublishSourceIds = new Set(['nasa', 'noaa']);
 
 function textFromTag(block: string, tag: string) {
   const match = block.match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'i'));
-  return match ? decodeXml(match[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()) : '';
+  return match ? decodeHtmlEntities(match[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()) : '';
 }
 
 function parseFeed(xml: string): FeedEntry[] {
@@ -37,7 +35,8 @@ async function stableId(value: string) {
 }
 
 async function fetchReadablePage(url: string) {
-  const response = await fetch(url, { headers: { 'user-agent': 'GoldenCoastJournalBot/1.0 (+https://golden-coast-journal.lunar-perch-0381.chatgpt.site/standards)' }, signal: AbortSignal.timeout(12000) });
+  const publicationUrl = env.SITE_URL || 'https://golden-coast-journal.kylelangford9999.chatgpt.site';
+  const response = await fetch(url, { headers: { 'user-agent': `GoldenCoastJournalBot/1.0 (+${publicationUrl}/standards)` }, signal: AbortSignal.timeout(12000) });
   if (!response.ok) throw new Error(`Source returned ${response.status}`);
   const html = (await response.text()).slice(0, 500000);
   return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').slice(0, 18000);
@@ -131,7 +130,7 @@ export async function runEditorialPipeline() {
           const draft = await draftCandidate(candidate, source);
           if (!draft) continue;
           const now = new Date().toISOString();
-          const publish = env.AUTO_PUBLISH === 'true' && source.trustTier === 1 && draft.confidence >= 92;
+          const publish = env.AUTO_PUBLISH === 'true' && autoPublishSourceIds.has(source.id) && draft.confidence >= 92;
           const image = editorialAssets.californiaCoast;
           await db.insert(articles).values({
             id: crypto.randomUUID(),

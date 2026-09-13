@@ -6,5 +6,6 @@ declare namespace Cloudflare {
     OPENAI_MODEL?: string;
     CRON_SECRET?: string;
     AUTO_PUBLISH?: string;
+    SITE_URL?: string;
   }
 }

@@ -12,7 +12,7 @@ function escapeXml(value: string) {
 export async function GET() {
   const articles = await listPublished();
   const origin =
-    process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+    process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const items = articles
     .map(
       (article) =>

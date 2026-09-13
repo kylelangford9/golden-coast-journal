@@ -20,7 +20,7 @@ export default async function Home() {
   const latest = rest.slice(2);
   const leadImage = getApprovedEditorialAsset(lead.imageUrl);
   const origin =
-    process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+    process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const publicationJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsMediaOrganization',

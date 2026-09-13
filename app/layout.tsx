@@ -9,7 +9,7 @@ import './globals.css';
 const sans = Libre_Franklin({ variable: '--font-sans', subsets: ['latin'] });
 const serif = Newsreader({ variable: '--font-serif', subsets: ['latin'] });
 const origin =
-  process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+  process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(origin),

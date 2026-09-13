@@ -3,7 +3,7 @@ import { sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 
 const origin =
-  process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+  process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-13T00:00:00.000Z');
 
 export const revalidate = 900;

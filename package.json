@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "oxlint",
     "format": "oxfmt",
+    "test:domain": "node scripts/domain-migration.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -53,7 +53,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
   const origin =
-    process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
+    process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const newsArticleJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',

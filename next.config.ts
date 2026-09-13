@@ -2,6 +2,22 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'golden-coast-journal.vercel.app' }],
+        destination: 'https://www.goldencoastjournal.com/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'goldencoastjournal.com' }],
+        destination: 'https://www.goldencoastjournal.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

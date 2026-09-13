@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { NewsletterForm } from '@/components/newsletter-form';
 import { formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -149,6 +150,24 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
         </div>
       </article>
+      <section
+        className="article-newsletter"
+        aria-labelledby="article-newsletter-title"
+      >
+        <div className="shell article-newsletter-inner">
+          <div>
+            <p className="eyebrow">Continue the briefing</p>
+            <h2 id="article-newsletter-title">
+              California, clearly explained.
+            </h2>
+            <p>
+              Get the Journal’s concise morning edition—free, with no
+              advertising trackers.
+            </p>
+          </div>
+          <NewsletterForm placement="article" articleSlug={article.slug} />
+        </div>
+      </section>
       <section className="related shell">
         <div className="section-heading">
           <h2>Keep reading</h2>

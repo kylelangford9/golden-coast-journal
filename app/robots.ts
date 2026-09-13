@@ -5,6 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     process.env.SITE_URL || 'https://golden-coast-journal.vercel.app';
   return {
     rules: { userAgent: '*', allow: '/', disallow: ['/api/editorial/'] },
-    sitemap: `${origin}/sitemap.xml`,
+    sitemap: [`${origin}/sitemap.xml`, `${origin}/news-sitemap.xml`],
   };
 }

@@ -17,8 +17,14 @@ export function NewsletterForm() {
         body: JSON.stringify({ email: form.get('email'), website: form.get('website') }),
       });
       setState(response.ok ? 'success' : 'error');
-      if (response.ok && !form.get('website'))
+      if (response.ok && !form.get('website')) {
         track('Newsletter Signup', { placement: 'homepage' });
+        (
+          window as Window & {
+            kyleGrowth?: { track: (name: string, metadata?: object) => void };
+          }
+        ).kyleGrowth?.track('newsletter_signup', { placement: 'homepage' });
+      }
     } catch {
       setState('error');
     }

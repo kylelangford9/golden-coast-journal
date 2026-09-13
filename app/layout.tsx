@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Libre_Franklin, Newsreader } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import Script from 'next/script';
 import { NetworkArrivalTracker } from '@/components/network-arrival-tracker';
 import './globals.css';
 
@@ -53,6 +54,11 @@ export default function RootLayout({
       <body className={`${sans.variable} ${serif.variable}`}>
         {children}
         <NetworkArrivalTracker />
+        <Script
+          src="https://www.kylelangford.org/growth.js"
+          strategy="afterInteractive"
+          data-site="golden-coast-journal"
+        />
         <Analytics />
         <SpeedInsights />
       </body>

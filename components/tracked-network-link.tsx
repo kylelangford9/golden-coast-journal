@@ -1,6 +1,7 @@
 'use client';
 
 import { track } from '@vercel/analytics/react';
+import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 export function TrackedNetworkLink({
   href,
@@ -16,12 +17,16 @@ export function TrackedNetworkLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() =>
+      onClick={() => {
         track('Network Referral', {
           destination,
           placement: 'journal_footer',
-        })
-      }
+        });
+        trackPortfolioGrowth('network_referral', {
+          destination,
+          placement: 'journal_footer',
+        });
+      }}
     >
       {children}
     </a>

@@ -2,6 +2,7 @@
 
 import { type SyntheticEvent, useState } from 'react';
 import { track } from '@vercel/analytics/react';
+import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 export function NewsletterForm() {
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -19,11 +20,7 @@ export function NewsletterForm() {
       setState(response.ok ? 'success' : 'error');
       if (response.ok && !form.get('website')) {
         track('Newsletter Signup', { placement: 'homepage' });
-        (
-          window as Window & {
-            kyleGrowth?: { track: (name: string, metadata?: object) => void };
-          }
-        ).kyleGrowth?.track('newsletter_signup', { placement: 'homepage' });
+        trackPortfolioGrowth('newsletter_signup', { placement: 'homepage' });
       }
     } catch {
       setState('error');

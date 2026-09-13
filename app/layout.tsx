@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Libre_Franklin, Newsreader } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { NetworkArrivalTracker } from '@/components/network-arrival-tracker';
 import './globals.css';
 
 const sans = Libre_Franklin({ variable: '--font-sans', subsets: ['latin'] });
@@ -51,6 +52,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sans.variable} ${serif.variable}`}>
         {children}
+        <NetworkArrivalTracker />
         <Analytics />
         <SpeedInsights />
       </body>

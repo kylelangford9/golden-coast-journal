@@ -1,6 +1,7 @@
 'use client';
 
 import { type SyntheticEvent, useState } from 'react';
+import { track } from '@vercel/analytics/react';
 
 export function NewsletterForm() {
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -9,12 +10,18 @@ export function NewsletterForm() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setState('loading');
-    const response = await fetch('/api/newsletter', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email: form.get('email'), website: form.get('website') }),
-    });
-    setState(response.ok ? 'success' : 'error');
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: form.get('email'), website: form.get('website') }),
+      });
+      setState(response.ok ? 'success' : 'error');
+      if (response.ok && !form.get('website'))
+        track('Newsletter Signup', { placement: 'homepage' });
+    } catch {
+      setState('error');
+    }
   }
 
   return (

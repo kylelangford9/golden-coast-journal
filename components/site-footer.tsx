@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { TrackedNetworkLink } from '@/components/tracked-network-link';
 
 export function SiteFooter() {
   return (
@@ -21,10 +22,17 @@ export function SiteFooter() {
           <Link href="/section/business">Business</Link>
           <Link href="/section/technology">Technology</Link>
         </nav>
+        <nav aria-label="Explore the project network">
+          <strong>Project network</strong>
+          <TrackedNetworkLink href="https://www.kylelangford.org/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="Kyle Langford">Kyle Langford</TrackedNetworkLink>
+          <TrackedNetworkLink href="https://anvil.builders/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="Anvil">Anvil</TrackedNetworkLink>
+          <TrackedNetworkLink href="https://langbeat.live/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="LangBeat">LangBeat</TrackedNetworkLink>
+          <TrackedNetworkLink href="https://theonecompass.app/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="The One">The One</TrackedNetworkLink>
+        </nav>
       </div>
       <div className="shell footer-bottom">
         <span>© 2026 The Golden Coast Journal</span>
-        <span>Reader-supported in spirit, freely available by design.</span>
+        <span>A Kyle Langford project · Editorially independent.</span>
       </div>
     </footer>
   );

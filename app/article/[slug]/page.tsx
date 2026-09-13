@@ -14,10 +14,21 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   const { slug } = await params;
   const article = await findPublishedBySlug(slug);
   if (!article) return { title: 'Story not found' };
+  const articlePath = `/article/${article.slug}`;
   return {
     title: article.title,
     description: article.dek,
-    openGraph: { title: article.title, description: article.dek, images: [{ url: article.imageUrl, alt: article.imageAlt }] },
+    alternates: { canonical: articlePath },
+    openGraph: {
+      type: 'article',
+      url: articlePath,
+      title: article.title,
+      description: article.dek,
+      publishedTime: article.publishedAt,
+      modifiedTime: article.updatedAt,
+      authors: [article.author],
+      images: [{ url: article.imageUrl, alt: article.imageAlt }],
+    },
     twitter: { card: 'summary_large_image', title: article.title, description: article.dek, images: [article.imageUrl] },
   };
 }

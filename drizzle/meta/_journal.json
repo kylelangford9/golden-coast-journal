@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789319351704,
+      "tag": "0000_melodic_green_goblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789320092311,
+      "tag": "0001_majestic_gamora",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789320110745,
+      "tag": "0002_puzzling_rhodey",
+      "breakpoints": true
+    }
+  ]
+}

@@ -12,6 +12,7 @@ An independent, ad-free and paywall-free digital newspaper for California and th
 - Search and share metadata, article-specific social cards and an original publication social card
 - An allowlisted image registry that rejects unapproved article imagery and preserves photo provenance
 - Newsletter capture endpoint with validation and duplicate protection
+- Protected editorial review queue with publish, reject and reopen actions plus a durable audit trail
 
 ## Editorial automation
 
@@ -24,6 +25,8 @@ The scheduled Worker runs at minutes 7 and 37 of every hour. It:
 5. only auto-publishes low-risk NASA and NOAA briefs when `AUTO_PUBLISH=true` and the model confidence is at least 92; every other beat remains review-first.
 
 The manual protected trigger is `POST /api/editorial/run` with `Authorization: Bearer <CRON_SECRET>`.
+
+The same bearer secret protects `GET /api/editorial/queue` and `POST /api/editorial/articles/:id`, whose JSON action is `publish`, `reject` or `reopen`.
 
 ## Local development
 

@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { and, desc, eq, lt } from 'drizzle-orm';
 import { getDb } from '@/db';
-import { articles, pipelineRuns, requestLimits, sources, storyCandidates } from '@/db/schema';
+import { articles, editorialActions, pipelineRuns, requestLimits, sources, storyCandidates } from '@/db/schema';
 import { seedDatabase } from '@/lib/repository';
 import { editorialAssets } from '@/lib/imagery';
 import { decodeHtmlEntities } from '@/lib/text';
@@ -132,8 +132,9 @@ export async function runEditorialPipeline() {
           const now = new Date().toISOString();
           const publish = env.AUTO_PUBLISH === 'true' && autoPublishSourceIds.has(source.id) && draft.confidence >= 92;
           const image = editorialAssets.californiaCoast;
-          await db.insert(articles).values({
-            id: crypto.randomUUID(),
+          const articleId = crypto.randomUUID();
+          const inserted = await db.insert(articles).values({
+            id: articleId,
             slug: `${slugify(draft.title)}-${(await stableId(candidate.externalUrl)).slice(0, 6)}`,
             section: draft.section,
             title: draft.title,
@@ -151,7 +152,10 @@ export async function runEditorialPipeline() {
             publishedAt: publish ? now : null,
             updatedAt: now,
             createdAt: now,
-          }).onConflictDoNothing();
+          }).onConflictDoNothing().returning({ id: articles.id });
+          if (inserted.length) {
+            await db.insert(editorialActions).values({ id: crypto.randomUUID(), articleId, action: 'drafted', actor: 'scheduled-newsroom', note: `Candidate ${candidate.id}`, createdAt: now });
+          }
           await db.update(storyCandidates).set({ status: 'processed' }).where(eq(storyCandidates.id, candidate.id));
           drafted++;
         } catch (error) {

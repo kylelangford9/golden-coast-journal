@@ -1,0 +1,1 @@
+CREATE INDEX `idx_articles_status_created` ON `articles` (`status`,`created_at`);

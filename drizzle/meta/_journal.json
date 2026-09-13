@@ -22,6 +22,20 @@
       "when": 1789320110745,
       "tag": "0002_puzzling_rhodey",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1789322184796,
+      "tag": "0003_chunky_randall",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789322371967,
+      "tag": "0004_ancient_machine_man",
+      "breakpoints": true
     }
   ]
 }

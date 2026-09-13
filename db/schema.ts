@@ -22,6 +22,7 @@ export const articles = sqliteTable('articles', {
 }, (table) => [
   uniqueIndex('idx_articles_slug').on(table.slug),
   index('idx_articles_status_published').on(table.status, table.publishedAt),
+  index('idx_articles_status_created').on(table.status, table.createdAt),
   index('idx_articles_section_published').on(table.section, table.publishedAt),
 ]);
 
@@ -81,3 +82,12 @@ export const requestLimits = sqliteTable('request_limits', {
   count: integer('count').notNull().default(1),
   windowStart: integer('window_start').notNull(),
 });
+
+export const editorialActions = sqliteTable('editorial_actions', {
+  id: text('id').primaryKey(),
+  articleId: text('article_id').notNull().references(() => articles.id, { onDelete: 'cascade' }),
+  action: text('action', { enum: ['drafted', 'published', 'rejected', 'reopened'] }).notNull(),
+  actor: text('actor').notNull().default('editorial-api'),
+  note: text('note'),
+  createdAt: text('created_at').notNull(),
+}, (table) => [index('idx_editorial_actions_article_created').on(table.articleId, table.createdAt)]);

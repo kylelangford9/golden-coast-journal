@@ -6,12 +6,14 @@ import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
+import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
 export default async function Home() {
   const articles = await listPublished();
   const [lead, ...rest] = articles;
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
+  const leadImage = getApprovedEditorialAsset(lead.imageUrl);
   const origin = process.env.SITE_URL || 'https://golden-coast-journal.lunar-perch-0381.chatgpt.site';
   const publicationJson = JSON.stringify({
     '@context': 'https://schema.org',
@@ -50,8 +52,8 @@ export default async function Home() {
           </div>
         </article>
         <Link href={`/article/${lead.slug}`} className="lead-visual" aria-label={`Read: ${lead.title}`}>
-          <Image src={lead.imageUrl} alt={lead.imageAlt} fill priority sizes="(max-width: 900px) 100vw, 62vw" />
-          <span className="photo-caption">{lead.imageCredit}</span>
+          <Image src={leadImage.url} alt={leadImage.alt} fill priority sizes="(max-width: 900px) 100vw, 62vw" />
+          <span className="photo-caption">{editorialAssetLabel(leadImage)} · {leadImage.credit}</span>
         </Link>
       </section>
 
@@ -65,6 +67,7 @@ export default async function Home() {
             <article className="image-story" key={article.slug}>
               <Link href={`/article/${article.slug}`} className="image-frame">
                 <Image src={article.imageUrl} alt={article.imageAlt} fill sizes="(max-width: 760px) 100vw, 50vw" />
+                <span className="photo-caption">{editorialAssetLabel(getApprovedEditorialAsset(article.imageUrl))} · {getApprovedEditorialAsset(article.imageUrl).credit}</span>
               </Link>
               <p className="eyebrow">{article.section}</p>
               <h3><Link href={`/article/${article.slug}`}>{article.title}</Link></h3>

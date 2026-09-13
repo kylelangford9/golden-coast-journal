@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { articles as articleTable, sources as sourceTable } from '@/db/schema';
 import { articles, type Article } from '@/lib/content';
+import { getApprovedEditorialAsset } from '@/lib/imagery';
 
 function toRow(article: Article) {
   return {
@@ -27,6 +28,7 @@ function toRow(article: Article) {
 }
 
 function fromRow(row: typeof articleTable.$inferSelect): Article {
+  const approvedAsset = getApprovedEditorialAsset(row.imageUrl);
   return {
     id: row.id,
     slug: row.slug,
@@ -36,9 +38,9 @@ function fromRow(row: typeof articleTable.$inferSelect): Article {
     body: JSON.parse(row.bodyJson),
     keyPoints: JSON.parse(row.keyPointsJson),
     author: row.author,
-    imageUrl: row.imageUrl || '/california-coast.jpg',
-    imageAlt: row.imageAlt || '',
-    imageCredit: row.imageCredit || '',
+    imageUrl: approvedAsset.url,
+    imageAlt: approvedAsset.alt,
+    imageCredit: approvedAsset.credit,
     sources: JSON.parse(row.sourcesJson),
     status: row.status === 'archived' ? 'draft' : row.status,
     featured: row.featured,

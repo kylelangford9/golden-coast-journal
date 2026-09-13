@@ -8,6 +8,7 @@ const standards = [
   ['Automation with accountability', 'Software may discover stories, compare records and draft original language. It does not change our obligation to distinguish fact, analysis and uncertainty. The publisher remains accountable for everything on this site.'],
   ['No invented certainty', 'Names, figures, dates and quotations must be supported. When information is incomplete or changing, the story says so plainly.'],
   ['Independent writing', 'We summarize and synthesize; we do not republish another newsroom’s article. Original reporting and source material receive visible credit.'],
+  ['Real photographs, always', 'Photographs of people, places and events must be authentic, attributable camera-made images from approved sources. We do not publish AI-generated or synthetic imagery as photography. AI may assist with logos, typography and clearly designed graphics, but never with a scene that readers could mistake for documentary evidence.'],
   ['Publication thresholds', 'Routine briefs from authoritative primary sources may be published automatically after structured checks. Sensitive claims, allegations, elections, health, public safety and conflicts require heightened review.'],
   ['Corrections that persist', 'Material corrections are attached to the article with the date and substance of the change. We do not silently rewrite consequential errors.'],
 ];

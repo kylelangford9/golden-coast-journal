@@ -3,6 +3,7 @@ import { and, desc, eq, lt } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { articles, pipelineRuns, requestLimits, sources, storyCandidates } from '@/db/schema';
 import { seedDatabase } from '@/lib/repository';
+import { editorialAssets } from '@/lib/imagery';
 
 type FeedEntry = { title: string; url: string; summary: string; publishedAt?: string };
 
@@ -131,6 +132,7 @@ export async function runEditorialPipeline() {
           if (!draft) continue;
           const now = new Date().toISOString();
           const publish = env.AUTO_PUBLISH === 'true' && source.trustTier === 1 && draft.confidence >= 92;
+          const image = editorialAssets.californiaCoast;
           await db.insert(articles).values({
             id: crypto.randomUUID(),
             slug: `${slugify(draft.title)}-${(await stableId(candidate.externalUrl)).slice(0, 6)}`,
@@ -140,9 +142,9 @@ export async function runEditorialPipeline() {
             bodyJson: JSON.stringify(draft.body),
             keyPointsJson: JSON.stringify(draft.keyPoints),
             author: 'Golden Coast Journal Desk',
-            imageUrl: '/california-coast.jpg',
-            imageAlt: 'California coast file photograph',
-            imageCredit: 'Golden Coast Journal file image',
+            imageUrl: image.url,
+            imageAlt: image.alt,
+            imageCredit: image.credit,
             sourcesJson: JSON.stringify([{ name: source.name, url: candidate.externalUrl }]),
             status: publish ? 'published' : 'review',
             featured: false,

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: 'The Golden Coast Journal',
     title: 'The Golden Coast Journal',
     description: 'Independent reporting and analysis from California to the world. No paywall. No ads.',
-    images: [{ url: '/og.png', width: 1730, height: 909, alt: 'The Golden Coast Journal — Independent. Clear. California.' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'The Golden Coast Journal title over a real photograph of Santa Barbara, California' }],
   },
   twitter: {
     card: 'summary_large_image',

@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
+import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
 
@@ -37,6 +38,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await findPublishedBySlug(slug);
   if (!article) notFound();
+  const approvedImage = getApprovedEditorialAsset(article.imageUrl);
   const articles = await listPublished();
   const related = articles.filter((item) => item.slug !== article.slug).slice(0, 3);
   const origin = process.env.SITE_URL || 'https://golden-coast-journal.lunar-perch-0381.chatgpt.site';
@@ -71,8 +73,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
         </header>
         <figure className="article-hero shell">
-          <Image src={article.imageUrl} alt={article.imageAlt} fill priority sizes="(max-width: 1480px) 100vw, 1420px" />
-          <figcaption>{article.imageCredit}</figcaption>
+          <Image src={approvedImage.url} alt={approvedImage.alt} fill priority sizes="(max-width: 1480px) 100vw, 1420px" />
+          <figcaption>{editorialAssetLabel(approvedImage)} · <a href={approvedImage.provenanceUrl} target="_blank" rel="noreferrer">{approvedImage.credit}</a></figcaption>
         </figure>
         <div className="article-layout shell">
           <aside className="key-points" aria-label="Key points">

@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
+import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
 type SectionProps = { params: Promise<{ section: string }> };
 
@@ -42,6 +43,7 @@ export default async function SectionPage({ params }: SectionProps) {
             </div>
             <Link href={`/article/${article.slug}`} className="section-image">
               <Image src={article.imageUrl} alt={article.imageAlt} fill sizes="(max-width: 700px) 100vw, 34vw" />
+              <span className="photo-caption">{editorialAssetLabel(getApprovedEditorialAsset(article.imageUrl))} · {getApprovedEditorialAsset(article.imageUrl).credit}</span>
             </Link>
           </article>
         ))}

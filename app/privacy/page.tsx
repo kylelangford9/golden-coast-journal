@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 
@@ -48,9 +49,9 @@ export default function PrivacyPage() {
           <section>
             <h2>Your choices</h2>
             <p>
-              You may read the publication without subscribing. A direct privacy
-              contact and unsubscribe flow will be added with the final
-              publication domain.
+              You may read the publication without subscribing. Use the direct{' '}
+              <Link href="/contact">publisher contact</Link> for a privacy or
+              newsletter-removal request.
             </p>
           </section>
         </div>

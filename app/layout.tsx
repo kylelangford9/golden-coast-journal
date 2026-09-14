@@ -69,6 +69,12 @@ export default function RootLayout({
     publishingPrinciples: `${origin}/standards`,
     correctionsPolicy: `${origin}/corrections`,
     ownershipFundingInfo: `${origin}/about`,
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'newsroom, corrections and privacy',
+      email: 'kyle@kylelangford.org',
+      url: `${origin}/contact`,
+    },
     isAccessibleForFree: true,
   }).replace(/</g, '\\u003c');
 

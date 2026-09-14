@@ -26,8 +26,8 @@ export default function CorrectionsPage() {
           <h2>No material corrections have been posted.</h2>
           <p>
             If you believe a report needs review, include the headline, the
-            specific passage and a link to supporting evidence. Contact details
-            will be added with the publication’s domain.
+            specific passage and a link to supporting evidence. Send it through
+            the Journal’s direct <Link href="/contact">publisher contact</Link>.
           </p>
           <Link href="/standards">Read our editorial standards</Link>
         </section>

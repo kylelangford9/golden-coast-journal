@@ -47,6 +47,7 @@ export function SiteHeader() {
                 <Link href="/about">About</Link>
                 <Link href="/standards">Standards & AI policy</Link>
                 <Link href="/corrections">Corrections</Link>
+                <Link href="/contact">Contact</Link>
               </nav>
             </div>
           </details>

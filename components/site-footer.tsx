@@ -26,6 +26,7 @@ export function SiteFooter() {
           <Link href="/about">About</Link>
           <Link href="/standards">Standards & AI policy</Link>
           <Link href="/corrections">Corrections</Link>
+          <Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link>
         </nav>
         <nav aria-label="Explore sections">

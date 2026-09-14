@@ -22,6 +22,60 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    id: 'gcj-010',
+    slug: 'track-california-mail-ballot-2026-fix-problems',
+    section: 'California',
+    title:
+      'How to track your California mail ballot in 2026 — and fix a problem',
+    dek: 'Where’s My Ballot provides automatic status notices in all 58 counties. A separate state page shows whether a ballot was counted, while replacement and signature-cure options address the most common problems.',
+    body: [
+      'California voters do not have to wait until the final canvass to learn what happened to a vote-by-mail ballot. The state’s Where’s My Ballot service can send email, text or voice notifications as the ballot moves through the process, and enrollment is available in all 58 counties.',
+      'The notices cover more than delivery. According to the Secretary of State, voters can be notified when a ballot is mailed, when it is expected to arrive, when the county receives the completed ballot and whether it was accepted. If a county cannot accept it, the notice can include the reason and instructions for correcting the problem.',
+      'Voters can also use My Voter Status or their county’s ballot-status system to verify whether a returned ballot arrived and was counted. The state maintains a county-by-county directory with online tools and phone numbers. That direct county record is the place to resolve a status that appears delayed or unclear.',
+      'A ballot that never arrives, is lost or is destroyed can be replaced. Only the registered voter may request the replacement, either by submitting the state application or by contacting the county elections office by phone, email, fax or another electronic method. For the November 3 general election, October 27 is the state’s recommended date to submit a replacement-ballot application; a voter facing a later problem should contact the county immediately rather than treating that recommendation as a final cutoff.',
+      'Signature problems have a separate remedy. County officials compare the signature on the return envelope with signatures in the voter’s registration record. If the envelope is unsigned or the signature does not compare, the county must notify the voter and provide instructions for completing a verification statement. Procedures vary by county.',
+      'For the November 3, 2026, general election, a completed signature-verification statement must reach the county elections office by 5 p.m. on November 25. The Secretary of State’s verification page links to instructions for every county. A voter who receives a warning should use that county-specific process promptly and keep confirmation of the submission when possible.',
+      'Ballot tracking is most useful when it is activated before a deadline becomes urgent. Sign up for Where’s My Ballot, keep the county elections office information available and read every status message. The relevant question is not only whether the envelope moved through the mail, but whether the county recorded the ballot as accepted.',
+    ],
+    keyPoints: [
+      'Where’s My Ballot offers email, text or voice status notices in all 58 California counties.',
+      'A missing, lost or destroyed ballot can be replaced; October 27 is the recommended application date for the November 3 general election.',
+      'For that election, a missing or mismatched signature must be cured by 5 p.m. on November 25.',
+    ],
+    author: 'Kyle Langford',
+    publishedAt: '2026-09-14T02:15:00-07:00',
+    updatedAt: '2026-09-14T02:15:00-07:00',
+    readingMinutes: 3,
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
+    imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
+    sources: [
+      {
+        name: 'California Secretary of State — Where’s My Ballot?',
+        url: 'https://www.sos.ca.gov/elections/ballot-status/wheres-my-ballot',
+      },
+      {
+        name: 'California Secretary of State — Vote by Mail',
+        url: 'https://www.sos.ca.gov/elections/voter-registration/vote-mail',
+      },
+      {
+        name: 'California Secretary of State — Ballot Status',
+        url: 'https://www.sos.ca.gov/elections/ballot-status',
+      },
+      {
+        name: 'California Secretary of State — Verify My Signature',
+        url: 'https://www.sos.ca.gov/elections/voter-registration/vote-mail/verify-my-signature',
+      },
+      {
+        name: 'California Secretary of State — Election Dates and Resources',
+        url: 'https://www.sos.ca.gov/elections/voting-resources/voting-california/election-dates-and-resources',
+      },
+    ],
+    status: 'published',
+    featured: true,
+  },
+  {
     id: 'gcj-009',
     slug: 'california-minimum-wage-2027-rate-exempt-salary',
     section: 'Business',

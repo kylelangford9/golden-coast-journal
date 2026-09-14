@@ -123,7 +123,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             title={article.title}
           />
         </header>
-        <figure className="article-hero shell">
+        <figure className="article-hero shell photo-frame ratio-hero">
           <Image
             src={approvedImage.url}
             alt={approvedImage.alt}

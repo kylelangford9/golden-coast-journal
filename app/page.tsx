@@ -71,7 +71,7 @@ export default async function Home() {
         </article>
         <Link
           href={`/article/${lead.slug}`}
-          className="lead-visual"
+          className="lead-visual photo-frame ratio-card"
           aria-label={`Read: ${lead.title}`}
         >
           <Image
@@ -171,7 +171,7 @@ export default async function Home() {
         <div className="feature-pair">
           {featurePair.map((article) => (
             <article className="image-story" key={article.slug}>
-              <Link href={`/article/${article.slug}`} className="image-frame">
+              <Link href={`/article/${article.slug}`} className="image-frame photo-frame ratio-card">
                 <Image
                   src={article.imageUrl}
                   alt={article.imageAlt}

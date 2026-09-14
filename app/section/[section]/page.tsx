@@ -69,7 +69,7 @@ export default async function SectionPage({ params }: SectionProps) {
                 By {article.author} · {article.readingMinutes} min
               </span>
             </div>
-            <Link href={`/article/${article.slug}`} className="section-image">
+            <Link href={`/article/${article.slug}`} className="section-image photo-frame ratio-card">
               <Image
                 src={article.imageUrl}
                 alt={article.imageAlt}

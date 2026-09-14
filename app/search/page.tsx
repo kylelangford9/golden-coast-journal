@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { ArticleTime } from '@/components/article-time';
+import {
+  editorialAssetLabel,
+  getApprovedEditorialAsset,
+} from '@/lib/imagery';
 import { listPublished } from '@/lib/repository';
 
 type SearchProps = { searchParams: Promise<{ q?: string }> };
@@ -52,15 +57,36 @@ export default async function SearchPage({ searchParams }: SearchProps) {
         <div className="search-results">
           {results.map((article) => (
             <article key={article.slug}>
-              <p className="eyebrow">{article.section}</p>
-              <h2>
-                <Link href={`/article/${article.slug}`}>{article.title}</Link>
-              </h2>
-              <p>{article.dek}</p>
-              <span className="source-note">
-                <ArticleTime article={article} separator="after" />
-                {article.section}
-              </span>
+              <div>
+                <p className="eyebrow">{article.section}</p>
+                <h2>
+                  <Link href={`/article/${article.slug}`}>{article.title}</Link>
+                </h2>
+                <p>{article.dek}</p>
+                <span className="source-note">
+                  <ArticleTime article={article} separator="after" />
+                  {article.readingMinutes} min read
+                </span>
+              </div>
+              <Link
+                href={`/article/${article.slug}`}
+                className="search-image photo-frame ratio-card"
+                aria-hidden
+                tabIndex={-1}
+              >
+                <Image
+                  src={article.imageUrl}
+                  alt=""
+                  fill
+                  sizes="(max-width: 700px) 100vw, 30vw"
+                />
+                <span className="photo-caption">
+                  {editorialAssetLabel(
+                    getApprovedEditorialAsset(article.imageUrl),
+                  )}{' '}
+                  · {getApprovedEditorialAsset(article.imageUrl).credit}
+                </span>
+              </Link>
             </article>
           ))}
         </div>

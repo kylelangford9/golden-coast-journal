@@ -42,6 +42,18 @@ export const readerPolls: ReaderPollDefinition[] = [
       { id: 'deep-explainers', label: 'Deep explainers when needed' },
     ],
   },
+  {
+    id: 'proposition-explainer-priority-2026',
+    question: 'Which part of the 2026 ballot needs a deeper explainer first?',
+    context:
+      'Choose the policy area where a sourced Journal follow-up would be most useful.',
+    options: [
+      { id: 'housing-and-bonds', label: 'Housing and bonds' },
+      { id: 'taxes-and-budget', label: 'Taxes and budget' },
+      { id: 'elections-and-government', label: 'Elections and government' },
+      { id: 'health-and-environment', label: 'Health and environment' },
+    ],
+  },
 ];
 
 export function findReaderPoll(pollId: string) {

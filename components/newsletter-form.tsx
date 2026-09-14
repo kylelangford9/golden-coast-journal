@@ -13,7 +13,13 @@ import { track } from '@vercel/analytics/react';
 import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 type NewsletterFormProps = {
-  placement?: 'homepage' | 'article' | 'briefing' | 'live' | 'deadlines';
+  placement?:
+    | 'homepage'
+    | 'article'
+    | 'briefing'
+    | 'live'
+    | 'deadlines'
+    | 'propositions';
   articleSlug?: string;
 };
 
@@ -64,7 +70,11 @@ export function NewsletterForm({
     if (!form) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.5))
+        if (
+          !entries.some(
+            (entry) => entry.isIntersecting && entry.intersectionRatio >= 0.5,
+          )
+        )
           return;
         trackCheckpointOnce('newsletter_form_viewed', 'Newsletter Form Viewed');
         observer.disconnect();
@@ -151,14 +161,19 @@ export function NewsletterForm({
       setShareStatus('Share options opened.');
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
-      setShareStatus('Sharing is unavailable. Copy the invitation link instead.');
+      setShareStatus(
+        'Sharing is unavailable. Copy the invitation link instead.',
+      );
     }
   }
 
   return (
     <form ref={formRef} className="newsletter-form" onSubmit={subscribe}>
       <label htmlFor={emailId}>The Coast, in your inbox</label>
-      <p>Join the launch list for concise editions and major California updates. Free.</p>
+      <p>
+        Join the launch list for concise editions and major California updates.
+        Free.
+      </p>
       <div>
         <input
           id={emailId}

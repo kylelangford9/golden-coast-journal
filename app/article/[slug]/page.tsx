@@ -9,6 +9,7 @@ import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleShare } from '@/components/article-share';
 import { ElectionCalendarDownload } from '@/components/election-calendar-download';
 import { DeadlineHubLink } from '@/components/deadline-hub-link';
+import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { effectiveArticleUpdatedAt, formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -161,6 +162,20 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {supportsDeadlineTracker && (
               <DeadlineHubLink articleSlug={article.slug} />
             )}
+            {article.slug === 'california-2026-general-election-deadlines' && (
+              <section className="proposition-hub-callout">
+                <div>
+                  <p className="eyebrow">Next step</p>
+                  <h2>Review all 14 statewide propositions.</h2>
+                  <p>
+                    Search by number or issue, compare what yes and no mean and
+                    mark each measure reviewed without sending your list
+                    anywhere.
+                  </p>
+                </div>
+                <PropositionGuideLink placement="article" />
+              </section>
+            )}
             <section className="source-box" aria-labelledby="sources-heading">
               <h2 id="sources-heading">Sources & methodology</h2>
               <p>
@@ -197,8 +212,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               California, clearly explained.
             </h2>
             <p>
-              Join the Journal’s launch list for concise editions; they are free,
-              with no advertising trackers.
+              Join the Journal’s launch list for concise editions; they are
+              free, with no advertising trackers.
             </p>
           </div>
           <NewsletterForm placement="article" articleSlug={article.slug} />

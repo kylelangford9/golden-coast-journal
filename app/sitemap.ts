@@ -3,7 +3,7 @@ import { effectiveArticleUpdatedAt, sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
-const institutionalModified = new Date('2026-09-13T00:00:00.000Z');
+const institutionalModified = new Date('2026-09-14T00:00:00.000Z');
 
 export const revalidate = 900;
 
@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...[
       '/about',
       '/briefing',
+      '/california-propositions-2026',
       '/california-deadlines',
       '/live',
       '/authors/kyle-langford',

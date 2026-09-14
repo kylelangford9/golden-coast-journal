@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleTime } from '@/components/article-time';
 import { ReaderPulse } from '@/components/reader-pulse';
+import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -102,6 +103,23 @@ export default async function Home() {
           </div>
           <NewsletterForm />
         </div>
+      </section>
+
+      <section
+        className="shell proposition-promo"
+        aria-labelledby="proposition-promo-title"
+      >
+        <div>
+          <p className="eyebrow">November ballot</p>
+          <h2 id="proposition-promo-title">
+            Fourteen propositions; one review checklist.
+          </h2>
+          <p>
+            Search every statewide measure, see what yes and no mean and keep a
+            browser-local list of what you have reviewed.
+          </p>
+        </div>
+        <PropositionGuideLink placement="homepage" />
       </section>
 
       <section

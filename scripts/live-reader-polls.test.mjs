@@ -64,7 +64,7 @@ for (const clause of [
 
 assert.match(homepage, /ReaderPulse pollId="coverage-priority-2026-09"/);
 assert.match(homepage, /href="\/live"/);
-assert.match(header, /item === 'Live Desk' \? '\/live'/);
+assert.match(header, /item === 'Live Desk'\s*\?\s*'\/live'/);
 assert.match(footer, /href="\/live"/);
 assert.match(sitemap, /'\/live'/);
 

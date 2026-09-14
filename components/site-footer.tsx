@@ -6,12 +6,19 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="shell footer-grid">
         <div>
-          <p className="footer-mark"><span>The</span> Golden Coast Journal</p>
-          <p className="footer-note">News for the whole coast. No paywall. No ads.</p>
+          <p className="footer-mark">
+            <span>The</span> Golden Coast Journal
+          </p>
+          <p className="footer-note">
+            News for the whole coast. No paywall. No ads.
+          </p>
         </div>
         <nav aria-label="About the Journal">
           <strong>Journal</strong>
           <Link href="/live">California live desk</Link>
+          <Link href="/california-propositions-2026">
+            2026 proposition guide
+          </Link>
           <Link href="/california-deadlines">California deadlines</Link>
           <Link href="/briefing">Briefing preview</Link>
           <Link href="/about">About</Link>
@@ -27,10 +34,30 @@ export function SiteFooter() {
         </nav>
         <nav aria-label="Explore the project network">
           <strong>Project network</strong>
-          <TrackedNetworkLink href="https://www.kylelangford.org/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="Kyle Langford">Kyle Langford</TrackedNetworkLink>
-          <TrackedNetworkLink href="https://anvil.builders/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="Anvil">Anvil</TrackedNetworkLink>
-          <TrackedNetworkLink href="https://langbeat.live/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="LangBeat">LangBeat</TrackedNetworkLink>
-          <TrackedNetworkLink href="https://theonecompass.app/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network" destination="The One">The One</TrackedNetworkLink>
+          <TrackedNetworkLink
+            href="https://www.kylelangford.org/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network"
+            destination="Kyle Langford"
+          >
+            Kyle Langford
+          </TrackedNetworkLink>
+          <TrackedNetworkLink
+            href="https://anvil.builders/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network"
+            destination="Anvil"
+          >
+            Anvil
+          </TrackedNetworkLink>
+          <TrackedNetworkLink
+            href="https://langbeat.live/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network"
+            destination="LangBeat"
+          >
+            LangBeat
+          </TrackedNetworkLink>
+          <TrackedNetworkLink
+            href="https://theonecompass.app/?utm_source=golden_coast_journal&amp;utm_medium=referral&amp;utm_campaign=project_network"
+            destination="The One"
+          >
+            The One
+          </TrackedNetworkLink>
         </nav>
       </div>
       <div className="shell footer-bottom">

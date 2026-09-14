@@ -17,6 +17,7 @@ const [
   sitemap,
   newsletter,
   detailPage,
+  propositionShare,
 ] = await Promise.all([
   read('lib/california-propositions.ts'),
   read('app/california-propositions-2026/page.tsx'),
@@ -29,6 +30,7 @@ const [
   read('app/sitemap.ts'),
   read('components/newsletter-form.tsx'),
   read('app/california-propositions-2026/[number]/page.tsx'),
+  read('components/proposition-share.tsx'),
 ]);
 
 const propositionNumbers = [1, 2, 3, 4, 5, 37, 38, 39, 40, 41, 42, 43, 44, 45];
@@ -118,8 +120,19 @@ assert.match(
   /ReaderPulse pollId="proposition-explainer-priority-2026" compact/,
 );
 assert.match(detailPage, /NewsletterForm placement="propositions"/);
+assert.match(detailPage, /editorialAssets\.californiaStateCapitol/);
+assert.match(detailPage, /image: propositionImage\.url/);
+assert.match(detailPage, /url: propositionImage\.url/);
+assert.doesNotMatch(detailPage, /images: \['\/og\.png'\]/);
+assert.match(detailPage, /<PropositionShare/);
 assert.match(guide, /Full Journal explainer/);
 assert.match(guide, /california-propositions-2026\/\$\{proposition\.number\}/);
+
+assert.match(propositionShare, /journal_proposition_referral/);
+assert.match(propositionShare, /utm_source', 'reader_share'/);
+assert.match(propositionShare, /trackPortfolioGrowth\('share_started', metadata\)/);
+assert.match(propositionShare, /proposition_number: number/);
+assert.doesNotMatch(propositionShare, /email|vote_choice|reviewed/i);
 
 async function sourceFiles(directory) {
   const entries = await readdir(path.join(root, directory), {

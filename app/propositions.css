@@ -641,6 +641,12 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.proposition-detail-hero .proposition-share {
+  justify-content: flex-start;
+}
+.proposition-detail-image {
+  margin-top: 0;
+}
 .proposition-detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.38fr);

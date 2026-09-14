@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { NewsletterForm } from '@/components/newsletter-form';
+import { PropositionShare } from '@/components/proposition-share';
 import { ReaderPulse } from '@/components/reader-pulse';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
@@ -9,8 +11,10 @@ import {
   californiaPropositions,
   propositionGuideVerifiedAt,
 } from '@/lib/california-propositions';
+import { editorialAssetLabel, editorialAssets } from '@/lib/imagery';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+const propositionImage = editorialAssets.californiaStateCapitol;
 
 type PropositionPageProps = {
   params: Promise<{ number: string }>;
@@ -53,13 +57,18 @@ export async function generateMetadata({
       publishedTime: propositionGuideVerifiedAt,
       modifiedTime: propositionGuideVerifiedAt,
       authors: [`${origin}/authors/kyle-langford`],
-      images: ['/og.png'],
+      images: [
+        {
+          url: propositionImage.url,
+          alt: propositionImage.alt,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/og.png'],
+      images: [propositionImage.url],
     },
   };
 }
@@ -87,6 +96,7 @@ export default async function PropositionPage({
         datePublished: propositionGuideVerifiedAt,
         dateModified: propositionGuideVerifiedAt,
         isAccessibleForFree: true,
+        image: propositionImage.url,
         mainEntityOfPage: pageUrl,
         author: {
           '@type': 'Person',
@@ -150,7 +160,32 @@ export default async function PropositionPage({
               Verified September 14, 2026
             </time>
           </div>
+          <PropositionShare
+            origin={origin}
+            number={proposition.number}
+            title={`California Proposition ${proposition.number} 2026; what yes and no mean`}
+          />
         </header>
+
+        <figure className="article-hero proposition-detail-image shell photo-frame ratio-hero">
+          <Image
+            src={propositionImage.url}
+            alt={propositionImage.alt}
+            fill
+            priority
+            sizes="(max-width: 1480px) 100vw, 1420px"
+          />
+          <figcaption>
+            {editorialAssetLabel(propositionImage)} ·{' '}
+            <a
+              href={propositionImage.provenanceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {propositionImage.credit}
+            </a>
+          </figcaption>
+        </figure>
 
         <div className="shell proposition-detail-layout">
           <div className="proposition-detail-copy">

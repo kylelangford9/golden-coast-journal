@@ -57,7 +57,7 @@ export const editorialAssets = {
   kyleLangfordPortrait: {
     url: '/kyle-langford.jpg',
     alt: 'Kyle Langford, publisher of The Golden Coast Journal',
-    credit: 'Courtesy of Kyle Langford',
+    credit: 'Kyle Langford',
     provenanceUrl: 'https://www.goldencoastjournal.com/authors/kyle-langford',
     kind: 'photograph',
     aiGenerated: false,

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Menu, Search } from 'lucide-react';
 import { sections } from '@/lib/content';
+import { NewsletterCtaLink } from '@/components/newsletter-cta-link';
 
 const nav = ['Latest', 'Live Desk', ...sections];
 
@@ -12,6 +13,7 @@ export function SiteHeader() {
         <p>{editionDate}</p>
         <p className="edition">Pacific Edition</p>
         <div className="utility-actions">
+          <NewsletterCtaLink />
           <details className="header-panel menu-panel">
             <summary aria-label="Open menu"><Menu size={18} strokeWidth={1.6} /></summary>
             <div className="panel-content">

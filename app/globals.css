@@ -32,6 +32,8 @@ button { color: inherit; }
 .utility-row p { margin: 0; }
 .edition { text-align: center; }
 .utility-actions { display: flex; justify-content: flex-end; gap: 14px; }
+.newsletter-cta-link { display: inline-flex; min-height: 30px; align-items: center; padding: 0 12px; background: var(--rust); color: white; font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; transition: background .18s ease; }
+.newsletter-cta-link:hover, .newsletter-cta-link:focus-visible { background: var(--navy); }
 .utility-actions button, .icon-trigger { border: 0; background: transparent; padding: 4px; cursor: pointer; }
 .header-panel { position: relative; }
 .header-panel summary { display: grid; place-items: center; padding: 5px; cursor: pointer; list-style: none; }

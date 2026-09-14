@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs';
 
 const homepage = readFileSync('app/page.tsx', 'utf8');
 const form = readFileSync('components/newsletter-form.tsx', 'utf8');
+const header = readFileSync('components/site-header.tsx', 'utf8');
+const headerCta = readFileSync('components/newsletter-cta-link.tsx', 'utf8');
+const article = readFileSync('app/article/[slug]/page.tsx', 'utf8');
 const route = readFileSync('app/api/newsletter/route.ts', 'utf8');
 
 const newsletterPosition = homepage.indexOf('id="newsletter"');
@@ -26,5 +29,11 @@ assert.ok(form.includes("'newsletter_intent_started'"));
 assert.ok(form.includes('window.sessionStorage.getItem(key)'));
 assert.ok(!form.includes("form.get('email'), metadata"));
 assert.ok(route.includes("{ onConflict: 'email', ignoreDuplicates: true }"));
+assert.ok(header.includes('<NewsletterCtaLink />'));
+assert.ok(headerCta.includes('Subscribe free'));
+assert.ok(headerCta.includes("trackPortfolioGrowth('newsletter_cta_clicked'"));
+assert.ok(headerCta.includes('window.sessionStorage.getItem(CHECKPOINT_KEY)'));
+assert.ok(headerCta.includes("pathname.startsWith('/article/')"));
+assert.ok(article.includes('id="newsletter"'));
 
 console.log('PASS Journal homepage signup placement and qualified conversion tracking');

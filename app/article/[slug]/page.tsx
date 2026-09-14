@@ -172,6 +172,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </article>
       <section
+        id="newsletter"
         className="article-newsletter"
         aria-labelledby="article-newsletter-title"
       >

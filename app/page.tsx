@@ -26,23 +26,8 @@ export default async function Home() {
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
   const leadImage = getApprovedEditorialAsset(lead.imageUrl);
-  const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
-  const publicationJson = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'NewsMediaOrganization',
-    name: 'The Golden Coast Journal',
-    url: origin,
-    logo: `${origin}/favicon.svg`,
-    publishingPrinciples: `${origin}/standards`,
-    correctionsPolicy: `${origin}/corrections`,
-  }).replace(/</g, '\\u003c');
-
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: publicationJson }}
-      />
       <a className="skip-link" href="#main-story">
         Skip to content
       </a>

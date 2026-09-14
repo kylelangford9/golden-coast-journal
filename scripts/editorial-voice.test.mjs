@@ -8,6 +8,8 @@ const authorPage = readFileSync('app/authors/kyle-langford/page.tsx', 'utf8');
 const articlePage = readFileSync('app/article/[slug]/page.tsx', 'utf8');
 
 for (const requiredRule of [
+  'Kyle Langford Simulator repository',
+  'measurable outcomes',
   'verified news',
   'strongest evidence',
   'practical consequence',

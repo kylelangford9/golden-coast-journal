@@ -4,6 +4,7 @@ export const KYLE_LANGFORD_AUTHOR = {
 } as const;
 
 const voiceRules = [
+  'Use the current public Kyle Langford Simulator repository as an authorized voice reference: practical, candid, constructive and concise, with measurable outcomes and a clear distinction between verified facts and uncertainty.',
   'Lead with the verified news, not a scene-setting runway.',
   'Put the strongest evidence next, then explain the practical consequence.',
   'Use short declarative sentences and compact paragraphs. Structure multiple issues clearly.',

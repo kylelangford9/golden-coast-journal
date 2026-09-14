@@ -22,6 +22,7 @@
     "test:minimum-wage": "node scripts/minimum-wage-service-journalism.test.mjs",
     "test:tax-extension": "node scripts/tax-extension-service-journalism.test.mjs",
     "test:live": "node scripts/live-reader-polls.test.mjs",
+    "test:deadlines": "node scripts/california-deadlines.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

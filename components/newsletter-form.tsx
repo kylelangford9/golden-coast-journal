@@ -13,7 +13,7 @@ import { track } from '@vercel/analytics/react';
 import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 type NewsletterFormProps = {
-  placement?: 'homepage' | 'article' | 'briefing' | 'live';
+  placement?: 'homepage' | 'article' | 'briefing' | 'live' | 'deadlines';
   articleSlug?: string;
 };
 

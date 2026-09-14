@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleShare } from '@/components/article-share';
 import { ElectionCalendarDownload } from '@/components/election-calendar-download';
+import { DeadlineHubLink } from '@/components/deadline-hub-link';
 import { effectiveArticleUpdatedAt, formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -57,6 +58,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const isKyleLangford = article.author === KYLE_LANGFORD_AUTHOR.name;
   const articleImageUrl = new URL(article.imageUrl, origin).toString();
+  const supportsDeadlineTracker = [
+    'california-2026-general-election-deadlines',
+    'california-tax-extension-deadline-2026-october-15',
+    'track-california-mail-ballot-2026-fix-problems',
+    'california-minimum-wage-2027-rate-exempt-salary',
+  ].includes(article.slug);
   const newsArticleJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -150,6 +157,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             ))}
             {article.slug === 'california-2026-general-election-deadlines' && (
               <ElectionCalendarDownload />
+            )}
+            {supportsDeadlineTracker && (
+              <DeadlineHubLink articleSlug={article.slug} />
             )}
             <section className="source-box" aria-labelledby="sources-heading">
               <h2 id="sources-heading">Sources & methodology</h2>

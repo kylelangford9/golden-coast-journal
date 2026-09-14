@@ -12,6 +12,7 @@ export function SiteFooter() {
         <nav aria-label="About the Journal">
           <strong>Journal</strong>
           <Link href="/live">California live desk</Link>
+          <Link href="/california-deadlines">California deadlines</Link>
           <Link href="/briefing">Briefing preview</Link>
           <Link href="/about">About</Link>
           <Link href="/standards">Standards & AI policy</Link>

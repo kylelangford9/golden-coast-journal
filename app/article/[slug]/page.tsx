@@ -10,6 +10,7 @@ import { ArticleShare } from '@/components/article-share';
 import { formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
+import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
 
@@ -52,8 +53,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const related = articles
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
-  const origin =
-    process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+  const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+  const isKyleLangford = article.author === KYLE_LANGFORD_AUTHOR.name;
   const newsArticleJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -63,7 +64,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     dateModified: article.updatedAt,
     mainEntityOfPage: `${origin}/article/${article.slug}`,
     image: [`${origin}${article.imageUrl}`],
-    author: { '@type': 'Organization', name: article.author },
+    author: isKyleLangford
+      ? {
+          '@type': 'Person',
+          name: article.author,
+          url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
+        }
+      : { '@type': 'Organization', name: article.author },
     publisher: {
       '@type': 'Organization',
       name: 'The Golden Coast Journal',
@@ -89,7 +96,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <p className="article-dek">{article.dek}</p>
           <div className="article-meta">
             <span>
-              By <strong>{article.author}</strong>
+              By{' '}
+              <strong>
+                {isKyleLangford ? (
+                  <Link href={KYLE_LANGFORD_AUTHOR.path}>{article.author}</Link>
+                ) : (
+                  article.author
+                )}
+              </strong>
             </span>
             <span>Published {formatArticleDate(article.publishedAt)}</span>
             <span>{article.readingMinutes} min read</span>

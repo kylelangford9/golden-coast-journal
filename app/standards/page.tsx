@@ -1,18 +1,53 @@
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 
-export const metadata = { title: 'Standards & AI Policy', description: 'The sourcing, automation and publication standards of The Golden Coast Journal.' };
+export const metadata = {
+  title: 'Standards & AI Policy',
+  description:
+    'The sourcing, automation and publication standards of The Golden Coast Journal.',
+};
 
 const standards = [
-  ['Source first', 'Every factual report begins with attributable material. Primary records, public data and direct statements are preferred, and source links remain attached to the published story.'],
-  ['Automation with accountability', 'Software may discover stories, compare records and draft original language. It does not change our obligation to distinguish fact, analysis and uncertainty. The publisher remains accountable for everything on this site.'],
-  ['Honest bylines', 'Automated and collaborative work is published under clearly institutional Golden Coast Journal desk bylines. We do not invent reporter identities or imply that a fictional person performed interviews or witnessed events.'],
-  ['No invented certainty', 'Names, figures, dates and quotations must be supported. When information is incomplete or changing, the story says so plainly.'],
-  ['Independent writing', 'We summarize and synthesize; we do not republish another newsroom’s article. Original reporting and source material receive visible credit.'],
-  ['Network independence', 'The Journal is part of the Kyle Langford project network, but sister products receive no editorial preference. We mention or cover them only when genuinely relevant to readers, clearly disclose the relationship and apply the same sourcing and scrutiny used for any other organization. First-party network coverage is capped at five percent of editorial output over a rolling 90-day period.'],
-  ['Real photographs, always', 'Photographs of people, places and events must be authentic, attributable camera-made images from approved sources. We do not publish AI-generated or synthetic imagery as photography. AI may assist with logos, typography and clearly designed graphics, but never with a scene that readers could mistake for documentary evidence.'],
-  ['Publication thresholds', 'Routine briefs from authoritative primary sources may be published automatically after structured checks. Sensitive claims, allegations, elections, health, public safety and conflicts require heightened review.'],
-  ['Corrections that persist', 'Material corrections are attached to the article with the date and substance of the change. We do not silently rewrite consequential errors.'],
+  [
+    'Source first',
+    'Every factual report begins with attributable material. Primary records, public data and direct statements are preferred, and source links remain attached to the published story.',
+  ],
+  [
+    'Automation with accountability',
+    'Software may discover stories, compare records and draft original language. It does not change our obligation to distinguish fact, analysis and uncertainty. The publisher remains accountable for everything on this site.',
+  ],
+  [
+    'Honest bylines',
+    'Articles carrying Kyle Langford’s byline use his authorized editorial voice and identify him as the accountable author and publisher, including when software assisted with research organization or drafting. Institutional desk bylines remain on collaborative work. No byline implies an interview, eyewitness account or original reporting unless the story says so.',
+  ],
+  [
+    'A voice, not a shortcut',
+    'Kyle’s newsroom voice is direct, evidence-led and candid about uncertainty. Style never overrides verification: the Journal does not import private persona material, manufacture certainty or turn an inference into a reported fact.',
+  ],
+  [
+    'No invented certainty',
+    'Names, figures, dates and quotations must be supported. When information is incomplete or changing, the story says so plainly.',
+  ],
+  [
+    'Independent writing',
+    'We summarize and synthesize; we do not republish another newsroom’s article. Original reporting and source material receive visible credit.',
+  ],
+  [
+    'Network independence',
+    'The Journal is part of the Kyle Langford project network, but sister products receive no editorial preference. We mention or cover them only when genuinely relevant to readers, clearly disclose the relationship and apply the same sourcing and scrutiny used for any other organization. First-party network coverage is capped at five percent of editorial output over a rolling 90-day period.',
+  ],
+  [
+    'Real photographs, always',
+    'Photographs of people, places and events must be authentic, attributable camera-made images from approved sources. We do not publish AI-generated or synthetic imagery as photography. AI may assist with logos, typography and clearly designed graphics, but never with a scene that readers could mistake for documentary evidence.',
+  ],
+  [
+    'Publication thresholds',
+    'Routine briefs from authoritative primary sources may be published automatically after structured checks. Sensitive claims, allegations, elections, health, public safety and conflicts require heightened review.',
+  ],
+  [
+    'Corrections that persist',
+    'Material corrections are attached to the article with the date and substance of the change. We do not silently rewrite consequential errors.',
+  ],
 ];
 
 export default function StandardsPage() {
@@ -22,9 +57,21 @@ export default function StandardsPage() {
       <article className="institutional shell">
         <p className="eyebrow">Editorial code</p>
         <h1>Our standards are part of the product.</h1>
-        <p className="standfirst">Trust should not depend on whether a reader knows how a story was produced. These rules govern every report, including work prepared with artificial intelligence.</p>
+        <p className="standfirst">
+          Trust should not depend on whether a reader knows how a story was
+          produced. These rules govern every report, including work prepared
+          with artificial intelligence.
+        </p>
         <div className="standards-list">
-          {standards.map(([title, body], index) => <section key={title}><span>0{index + 1}</span><div><h2>{title}</h2><p>{body}</p></div></section>)}
+          {standards.map(([title, body], index) => (
+            <section key={title}>
+              <span>0{index + 1}</span>
+              <div>
+                <h2>{title}</h2>
+                <p>{body}</p>
+              </div>
+            </section>
+          ))}
         </div>
       </article>
       <SiteFooter />

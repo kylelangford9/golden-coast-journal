@@ -18,11 +18,13 @@ The protected `/api/editorial/run` route:
 
 1. polls seven primary-source feeds;
 2. records and scores new story candidates;
-3. drafts at most two stories through `openai/gpt-5-mini` on Vercel AI Gateway;
+3. drafts at most two stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice;
 4. stores new drafts in the review queue; and
 5. records every drafting, publishing, rejection and reopening action.
 
 Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer credential protects the review queue and editorial action routes. `AUTO_PUBLISH` remains `false` in every environment.
+
+Future pipeline drafts carry Kyle Langford’s byline. The public author profile and standards page disclose the role of drafting assistance and define what the byline does and does not claim. Existing desk-bylined stories retain their original attribution.
 
 ## Audience and network measurement
 
@@ -34,7 +36,8 @@ Duplicate addresses are acknowledged without recording a second conversion. Thes
 actions are delivered to both Vercel Analytics and the privacy-light first-party
 portfolio scorecard; a small in-browser queue prevents events from being lost while the
 shared collector loads. Standard page views and performance data use Vercel Analytics
-and Speed Insights.
+and Speed Insights. The author profile records one `Author Profile Viewed` event per
+browser session in both measurement systems.
 
 The protected `/api/editorial/metrics` route returns publication, review queue, source
 candidate, section and subscriber totals without exposing subscriber identities. It uses

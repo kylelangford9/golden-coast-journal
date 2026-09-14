@@ -35,9 +35,7 @@ export async function GET(request: Request) {
         db
           .from('gcj_story_candidates')
           .select('*', { count: 'exact', head: true }),
-        db
-          .from('gcj_subscribers')
-          .select('*', { count: 'exact', head: true }),
+        db.from('gcj_subscribers').select('*', { count: 'exact', head: true }),
         db
           .from('gcj_articles')
           .select('published_at')
@@ -52,7 +50,8 @@ export async function GET(request: Request) {
           .limit(500),
       ]);
 
-    if (latest.error) throw new Error(`Latest article: ${latest.error.message}`);
+    if (latest.error)
+      throw new Error(`Latest article: ${latest.error.message}`);
     if (sections.error)
       throw new Error(`Section totals: ${sections.error.message}`);
 
@@ -82,6 +81,7 @@ export async function GET(request: Request) {
             'Network Referral',
             'Newsletter Signup',
             'Newsletter Invite Started',
+            'Author Profile Viewed',
           ],
         },
       },

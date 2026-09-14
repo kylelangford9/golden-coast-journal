@@ -12,6 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "test:domain": "node scripts/domain-migration.test.mjs",
+    "test:voice": "node scripts/editorial-voice.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

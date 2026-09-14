@@ -2,8 +2,7 @@ import type { MetadataRoute } from 'next';
 import { sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 
-const origin =
-  process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-13T00:00:00.000Z');
 
 export const revalidate = 900;
@@ -27,7 +26,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
-    ...['/about', '/standards', '/corrections', '/privacy'].map((path) => ({
+    ...[
+      '/about',
+      '/authors/kyle-langford',
+      '/standards',
+      '/corrections',
+      '/privacy',
+    ].map((path) => ({
       url: `${origin}${path}`,
       lastModified: institutionalModified,
       changeFrequency: 'monthly' as const,

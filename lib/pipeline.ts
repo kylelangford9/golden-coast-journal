@@ -1,5 +1,9 @@
 import { getVercelOidcToken } from '@vercel/oidc';
 import { editorialAssets } from '@/lib/imagery';
+import {
+  JOURNAL_DRAFT_INSTRUCTIONS,
+  KYLE_LANGFORD_AUTHOR,
+} from '@/lib/editorial-voice';
 import { seedDatabase } from '@/lib/repository';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { decodeHtmlEntities } from '@/lib/text';
@@ -139,8 +143,7 @@ async function draftCandidate(
     body: JSON.stringify({
       model: process.env.OPENAI_MODEL || 'openai/gpt-5-mini',
       store: false,
-      instructions:
-        'You are the standards desk of The Golden Coast Journal. Produce concise, original newspaper copy only from the supplied primary source. Never invent a quote, number, name, date, implication or source. Clearly qualify uncertainty. Do not imitate or copy source phrasing. Do not propose or generate imagery. Return JSON only.',
+      instructions: JOURNAL_DRAFT_INSTRUCTIONS,
       input: `SOURCE NAME: ${source.name}\nSOURCE URL: ${candidate.external_url}\nSOURCE MATERIAL:\n${sourceText}`,
       text: {
         format: {
@@ -357,7 +360,7 @@ export async function runEditorialPipeline() {
                   dek: draft.dek,
                   body_json: draft.body,
                   key_points_json: draft.keyPoints,
-                  author: 'Golden Coast Journal Desk',
+                  author: KYLE_LANGFORD_AUTHOR.name,
                   image_url: image.url,
                   image_alt: image.alt,
                   image_credit: image.credit,

@@ -109,6 +109,9 @@ export default async function Home() {
               <br />
               Stay unhurried.
             </h2>
+            <Link className="briefing-preview-link" href="/briefing">
+              Preview your briefing <ArrowRight size={14} />
+            </Link>
           </div>
           <NewsletterForm />
         </div>

@@ -11,6 +11,7 @@ export function SiteFooter() {
         </div>
         <nav aria-label="About the Journal">
           <strong>Journal</strong>
+          <Link href="/briefing">Briefing preview</Link>
           <Link href="/about">About</Link>
           <Link href="/standards">Standards & AI policy</Link>
           <Link href="/corrections">Corrections</Link>

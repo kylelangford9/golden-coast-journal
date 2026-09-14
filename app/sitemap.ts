@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...[
       '/about',
+      '/briefing',
       '/authors/kyle-langford',
       '/standards',
       '/corrections',

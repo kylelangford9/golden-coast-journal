@@ -9,6 +9,9 @@ const article = readFileSync('app/article/[slug]/page.tsx', 'utf8');
 const route = readFileSync('app/api/newsletter/route.ts', 'utf8');
 const electionCalendar = readFileSync('components/election-calendar-download.tsx', 'utf8');
 const electionRoute = readFileSync('app/calendar/california-2026-general-election.ics/route.ts', 'utf8');
+const briefingPage = readFileSync('app/briefing/page.tsx', 'utf8');
+const briefingBuilder = readFileSync('components/briefing-preview-builder.tsx', 'utf8');
+const sitemap = readFileSync('app/sitemap.ts', 'utf8');
 
 const newsletterPosition = homepage.indexOf('id="newsletter"');
 const liveDeskPosition = homepage.indexOf('id="live-desk"');
@@ -42,5 +45,17 @@ assert.ok(header.includes("'Election Calendar'"));
 assert.ok(electionCalendar.includes("trackPortfolioGrowth('election_calendar_downloaded'"));
 assert.ok(electionCalendar.includes('window.sessionStorage.getItem(checkpointKey)'));
 assert.ok(electionRoute.includes("'Content-Type': 'text/calendar; charset=utf-8'"));
+assert.ok(homepage.includes('href="/briefing"'));
+assert.ok(header.includes("'Briefing Preview'"));
+assert.ok(briefingPage.includes('alternates: { canonical: \'/briefing\' }'));
+assert.ok(briefingPage.includes('<NewsletterForm placement="briefing" />'));
+assert.ok(briefingPage.includes('Your briefing selections are not attached'));
+assert.ok(briefingBuilder.includes("'briefing_preview_started'"));
+assert.ok(briefingBuilder.includes("'briefing_preview_built'"));
+assert.ok(briefingBuilder.includes("'briefing_signup_selected'"));
+assert.ok(briefingBuilder.includes('window.sessionStorage.getItem(key)'));
+assert.ok(!briefingBuilder.includes('selected.join'));
+assert.ok(!briefingBuilder.includes('trackPortfolioGrowth(eventName, { selected'));
+assert.ok(sitemap.includes("'/briefing'"));
 
-console.log('PASS Journal homepage signup placement and qualified conversion tracking');
+console.log('PASS Journal signup funnel, private briefing preview, and qualified conversion tracking');

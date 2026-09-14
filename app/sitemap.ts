@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next';
+import { californiaPropositions } from '@/lib/california-propositions';
 import { effectiveArticleUpdatedAt, sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-14T00:00:00.000Z');
 const articleTemplateModified = new Date('2026-09-14T17:57:53.000Z');
+const propositionPagesModified = new Date('2026-09-14T19:25:19.000Z');
 
 export const revalidate = 900;
 
@@ -31,12 +33,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
+    {
+      url: `${origin}/california-propositions-2026`,
+      lastModified: propositionPagesModified,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
     ...[
       '/about',
       '/briefing',
       '/california-election-2026',
       '/california-candidates-2026',
-      '/california-propositions-2026',
       '/california-deadlines',
       '/live',
       '/authors/kyle-langford',
@@ -60,6 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'daily' as const,
     priority: article.featured ? 0.9 : 0.7,
   }));
+  const propositionPages = californiaPropositions.map((proposition) => ({
+    url: `${origin}/california-propositions-2026/${proposition.number}`,
+    lastModified: propositionPagesModified,
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
   const sectionPages = sections
     .map((section) => ({
       section,
@@ -72,5 +85,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.7,
     }));
-  return [...staticPages, ...sectionPages, ...storyPages];
+  return [...staticPages, ...propositionPages, ...sectionPages, ...storyPages];
 }

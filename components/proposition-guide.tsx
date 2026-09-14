@@ -314,6 +314,14 @@ export function PropositionGuide({
                     >
                       Official voter guide <ExternalLink aria-hidden="true" />
                     </a>
+                    <Link
+                      href={`/california-propositions-2026/${proposition.number}`}
+                      data-growth-event="proposition_detail_opened"
+                      data-growth-surface="proposition_guide"
+                      data-growth-role={proposition.number}
+                    >
+                      Full Journal explainer
+                    </Link>
                   </div>
                   {isExpanded && (
                     <div className="proposition-consequences" id={panelId}>

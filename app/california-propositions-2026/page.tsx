@@ -50,7 +50,7 @@ export default function CaliforniaPropositionsPage() {
         '@type': 'ListItem',
         position: index + 1,
         name: `Proposition ${proposition.number}: ${proposition.officialTitle}`,
-        url: `${origin}/california-propositions-2026#proposition-${proposition.number}`,
+        url: `${origin}/california-propositions-2026/${proposition.number}`,
       })),
     },
   }).replace(/</g, '\\u003c');

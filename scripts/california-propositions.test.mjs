@@ -16,6 +16,7 @@ const [
   footer,
   sitemap,
   newsletter,
+  detailPage,
 ] = await Promise.all([
   read('lib/california-propositions.ts'),
   read('app/california-propositions-2026/page.tsx'),
@@ -27,6 +28,7 @@ const [
   read('components/site-footer.tsx'),
   read('app/sitemap.ts'),
   read('components/newsletter-form.tsx'),
+  read('app/california-propositions-2026/[number]/page.tsx'),
 ]);
 
 const propositionNumbers = [1, 2, 3, 4, 5, 37, 38, 39, 40, 41, 42, 43, 44, 45];
@@ -86,8 +88,38 @@ assert.match(homepage, /PropositionGuideLink placement="homepage"/);
 assert.match(articlePage, /PropositionGuideLink placement="article"/);
 assert.match(header, /2026 Propositions/);
 assert.match(footer, /href="\/california-propositions-2026"/);
-assert.match(sitemap, /'\/california-propositions-2026'/);
+assert.match(sitemap, /url: `\$\{origin\}\/california-propositions-2026`/);
+assert.match(sitemap, /californiaPropositions\.map/);
+assert.match(
+  sitemap,
+  /california-propositions-2026\/\$\{proposition\.number\}/,
+);
 assert.match(newsletter, /'propositions'/);
+
+assert.match(detailPage, /generateStaticParams/);
+assert.match(detailPage, /dynamicParams = false/);
+assert.match(
+  detailPage,
+  /California Proposition \$\{proposition\.number\} 2026/,
+);
+assert.match(detailPage, /alternates: \{ canonical: path \}/);
+assert.match(detailPage, /'@type': 'Article'/);
+assert.match(detailPage, /'@type': 'BreadcrumbList'/);
+assert.match(
+  detailPage,
+  /By <Link href="\/authors\/kyle-langford">Kyle Langford/,
+);
+assert.match(
+  detailPage,
+  /data-growth-event="proposition_official_source_opened"/,
+);
+assert.match(
+  detailPage,
+  /ReaderPulse pollId="proposition-explainer-priority-2026" compact/,
+);
+assert.match(detailPage, /NewsletterForm placement="propositions"/);
+assert.match(guide, /Full Journal explainer/);
+assert.match(guide, /california-propositions-2026\/\$\{proposition\.number\}/);
 
 async function sourceFiles(directory) {
   const entries = await readdir(path.join(root, directory), {

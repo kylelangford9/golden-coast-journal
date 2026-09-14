@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const content = readFileSync('lib/content.ts', 'utf8');
+const start = content.indexOf("id: 'gcj-007'");
+const end = content.indexOf("id: 'gcj-001'", start);
+assert.ok(
+  start >= 0 && end > start,
+  'election service story must be registered',
+);
+
+const story = content.slice(start, end);
+for (const fact of [
+  'October 5',
+  'October 6',
+  'October 19',
+  'October 20 through November 3',
+  'November 10',
+  'December 3',
+  'December 11',
+]) {
+  assert.ok(
+    story.includes(fact),
+    `election story is missing verified date: ${fact}`,
+  );
+}
+
+assert.ok(story.includes("author: 'Kyle Langford'"));
+assert.equal((story.match(/https:\/\/www\.sos\.ca\.gov/g) || []).length, 3);
+for (const affiliatedProject of [
+  'LangBeat',
+  'Anvil',
+  'The One',
+  'Qollar',
+  'Calia',
+  'Kyle Langford Simulator',
+]) {
+  assert.ok(
+    !story.includes(affiliatedProject),
+    `independent election coverage must not promote ${affiliatedProject}`,
+  );
+}
+
+console.log(
+  'PASS election service story retains verified dates, sourcing and independence',
+);

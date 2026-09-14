@@ -15,6 +15,7 @@
     "test:growth": "node scripts/newsletter-acquisition.test.mjs",
     "test:seo": "node scripts/canonical-metadata.test.mjs",
     "test:voice": "node scripts/editorial-voice.test.mjs",
+    "test:elections": "node scripts/election-service-journalism.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

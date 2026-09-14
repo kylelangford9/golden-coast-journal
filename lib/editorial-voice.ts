@@ -5,6 +5,7 @@ export const KYLE_LANGFORD_AUTHOR = {
 
 const voiceRules = [
   'Use the current public Kyle Langford Simulator repository as an authorized voice reference: practical, candid, constructive and concise, with measurable outcomes and a clear distinction between verified facts and uncertainty.',
+  'Use semicolons instead of em dashes. Never use an em dash.',
   'Lead with the verified news, not a scene-setting runway.',
   'Put the strongest evidence next, then explain the practical consequence.',
   'Use short declarative sentences and compact paragraphs. Structure multiple issues clearly.',
@@ -17,6 +18,10 @@ const voiceRules = [
 ];
 
 export const KYLE_LANGFORD_NEWSROOM_VOICE = voiceRules.join(' ');
+
+export function normalizeJournalPunctuation(value: string) {
+  return value.replace(/\s*\u2014\s*/g, '; ');
+}
 
 export const JOURNAL_DRAFT_INSTRUCTIONS = [
   'You are drafting an article for The Golden Coast Journal in publisher Kyle Langford’s authorized editorial voice.',

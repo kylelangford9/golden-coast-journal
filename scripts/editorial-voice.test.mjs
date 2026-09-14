@@ -9,6 +9,7 @@ const articlePage = readFileSync('app/article/[slug]/page.tsx', 'utf8');
 
 for (const requiredRule of [
   'Kyle Langford Simulator repository',
+  'Use semicolons instead of em dashes',
   'measurable outcomes',
   'verified news',
   'strongest evidence',
@@ -25,6 +26,9 @@ for (const requiredRule of [
 
 assert.ok(pipeline.includes('JOURNAL_DRAFT_INSTRUCTIONS'));
 assert.ok(pipeline.includes('author: KYLE_LANGFORD_AUTHOR.name'));
+assert.ok(pipeline.includes('normalizeJournalPunctuation'));
+assert.ok(pipeline.includes('draft.body.map(normalizeJournalPunctuation)'));
+assert.ok(pipeline.includes('draft.keyPoints.map(normalizeJournalPunctuation)'));
 assert.ok(!pipeline.includes("author: 'Golden Coast Journal Desk'"));
 assert.ok(standards.includes('authorized editorial voice'));
 assert.ok(authorPage.includes('accountable author'));

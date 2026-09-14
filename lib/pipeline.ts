@@ -3,6 +3,7 @@ import { editorialAssets } from '@/lib/imagery';
 import {
   JOURNAL_DRAFT_INSTRUCTIONS,
   KYLE_LANGFORD_AUTHOR,
+  normalizeJournalPunctuation,
 } from '@/lib/editorial-voice';
 import { seedDatabase } from '@/lib/repository';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
@@ -209,13 +210,20 @@ async function draftCandidate(
       `AI Gateway drafting failed with ${response.status}${requestId ? ` (${requestId})` : ''}`,
     );
   }
-  return JSON.parse(extractOutputText(await response.json())) as {
+  const draft = JSON.parse(extractOutputText(await response.json())) as {
     title: string;
     dek: string;
     body: string[];
     keyPoints: string[];
     section: string;
     confidence: number;
+  };
+  return {
+    ...draft,
+    title: normalizeJournalPunctuation(draft.title),
+    dek: normalizeJournalPunctuation(draft.dek),
+    body: draft.body.map(normalizeJournalPunctuation),
+    keyPoints: draft.keyPoints.map(normalizeJournalPunctuation),
   };
 }
 

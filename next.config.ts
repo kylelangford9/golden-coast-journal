@@ -2,6 +2,15 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'thumb.wikimedia.org',
+        pathname: '/wikipedia/commons/**',
+      },
+    ],
+  },
   async redirects() {
     return [
       {
@@ -34,7 +43,7 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             value:
-              "default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.kylelangford.org; connect-src 'self' https://www.kylelangford.org; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+              "default-src 'self'; img-src 'self' data: https://thumb.wikimedia.org; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.kylelangford.org; connect-src 'self' https://www.kylelangford.org; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
           },
         ],
       },

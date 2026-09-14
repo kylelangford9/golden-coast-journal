@@ -55,6 +55,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     .slice(0, 3);
   const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const isKyleLangford = article.author === KYLE_LANGFORD_AUTHOR.name;
+  const articleImageUrl = new URL(article.imageUrl, origin).toString();
   const newsArticleJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -63,7 +64,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     mainEntityOfPage: `${origin}/article/${article.slug}`,
-    image: [`${origin}${article.imageUrl}`],
+    image: [articleImageUrl],
     author: isKyleLangford
       ? {
           '@type': 'Person',
@@ -181,8 +182,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               California, clearly explained.
             </h2>
             <p>
-              Join the Journal’s launch list for concise editions—free, with
-              no advertising trackers.
+              Join the Journal’s launch list for concise editions—free, with no
+              advertising trackers.
             </p>
           </div>
           <NewsletterForm placement="article" articleSlug={article.slug} />

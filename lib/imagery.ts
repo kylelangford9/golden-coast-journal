@@ -8,11 +8,21 @@ export type EditorialAsset = {
 };
 
 export const editorialAssets = {
+  californiaStateCapitol: {
+    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    alt: 'California State Capitol in Sacramento beneath a clear blue sky',
+    credit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
+    provenanceUrl:
+      'https://commons.wikimedia.org/wiki/File:CA_State_Capitol.png',
+    kind: 'photograph',
+    aiGenerated: false,
+  },
   californiaCoast: {
     url: '/california-coast.jpg',
     alt: 'Aerial photograph of Santa Barbara, California, meeting the Pacific Ocean',
     credit: 'Clayton Cardinalli / Unsplash',
-    provenanceUrl: 'https://unsplash.com/photos/aerial-view-of-city-during-daytime-BTAU-92ZeZc',
+    provenanceUrl:
+      'https://unsplash.com/photos/aerial-view-of-city-during-daytime-BTAU-92ZeZc',
     kind: 'photograph',
     aiGenerated: false,
   },
@@ -20,7 +30,8 @@ export const editorialAssets = {
     url: '/oroville.jpg',
     alt: 'Aerial photograph of Lake Oroville and the surrounding California foothills',
     credit: 'Florence Low / California Department of Water Resources',
-    provenanceUrl: 'https://water.ca.gov/-/media/CWC-Website/Files/Documents/2023/2022_SWPAnnualReview_Final.pdf',
+    provenanceUrl:
+      'https://water.ca.gov/-/media/CWC-Website/Files/Documents/2023/2022_SWPAnnualReview_Final.pdf',
     kind: 'photograph',
     aiGenerated: false,
   },
@@ -34,13 +45,16 @@ export const editorialAssets = {
   },
 } as const satisfies Record<string, EditorialAsset>;
 
-const assetsByUrl = new Map<string, EditorialAsset>(Object.values(editorialAssets).map((asset) => [asset.url, asset]));
+const assetsByUrl = new Map<string, EditorialAsset>(
+  Object.values(editorialAssets).map((asset) => [asset.url, asset]),
+);
 
-export function getApprovedEditorialAsset(url: string | null | undefined): EditorialAsset {
+export function getApprovedEditorialAsset(
+  url: string | null | undefined,
+): EditorialAsset {
   return (url && assetsByUrl.get(url)) || editorialAssets.californiaCoast;
 }
 
 export function editorialAssetLabel(asset: EditorialAsset) {
   return asset.kind === 'photograph' ? 'Photograph' : 'Source graphic';
 }
-

@@ -46,10 +46,10 @@ export const articles: Article[] = [
     publishedAt: '2026-09-13T22:14:00-07:00',
     updatedAt: '2026-09-13T22:14:00-07:00',
     readingMinutes: 3,
-    imageUrl: '/california-coast.jpg',
-    imageAlt:
-      'Aerial photograph of Santa Barbara, California, meeting the Pacific Ocean',
-    imageCredit: 'Clayton Cardinalli / Unsplash',
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
+    imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
       {
         name: 'California Secretary of State — General Election Key Dates and Deadlines',

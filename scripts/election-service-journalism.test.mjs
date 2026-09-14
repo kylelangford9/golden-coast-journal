@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const content = readFileSync('lib/content.ts', 'utf8');
+const imagery = readFileSync('lib/imagery.ts', 'utf8');
+const articlePage = readFileSync('app/article/[slug]/page.tsx', 'utf8');
+const nextConfig = readFileSync('next.config.ts', 'utf8');
 const start = content.indexOf("id: 'gcj-007'");
 const end = content.indexOf("id: 'gcj-001'", start);
 assert.ok(
@@ -27,6 +30,12 @@ for (const fact of [
 
 assert.ok(story.includes("author: 'Kyle Langford'"));
 assert.equal((story.match(/https:\/\/www\.sos\.ca\.gov/g) || []).length, 3);
+assert.ok(story.includes('CA_State_Capitol.png'));
+assert.ok(imagery.includes('Wikimedia Commons (CC0)'));
+assert.ok(imagery.includes('File:CA_State_Capitol.png'));
+assert.ok(nextConfig.includes("hostname: 'thumb.wikimedia.org'"));
+assert.ok(nextConfig.includes('https://thumb.wikimedia.org'));
+assert.ok(articlePage.includes('new URL(article.imageUrl, origin).toString()'));
 for (const affiliatedProject of [
   'LangBeat',
   'Anvil',

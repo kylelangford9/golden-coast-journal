@@ -20,6 +20,19 @@ export type Article = {
   featured: boolean;
 };
 
+const pageEnhancementUpdates: Record<string, string> = {
+  'california-2026-general-election-deadlines':
+    '2026-09-14T02:52:00-07:00',
+};
+
+export function effectiveArticleUpdatedAt(article: Article) {
+  const enhancement = pageEnhancementUpdates[article.slug];
+  if (!enhancement) return article.updatedAt;
+  return Date.parse(enhancement) > Date.parse(article.updatedAt)
+    ? enhancement
+    : article.updatedAt;
+}
+
 export const articles: Article[] = [
   {
     id: 'gcj-010',

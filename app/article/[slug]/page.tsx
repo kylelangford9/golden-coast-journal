@@ -8,7 +8,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleShare } from '@/components/article-share';
 import { ElectionCalendarDownload } from '@/components/election-calendar-download';
-import { formatArticleDate } from '@/lib/content';
+import { effectiveArticleUpdatedAt, formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
@@ -32,7 +32,7 @@ export async function generateMetadata({
       title: article.title,
       description: article.dek,
       publishedTime: article.publishedAt,
-      modifiedTime: article.updatedAt,
+      modifiedTime: effectiveArticleUpdatedAt(article),
       authors: [article.author],
       images: [{ url: article.imageUrl, alt: article.imageAlt }],
     },
@@ -63,7 +63,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     headline: article.title,
     description: article.dek,
     datePublished: article.publishedAt,
-    dateModified: article.updatedAt,
+    dateModified: effectiveArticleUpdatedAt(article),
     mainEntityOfPage: `${origin}/article/${article.slug}`,
     image: [articleImageUrl],
     author: isKyleLangford

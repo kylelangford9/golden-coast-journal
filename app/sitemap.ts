@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { sections } from '@/lib/content';
+import { effectiveArticleUpdatedAt, sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   const storyPages = articles.map((article) => ({
     url: `${origin}/article/${article.slug}`,
-    lastModified: new Date(article.updatedAt),
+    lastModified: new Date(effectiveArticleUpdatedAt(article)),
     changeFrequency: 'daily' as const,
     priority: article.featured ? 0.9 : 0.7,
   }));

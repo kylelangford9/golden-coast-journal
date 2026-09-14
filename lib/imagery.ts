@@ -28,7 +28,7 @@ export const editorialAssets = {
     aiGenerated: false,
   },
   californiaStateCapitol: {
-    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
     alt: 'California State Capitol in Sacramento beneath a clear blue sky',
     credit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     provenanceUrl:
@@ -64,9 +64,24 @@ export const editorialAssets = {
   },
 } as const satisfies Record<string, EditorialAsset>;
 
-const assetsByUrl = new Map<string, EditorialAsset>(
-  Object.values(editorialAssets).map((asset) => [asset.url, asset]),
-);
+/**
+ * URLs retired from the registry that still appear on stored articles. They
+ * resolve to the asset that replaced them so a row written before the swap
+ * keeps its own photograph, alt text and credit instead of falling through to
+ * the generic coast image under someone else's byline. Safe to delete once no
+ * gcj_articles row references the key.
+ */
+const retiredAssetUrls: Record<string, EditorialAsset> = {
+  'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail':
+    editorialAssets.californiaStateCapitol,
+};
+
+const assetsByUrl = new Map<string, EditorialAsset>([
+  ...Object.entries(retiredAssetUrls),
+  ...Object.values(editorialAssets).map(
+    (asset) => [asset.url, asset] as [string, EditorialAsset],
+  ),
+]);
 
 export function getApprovedEditorialAsset(
   url: string | null | undefined,

@@ -181,8 +181,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               California, clearly explained.
             </h2>
             <p>
-              Get the Journal’s concise morning edition—free, with no
-              advertising trackers.
+              Join the Journal’s launch list for concise editions—free, with
+              no advertising trackers.
             </p>
           </div>
           <NewsletterForm placement="article" articleSlug={article.slug} />

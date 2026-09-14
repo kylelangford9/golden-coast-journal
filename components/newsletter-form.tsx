@@ -104,7 +104,7 @@ export function NewsletterForm({
   return (
     <form className="newsletter-form" onSubmit={subscribe}>
       <label htmlFor={emailId}>The Coast, in your inbox</label>
-      <p>One concise morning briefing. Free, always.</p>
+      <p>Join the launch list for concise editions and major California updates. Free.</p>
       <div>
         <input
           id={emailId}
@@ -115,7 +115,7 @@ export function NewsletterForm({
           autoComplete="email"
         />
         <button type="submit" disabled={state === 'loading'}>
-          {state === 'loading' ? 'Joining…' : 'Join free'}
+          {state === 'loading' ? 'Joining…' : 'Join launch list'}
         </button>
       </div>
       <input

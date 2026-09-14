@@ -96,6 +96,20 @@ export default async function Home() {
         </Link>
       </section>
 
+      <section className="newsletter-band" id="newsletter">
+        <div className="shell newsletter-band-inner">
+          <div>
+            <p className="eyebrow">Reader briefing</p>
+            <h2>
+              Start informed.
+              <br />
+              Stay unhurried.
+            </h2>
+          </div>
+          <NewsletterForm />
+        </div>
+      </section>
+
       <section
         className="live-desk shell"
         id="live-desk"
@@ -203,19 +217,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="newsletter-band">
-        <div className="shell newsletter-band-inner">
-          <div>
-            <p className="eyebrow">The morning edition</p>
-            <h2>
-              Start informed.
-              <br />
-              Stay unhurried.
-            </h2>
-          </div>
-          <NewsletterForm />
-        </div>
-      </section>
       <SiteFooter />
     </main>
   );

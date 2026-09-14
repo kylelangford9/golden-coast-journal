@@ -192,7 +192,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-13T22:14:00-07:00',
-    updatedAt: '2026-09-13T22:14:00-07:00',
+    updatedAt: '2026-09-14T02:52:00-07:00',
     readingMinutes: 3,
     imageUrl:
       'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',

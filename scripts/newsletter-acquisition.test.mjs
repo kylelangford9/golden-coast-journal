@@ -7,6 +7,8 @@ const header = readFileSync('components/site-header.tsx', 'utf8');
 const headerCta = readFileSync('components/newsletter-cta-link.tsx', 'utf8');
 const article = readFileSync('app/article/[slug]/page.tsx', 'utf8');
 const route = readFileSync('app/api/newsletter/route.ts', 'utf8');
+const electionCalendar = readFileSync('components/election-calendar-download.tsx', 'utf8');
+const electionRoute = readFileSync('app/calendar/california-2026-general-election.ics/route.ts', 'utf8');
 
 const newsletterPosition = homepage.indexOf('id="newsletter"');
 const liveDeskPosition = homepage.indexOf('id="live-desk"');
@@ -35,5 +37,10 @@ assert.ok(headerCta.includes("trackPortfolioGrowth('newsletter_cta_clicked'"));
 assert.ok(headerCta.includes('window.sessionStorage.getItem(CHECKPOINT_KEY)'));
 assert.ok(headerCta.includes("pathname.startsWith('/article/')"));
 assert.ok(article.includes('id="newsletter"'));
+assert.ok(article.includes('<ElectionCalendarDownload />'));
+assert.ok(header.includes("'Election Calendar'"));
+assert.ok(electionCalendar.includes("trackPortfolioGrowth('election_calendar_downloaded'"));
+assert.ok(electionCalendar.includes('window.sessionStorage.getItem(checkpointKey)'));
+assert.ok(electionRoute.includes("'Content-Type': 'text/calendar; charset=utf-8'"));
 
 console.log('PASS Journal homepage signup placement and qualified conversion tracking');

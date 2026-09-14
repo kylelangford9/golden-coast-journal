@@ -17,6 +17,7 @@
     "test:voice": "node scripts/editorial-voice.test.mjs",
     "test:elections": "node scripts/election-service-journalism.test.mjs",
     "test:ballot-tracking": "node scripts/ballot-tracking-service-journalism.test.mjs",
+    "test:election-calendar": "node scripts/election-calendar.test.mjs",
     "test:climate-credit": "node scripts/climate-credit-service-journalism.test.mjs",
     "test:minimum-wage": "node scripts/minimum-wage-service-journalism.test.mjs",
     "typecheck": "tsc --noEmit"

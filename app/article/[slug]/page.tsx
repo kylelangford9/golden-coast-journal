@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleShare } from '@/components/article-share';
+import { ElectionCalendarDownload } from '@/components/election-calendar-download';
 import { formatArticleDate } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -147,6 +148,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {article.body.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
+            {article.slug === 'california-2026-general-election-deadlines' && (
+              <ElectionCalendarDownload />
+            )}
             <section className="source-box" aria-labelledby="sources-heading">
               <h2 id="sources-heading">Sources & methodology</h2>
               <p>

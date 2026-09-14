@@ -79,6 +79,8 @@ export async function GET(request: Request) {
             'pageview',
             'Network Arrival',
             'Network Referral',
+            'Newsletter Form Viewed',
+            'Newsletter Intent Started',
             'Newsletter Signup',
             'Newsletter Invite Started',
             'Author Profile Viewed',

@@ -20,6 +20,11 @@ assert.equal(
 assert.ok(form.includes('Join the launch list'));
 assert.ok(form.includes("if (created && !form.get('website'))"));
 assert.ok(form.includes("trackPortfolioGrowth('newsletter_signup'"));
+assert.ok(form.includes("trackPortfolioGrowth(eventName, metadata)"));
+assert.ok(form.includes("'newsletter_form_viewed'"));
+assert.ok(form.includes("'newsletter_intent_started'"));
+assert.ok(form.includes('window.sessionStorage.getItem(key)'));
+assert.ok(!form.includes("form.get('email'), metadata"));
 assert.ok(route.includes("{ onConflict: 'email', ignoreDuplicates: true }"));
 
 console.log('PASS Journal homepage signup placement and qualified conversion tracking');

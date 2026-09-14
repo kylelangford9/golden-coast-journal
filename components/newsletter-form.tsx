@@ -1,6 +1,13 @@
 'use client';
 
-import { type SyntheticEvent, useId, useState } from 'react';
+import {
+  type SyntheticEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { Link2, Share2 } from 'lucide-react';
 import { track } from '@vercel/analytics/react';
 import { trackPortfolioGrowth } from '@/lib/growth-client';
@@ -18,8 +25,55 @@ export function NewsletterForm({
     'idle' | 'loading' | 'created' | 'existing' | 'error'
   >('idle');
   const [shareStatus, setShareStatus] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+  const checkpointKeys = useRef(new Set<string>());
   const formId = useId();
   const emailId = `${formId}-email`;
+
+  const checkpointMetadata = useCallback(() => {
+    return {
+      placement,
+      ...(articleSlug ? { article_slug: articleSlug } : {}),
+    };
+  }, [articleSlug, placement]);
+
+  const trackCheckpointOnce = useCallback(
+    (
+      eventName: 'newsletter_form_viewed' | 'newsletter_intent_started',
+      analyticsName: 'Newsletter Form Viewed' | 'Newsletter Intent Started',
+    ) => {
+      const context = articleSlug || placement;
+      const key = `gcj_${eventName}_${context}`;
+      if (checkpointKeys.current.has(key)) return;
+      try {
+        if (window.sessionStorage.getItem(key)) return;
+        window.sessionStorage.setItem(key, '1');
+      } catch {
+        // The in-memory guard still prevents duplicate events for this form.
+      }
+      checkpointKeys.current.add(key);
+      const metadata = checkpointMetadata();
+      track(analyticsName, metadata);
+      trackPortfolioGrowth(eventName, metadata);
+    },
+    [articleSlug, checkpointMetadata, placement],
+  );
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.5))
+          return;
+        trackCheckpointOnce('newsletter_form_viewed', 'Newsletter Form Viewed');
+        observer.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(form);
+    return () => observer.disconnect();
+  }, [trackCheckpointOnce]);
 
   async function subscribe(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -102,7 +156,7 @@ export function NewsletterForm({
   }
 
   return (
-    <form className="newsletter-form" onSubmit={subscribe}>
+    <form ref={formRef} className="newsletter-form" onSubmit={subscribe}>
       <label htmlFor={emailId}>The Coast, in your inbox</label>
       <p>Join the launch list for concise editions and major California updates. Free.</p>
       <div>
@@ -113,6 +167,12 @@ export function NewsletterForm({
           required
           placeholder="you@example.com"
           autoComplete="email"
+          onFocus={() =>
+            trackCheckpointOnce(
+              'newsletter_intent_started',
+              'Newsletter Intent Started',
+            )
+          }
         />
         <button type="submit" disabled={state === 'loading'}>
           {state === 'loading' ? 'Joining…' : 'Join launch list'}

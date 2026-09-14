@@ -25,7 +25,12 @@ assert.equal(
   1,
   'homepage must contain one signup form rather than competing duplicate forms',
 );
-assert.ok(form.includes('Join the launch list'));
+assert.ok(form.includes('Get the briefing'));
+assert.ok(form.includes('Primary sources'));
+assert.ok(form.includes("'newsletter_submit_attempted'"));
+assert.ok(form.includes("'Newsletter Submit Attempted'"));
+assert.ok(form.includes('onChange={(event)'));
+assert.ok(!form.includes('onFocus={()'));
 assert.ok(form.includes("if (created && !form.get('website'))"));
 assert.ok(form.includes("trackPortfolioGrowth('newsletter_signup'"));
 assert.ok(form.includes("trackPortfolioGrowth(eventName, metadata)"));

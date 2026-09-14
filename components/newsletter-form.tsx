@@ -47,8 +47,14 @@ export function NewsletterForm({
 
   const trackCheckpointOnce = useCallback(
     (
-      eventName: 'newsletter_form_viewed' | 'newsletter_intent_started',
-      analyticsName: 'Newsletter Form Viewed' | 'Newsletter Intent Started',
+      eventName:
+        | 'newsletter_form_viewed'
+        | 'newsletter_intent_started'
+        | 'newsletter_submit_attempted',
+      analyticsName:
+        | 'Newsletter Form Viewed'
+        | 'Newsletter Intent Started'
+        | 'Newsletter Submit Attempted',
     ) => {
       const context = articleSlug || placement;
       const key = `gcj_${eventName}_${context}`;
@@ -90,6 +96,12 @@ export function NewsletterForm({
   async function subscribe(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    if (!form.get('website')) {
+      trackCheckpointOnce(
+        'newsletter_submit_attempted',
+        'Newsletter Submit Attempted',
+      );
+    }
     setState('loading');
     try {
       const response = await fetch('/api/newsletter', {
@@ -171,11 +183,16 @@ export function NewsletterForm({
 
   return (
     <form ref={formRef} className="newsletter-form" onSubmit={subscribe}>
-      <label htmlFor={emailId}>The Coast, in your inbox</label>
+      <label htmlFor={emailId}>California, in your inbox</label>
       <p>
-        Join the launch list for concise editions and major California updates.
-        Free.
+        Useful California reporting; what changed, why it matters and the
+        primary source. Free. Unsubscribe anytime.
       </p>
+      <ul className="newsletter-assurances" aria-label="Reader briefing promises">
+        <li>Primary sources</li>
+        <li>No paywall</li>
+        <li>No advertising trackers</li>
+      </ul>
       <div>
         <input
           id={emailId}
@@ -184,15 +201,16 @@ export function NewsletterForm({
           required
           placeholder="you@example.com"
           autoComplete="email"
-          onFocus={() =>
+          onChange={(event) => {
+            if (!event.currentTarget.value.trim()) return;
             trackCheckpointOnce(
               'newsletter_intent_started',
               'Newsletter Intent Started',
-            )
-          }
+            );
+          }}
         />
         <button type="submit" disabled={state === 'loading'}>
-          {state === 'loading' ? 'Joining…' : 'Join launch list'}
+          {state === 'loading' ? 'Saving…' : 'Get the briefing'}
         </button>
       </div>
       <input
@@ -204,8 +222,8 @@ export function NewsletterForm({
       />
       <output aria-live="polite">
         {state === 'created' &&
-          'Thanks; your address is saved for the launch edition.'}
-        {state === 'existing' && 'You’re already on the launch list.'}
+          'Thanks; your address is saved for the next briefing.'}
+        {state === 'existing' && 'You’re already on the reader list.'}
         {state === 'error' && 'We couldn’t add you just now. Please try again.'}
       </output>
       {state === 'created' && (

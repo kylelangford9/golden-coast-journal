@@ -240,6 +240,8 @@ button { color: inherit; }
 .newsletter-form { max-width: 620px; padding: 35px; background: var(--navy); color: white; }
 .newsletter-form label { font-family: var(--font-serif), Georgia, serif; font-size: 30px; }
 .newsletter-form > p { color: #cad4da; font-size: 13px; }
+.newsletter-assurances { display: flex; flex-wrap: wrap; gap: 7px 14px; margin: 15px 0 0; padding: 0; list-style: none; color: #d9e2e7; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.newsletter-assurances li::before { content: '✓'; margin-right: 5px; color: #f1b58e; }
 .newsletter-form > div { display: flex; margin-top: 18px; }
 .newsletter-form input { flex: 1; min-width: 0; height: 46px; padding: 0 14px; border: 0; background: white; color: var(--ink); }
 .newsletter-form button { border: 0; background: var(--rust); color: white; padding: 0 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }

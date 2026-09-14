@@ -114,9 +114,9 @@ export default async function Home() {
               <br />
               A briefing worth opening.
             </h2>
-            <p style={{ maxWidth: '36rem', lineHeight: 1.7, margin: '14px 0' }}>Reporting, source links and useful California guides in one reader briefing. Preview it before you subscribe.</p>
+            <p style={{ maxWidth: '36rem', lineHeight: 1.7, margin: '14px 0' }}>Useful California reporting, source links and practical guides in one reader briefing. See exactly what it includes before you subscribe.</p>
             <Link className="briefing-preview-link" href="/briefing">
-              Preview your briefing <ArrowRight size={14} />
+              See a sample briefing <ArrowRight size={14} />
             </Link>
           </div>
           <NewsletterForm />

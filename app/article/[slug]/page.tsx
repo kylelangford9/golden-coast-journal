@@ -244,8 +244,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               California, clearly explained.
             </h2>
             <p>
-              Join the Journal’s launch list for concise editions; they are
-              free, with no advertising trackers.
+              Get the next briefing; concise California reporting,
+              primary-source links and no advertising trackers. Free.
             </p>
           </div>
           <NewsletterForm placement="article" articleSlug={article.slug} />

@@ -51,7 +51,7 @@ button { color: inherit; }
 .wordmark { font-family: var(--font-serif), Georgia, serif; font-weight: 650; font-size: clamp(38px, 4.4vw, 68px); line-height: .9; letter-spacing: -.045em; white-space: nowrap; }
 .wordmark span, .footer-mark span { font-size: .46em; font-style: italic; vertical-align: top; margin-right: .12em; }
 .primary-nav { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
-.nav-track { display: flex; align-items: center; justify-content: center; gap: clamp(18px, 3vw, 44px); min-height: 42px; overflow-x: auto; scrollbar-width: none; }
+.nav-track { display: flex; align-items: center; justify-content: safe center; gap: clamp(18px, 3vw, 44px); min-height: 42px; overflow-x: auto; scrollbar-width: none; }
 .nav-track a { white-space: nowrap; font-size: 12px; font-weight: 650; letter-spacing: .065em; text-transform: uppercase; }
 .nav-track a:hover { color: var(--rust); }
 .ticker { background: var(--navy); color: white; }
@@ -62,7 +62,11 @@ button { color: inherit; }
 .lead-grid { display: grid; grid-template-columns: minmax(300px, .64fr) minmax(0, 1.36fr); gap: clamp(30px, 5vw, 82px); padding-top: clamp(44px, 7vw, 94px); padding-bottom: 64px; border-bottom: 1px solid var(--ink); }
 .lead-copy { padding-top: 12px; }
 .eyebrow { color: var(--rust) !important; font-size: 11px !important; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-.lead-copy h1 { max-width: 650px; margin: 18px 0 20px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(54px, 7vw, 104px); font-weight: 560; line-height: .88; letter-spacing: -.052em; }
+.lead-copy h1 { max-width: 650px; margin: 18px 0 20px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(46px, 4.8vw, 72px); font-weight: 560; line-height: .95; letter-spacing: -.048em; }
+@supports (container-type: inline-size) {
+  .lead-copy { container-type: inline-size; }
+  .lead-copy h1 { font-size: clamp(46px, 15cqi, 72px); }
+}
 .lead-dek { max-width: 590px; margin: 0; color: #3f403b; font-family: var(--font-serif), Georgia, serif; font-size: clamp(19px, 2vw, 25px); line-height: 1.34; }
 .byline-row { display: flex; gap: 12px; align-items: center; margin-top: 36px; font-size: 12px; }
 .byline-row p { margin: 0 0 3px; font-weight: 700; }
@@ -268,6 +272,7 @@ button { color: inherit; }
   .briefing-builder { grid-template-columns: 1fr; }
   .briefing-builder-controls { position: static; }
   .briefing-newsletter-inner { grid-template-columns: 1fr; gap: 28px; }
+  .newsletter-band-inner { grid-template-columns: 1fr; gap: 32px; }
   .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; }
   .footer-grid nav:last-child { grid-column: 2 / -1; }
 }

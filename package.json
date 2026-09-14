@@ -16,6 +16,7 @@
     "test:seo": "node scripts/canonical-metadata.test.mjs",
     "test:voice": "node scripts/editorial-voice.test.mjs",
     "test:elections": "node scripts/election-service-journalism.test.mjs",
+    "test:climate-credit": "node scripts/climate-credit-service-journalism.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

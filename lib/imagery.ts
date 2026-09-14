@@ -8,6 +8,15 @@ export type EditorialAsset = {
 };
 
 export const editorialAssets = {
+  californiaPowerLines: {
+    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Path_27_Power_Lines_in_California_0.JPG/1280px-Path_27_Power_Lines_in_California_0.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail',
+    alt: 'High-voltage power lines running beside Interstate 15 in California',
+    credit: 'Northwalker / Wikimedia Commons (CC0)',
+    provenanceUrl:
+      'https://commons.wikimedia.org/wiki/File:Path_27_Power_Lines_in_California_0.JPG',
+    kind: 'photograph',
+    aiGenerated: false,
+  },
   californiaStateCapitol: {
     url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
     alt: 'California State Capitol in Sacramento beneath a clear blue sky',

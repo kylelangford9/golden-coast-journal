@@ -22,6 +22,53 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    id: 'gcj-008',
+    slug: 'california-climate-credit-2026-amounts-bill',
+    section: 'California',
+    title:
+      'California Climate Credit 2026 — the amounts and dates to check on your bill',
+    dek: 'PG&E, SCE and SDG&E moved residential electric credits to August and September this year. Smaller utilities use a different schedule, and no application is required.',
+    body: [
+      'California households do not need to apply for the 2026 California Climate Credit. Customers of the state’s three largest investor-owned electric utilities should check their August and September bills, although a utility’s billing cycle can push the credit onto the following month’s statement.',
+      'PG&E residential customers receive $36.18 in August and another $36.18 in September. Southern California Edison customers receive $36 in each month. San Diego Gas & Electric customers receive $49.36 in each month, according to the California Public Utilities Commission’s current 2026 schedule.',
+      'The schedule is different for the state’s smaller investor-owned electric utilities. Bear Valley Electric Service customers are scheduled for $17.52 in April and November, while Pacific Power customers are scheduled for $111.83 in those months. Liberty Utilities customers received $71.98 in April and are listed for the same amount in November, but the commission says that amount may change because a proposed adjustment is still awaiting approval.',
+      'The credit appears automatically as “CA Climate Credit” or “California Climate Credit.” It is not based on how much energy a household uses. Eligible residential customers of investor-owned utilities and community choice aggregators receive it through the utility bill rather than through a separate check or application.',
+      'A missing credit should be raised with the utility first. The commission advises customers to contact their utility when the expected bill arrives without the line item. Submetered residents who are eligible but do not receive a utility bill directly should receive the credit from their property owner or billing provider.',
+      'Natural-gas and small-business credits remain on separate tracks. The 2026 residential gas credit was issued in April: $46.26 for PG&E, $32.58 for SDG&E, $45.57 for Southwest Gas and $36.06 for Southern California Gas. Small-business electric credits continue in April and October.',
+      'This is a timing change, not a new benefit. The commission approved moving the large-utility residential electric credits from spring and fall to August and September, when summer electricity bills are typically higher. Beginning in 2027, residential natural-gas credits move from April to February. The practical test is the bill itself — check the named line item, the utility-specific amount and the relevant billing cycle.',
+    ],
+    keyPoints: [
+      'PG&E, SCE and SDG&E residential electric customers receive credits in August and September in 2026.',
+      'No application is required; the credit appears as a line item on an eligible customer’s bill.',
+      'Smaller electric utilities, natural-gas customers and small businesses follow different schedules.',
+    ],
+    author: 'Kyle Langford',
+    publishedAt: '2026-09-13T23:41:47-07:00',
+    updatedAt: '2026-09-13T23:41:47-07:00',
+    readingMinutes: 3,
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Path_27_Power_Lines_in_California_0.JPG/1280px-Path_27_Power_Lines_in_California_0.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail',
+    imageAlt:
+      'High-voltage power lines running beside Interstate 15 in California',
+    imageCredit: 'Northwalker / Wikimedia Commons (CC0)',
+    sources: [
+      {
+        name: 'California Public Utilities Commission — California Climate Credit',
+        url: 'https://www.cpuc.ca.gov/climatecredit',
+      },
+      {
+        name: 'California Public Utilities Commission — Climate Credit fact sheet',
+        url: 'https://www.cpuc.ca.gov/-/media/cpuc-website/industries-and-topics/documents/natural-gas-and-oil-pipeline-regulation/climate-credit/fact-sheet-climate-credit.pdf',
+      },
+      {
+        name: 'California Public Utilities Commission — Climate Credit FAQ',
+        url: 'https://www.cpuc.ca.gov/industries-and-topics/natural-gas/greenhouse-gas-cap-and-trade-program/california-climate-credit/california-climate-credit---faq',
+      },
+    ],
+    status: 'published',
+    featured: true,
+  },
+  {
     id: 'gcj-007',
     slug: 'california-2026-general-election-deadlines',
     section: 'California',

@@ -35,6 +35,64 @@ export function effectiveArticleUpdatedAt(article: Article) {
 
 export const articles: Article[] = [
   {
+    id: 'gcj-011',
+    slug: 'california-tax-extension-deadline-2026-october-15',
+    section: 'Business',
+    title:
+      'California tax extension deadline 2026 — what is due October 15',
+    dek: 'Most individual extension filers have until October 15 to submit their 2025 state and federal returns. The filing extension did not move the April payment deadline, and the California and federal rules are not identical.',
+    body: [
+      'October 15 is the 2026 filing deadline for most individuals using an extension on a 2025 California or federal income-tax return. It is a filing date — not a new payment date — and the state and federal paths into the extension work differently.',
+      'California gives individual taxpayers an automatic extension through October 15. No state extension application is required. The Franchise Tax Board says a 2025 return should be filed or e-filed by that date to avoid a late-filing penalty, with interest calculated from the original April 15 due date when tax remains unpaid.',
+      'The federal rule has an extra condition. Most individual taxpayers needed to request a federal extension by April 15, generally through Form 4868 or an accepted electronic method, to make an October 15 federal filing timely. A person who did not obtain that extension should not treat October 15 as a new federal deadline; the IRS advises taxpayers who are already late to file and pay as soon as possible.',
+      'Neither extension created six more months to pay. California and federal balances were generally due April 15, 2026. Filing now does not make a late payment timely. Both agencies say unpaid balances can continue to accrue interest and penalties, and both offer payment-plan options for eligible taxpayers who cannot pay in full.',
+      'The useful check is straightforward. Confirm that the return covers tax year 2025, verify that the federal extension was accepted if one was required, file both returns by the applicable deadline and keep the electronic acceptance records. If an e-file submission is rejected, correct and retransmit it promptly.',
+      'Free filing remains available for some taxpayers. The IRS says its guided Free File service is available for 2025 adjusted gross income of $89,000 or less, while Free File Fillable Forms are available regardless of income for people comfortable preparing their own return. California offers CalFile and lists other state filing options through the Franchise Tax Board.',
+      'Some taxpayers have different dates, including certain people outside the United States, members of the military serving in qualifying areas and people covered by disaster-related relief. Those exceptions are specific. Check the notice or rule that applies to the individual return rather than assuming the ordinary October 15 date controls. This article provides general deadline information, not individualized tax advice.',
+    ],
+    keyPoints: [
+      'California automatically extends the deadline to file a 2025 individual return to October 15, 2026; no state application is required.',
+      'Most federal filers needed to request their extension by April 15 for an October 15 federal return to be timely.',
+      'The ordinary payment deadline remained April 15, so unpaid balances may continue to generate interest and penalties.',
+    ],
+    author: 'Kyle Langford',
+    publishedAt: '2026-09-14T04:05:00-07:00',
+    updatedAt: '2026-09-14T04:05:00-07:00',
+    readingMinutes: 3,
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
+    imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
+    sources: [
+      {
+        name: 'California Franchise Tax Board — Personal filing due dates',
+        url: 'https://www.ftb.ca.gov/file/when-to-file/due-dates-personal.html',
+      },
+      {
+        name: 'California Franchise Tax Board — 2025 Form 540 instructions',
+        url: 'https://www.ftb.ca.gov/forms/2025/2025-540-booklet.html',
+      },
+      {
+        name: 'California Franchise Tax Board — Payment plans',
+        url: 'https://www.ftb.ca.gov/pay/payment-plans/index.asp',
+      },
+      {
+        name: 'Internal Revenue Service — Requesting an extension',
+        url: 'https://www.irs.gov/newsroom/if-you-need-more-time-to-file-request-an-extension',
+      },
+      {
+        name: 'Internal Revenue Service — Free filing options for extension filers',
+        url: 'https://www.irs.gov/newsroom/dont-delay-filing-any-longer-several-free-filing-options-still-available',
+      },
+      {
+        name: 'Internal Revenue Service — Payment plans and installment agreements',
+        url: 'https://www.irs.gov/payments/payment-plans-installment-agreements',
+      },
+    ],
+    status: 'published',
+    featured: true,
+  },
+  {
     id: 'gcj-010',
     slug: 'track-california-mail-ballot-2026-fix-problems',
     section: 'California',

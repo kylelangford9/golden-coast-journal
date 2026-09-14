@@ -54,6 +54,18 @@ export const readerPolls: ReaderPollDefinition[] = [
       { id: 'health-and-environment', label: 'Health and environment' },
     ],
   },
+  {
+    id: 'candidate-office-explainer-priority-2026',
+    question: 'Which statewide office needs the clearest explainer next?',
+    context:
+      'Choose the office where a sourced Journal follow-up would be most useful.',
+    options: [
+      { id: 'governor-and-lieutenant', label: 'Governor and lieutenant' },
+      { id: 'money-and-taxes', label: 'Money and tax offices' },
+      { id: 'justice-and-insurance', label: 'Justice and insurance' },
+      { id: 'education-and-elections', label: 'Education and elections' },
+    ],
+  },
 ];
 
 export function findReaderPoll(pollId: string) {

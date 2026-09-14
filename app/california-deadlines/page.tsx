@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { DeadlineTracker } from '@/components/deadline-tracker';
+import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
@@ -30,7 +31,9 @@ function pacificDate() {
     day: '2-digit',
     timeZone: 'America/Los_Angeles',
   }).formatToParts(new Date());
-  const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const value = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
   return `${value.year}-${value.month}-${value.day}`;
 }
 
@@ -102,15 +105,18 @@ export default async function CaliforniaDeadlinesPage() {
               you.
             </p>
             <p>
-              The Journal distinguishes firm deadlines, start dates,
-              recommended dates and scheduled changes. When circumstances vary,
-              the entry says so and sends readers to the responsible agency.
+              The Journal distinguishes firm deadlines, start dates, recommended
+              dates and scheduled changes. When circumstances vary, the entry
+              says so and sends readers to the responsible agency.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="shell deadline-references" aria-labelledby="deadline-references-title">
+      <section
+        className="shell deadline-references"
+        aria-labelledby="deadline-references-title"
+      >
         <p className="eyebrow">Primary record</p>
         <h2 id="deadline-references-title">Sources and references</h2>
         <ol>
@@ -122,6 +128,12 @@ export default async function CaliforniaDeadlinesPage() {
             </li>
           ))}
         </ol>
+        <p>
+          Need the people on the statewide ballot?{' '}
+          <CandidateGuideLink placement="deadlines">
+            Open the 2026 candidate guide
+          </CandidateGuideLink>
+        </p>
       </section>
 
       <section className="deadline-newsletter" id="newsletter">

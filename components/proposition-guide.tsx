@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { track } from '@vercel/analytics/react';
 import { Button } from '@/components/ui/button';
+import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import type {
@@ -233,22 +234,9 @@ export function PropositionGuide({
           </p>
         </div>
         <div className="proposition-guide-links">
-          <a
-            href="https://voterguide.sos.ca.gov/candidates/"
-            target="_blank"
-            rel="noreferrer"
-            onClick={() =>
-              record(
-                'proposition_election_resource_opened',
-                'Election Resource Opened',
-                {
-                  resource: 'candidate_statements',
-                },
-              )
-            }
-          >
-            Candidate statements <ExternalLink aria-hidden="true" />
-          </a>
+          <CandidateGuideLink placement="propositions">
+            Candidate guide
+          </CandidateGuideLink>
           <a
             href="https://www.fppc.ca.gov/transparency/top-contributors.html"
             target="_blank"

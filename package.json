@@ -24,6 +24,7 @@
     "test:live": "node scripts/live-reader-polls.test.mjs",
     "test:deadlines": "node scripts/california-deadlines.test.mjs",
     "test:propositions": "node scripts/california-propositions.test.mjs",
+    "test:candidates": "node scripts/california-candidates.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

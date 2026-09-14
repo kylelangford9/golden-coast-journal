@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
 import { ArticleTime } from '@/components/article-time';
 import { ReaderPulse } from '@/components/reader-pulse';
+import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
@@ -110,16 +111,24 @@ export default async function Home() {
         aria-labelledby="proposition-promo-title"
       >
         <div>
-          <p className="eyebrow">November ballot</p>
+          <p className="eyebrow">2026 California election desk</p>
           <h2 id="proposition-promo-title">
-            Fourteen propositions; one review checklist.
+            Candidates, propositions and the dates that change the plan.
           </h2>
           <p>
-            Search every statewide measure, see what yes and no mean and keep a
-            browser-local list of what you have reviewed.
+            Start with the statewide candidates; compare all 14 measures; then
+            put registration, ballot and voting dates in order.
           </p>
         </div>
-        <PropositionGuideLink placement="homepage" />
+        <div className="election-promo-actions">
+          <CandidateGuideLink placement="homepage" />
+          <PropositionGuideLink placement="homepage">
+            Review propositions
+          </PropositionGuideLink>
+          <Link href="/california-deadlines">
+            Check deadlines <ArrowRight aria-hidden="true" />
+          </Link>
+        </div>
       </section>
 
       <section
@@ -189,7 +198,10 @@ export default async function Home() {
         <div className="feature-pair">
           {featurePair.map((article) => (
             <article className="image-story" key={article.slug}>
-              <Link href={`/article/${article.slug}`} className="image-frame photo-frame ratio-card">
+              <Link
+                href={`/article/${article.slug}`}
+                className="image-frame photo-frame ratio-card"
+              >
                 <Image
                   src={article.imageUrl}
                   alt={article.imageAlt}

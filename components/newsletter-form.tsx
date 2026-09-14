@@ -19,7 +19,8 @@ type NewsletterFormProps = {
     | 'briefing'
     | 'live'
     | 'deadlines'
-    | 'propositions';
+    | 'propositions'
+    | 'candidates';
   articleSlug?: string;
 };
 

@@ -7,6 +7,7 @@ const nav = [
   'Latest',
   'Briefing Preview',
   'Live Desk',
+  '2026 Candidates',
   '2026 Propositions',
   'Deadlines',
   'Election Calendar',
@@ -91,13 +92,15 @@ export function SiteHeader() {
                     ? '/briefing'
                     : item === 'Live Desk'
                       ? '/live'
-                      : item === '2026 Propositions'
-                        ? '/california-propositions-2026'
-                        : item === 'Deadlines'
-                          ? '/california-deadlines'
-                          : item === 'Election Calendar'
-                            ? '/article/california-2026-general-election-deadlines'
-                            : `/section/${item.toLowerCase()}`
+                      : item === '2026 Candidates'
+                        ? '/california-candidates-2026'
+                        : item === '2026 Propositions'
+                          ? '/california-propositions-2026'
+                          : item === 'Deadlines'
+                            ? '/california-deadlines'
+                            : item === 'Election Calendar'
+                              ? '/article/california-2026-general-election-deadlines'
+                              : `/section/${item.toLowerCase()}`
               }
             >
               {item}

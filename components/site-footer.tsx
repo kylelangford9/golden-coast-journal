@@ -16,6 +16,7 @@ export function SiteFooter() {
         <nav aria-label="About the Journal">
           <strong>Journal</strong>
           <Link href="/live">California live desk</Link>
+          <Link href="/california-candidates-2026">2026 candidate guide</Link>
           <Link href="/california-propositions-2026">
             2026 proposition guide
           </Link>

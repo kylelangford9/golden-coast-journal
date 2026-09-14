@@ -111,8 +111,8 @@ export function BriefingPreviewBuilder({
             <span>01</span>
             <h2>Your briefing will appear here.</h2>
             <p>
-              It will draw from reporting already published by the Journal—no
-              generated summaries and no hidden recommendation profile.
+              It will draw from reporting already published by the Journal; it
+              uses no generated summaries and no hidden recommendation profile.
             </p>
           </div>
         ) : (

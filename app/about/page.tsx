@@ -52,8 +52,8 @@ export default function AboutPage() {
           <section>
             <h2>Our scope</h2>
             <p>
-              We begin on the Golden Coast — its government, climate, economy,
-              technology and culture — while keeping a clear view of the nation
+              We begin on the Golden Coast, covering its government, climate,
+              economy, technology and culture while keeping a clear view of the nation
               and world.
             </p>
           </section>

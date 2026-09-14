@@ -39,10 +39,10 @@ export const articles: Article[] = [
     slug: 'california-tax-extension-deadline-2026-october-15',
     section: 'Business',
     title:
-      'California tax extension deadline 2026 — what is due October 15',
+      'California tax extension deadline 2026; what is due October 15',
     dek: 'Most individual extension filers have until October 15 to submit their 2025 state and federal returns. The filing extension did not move the April payment deadline, and the California and federal rules are not identical.',
     body: [
-      'October 15 is the 2026 filing deadline for most individuals using an extension on a 2025 California or federal income-tax return. It is a filing date — not a new payment date — and the state and federal paths into the extension work differently.',
+      'October 15 is the 2026 filing deadline for most individuals using an extension on a 2025 California or federal income-tax return. It is a filing date, not a new payment date; the state and federal paths into the extension work differently.',
       'California gives individual taxpayers an automatic extension through October 15. No state extension application is required. The Franchise Tax Board says a 2025 return should be filed or e-filed by that date to avoid a late-filing penalty, with interest calculated from the original April 15 due date when tax remains unpaid.',
       'The federal rule has an extra condition. Most individual taxpayers needed to request a federal extension by April 15, generally through Form 4868 or an accepted electronic method, to make an October 15 federal filing timely. A person who did not obtain that extension should not treat October 15 as a new federal deadline; the IRS advises taxpayers who are already late to file and pay as soon as possible.',
       'Neither extension created six more months to pay. California and federal balances were generally due April 15, 2026. Filing now does not make a late payment timely. Both agencies say unpaid balances can continue to accrue interest and penalties, and both offer payment-plan options for eligible taxpayers who cannot pay in full.',
@@ -65,27 +65,27 @@ export const articles: Article[] = [
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
       {
-        name: 'California Franchise Tax Board — Personal filing due dates',
+        name: 'California Franchise Tax Board: Personal filing due dates',
         url: 'https://www.ftb.ca.gov/file/when-to-file/due-dates-personal.html',
       },
       {
-        name: 'California Franchise Tax Board — 2025 Form 540 instructions',
+        name: 'California Franchise Tax Board: 2025 Form 540 instructions',
         url: 'https://www.ftb.ca.gov/forms/2025/2025-540-booklet.html',
       },
       {
-        name: 'California Franchise Tax Board — Payment plans',
+        name: 'California Franchise Tax Board: Payment plans',
         url: 'https://www.ftb.ca.gov/pay/payment-plans/index.asp',
       },
       {
-        name: 'Internal Revenue Service — Requesting an extension',
+        name: 'Internal Revenue Service: Requesting an extension',
         url: 'https://www.irs.gov/newsroom/if-you-need-more-time-to-file-request-an-extension',
       },
       {
-        name: 'Internal Revenue Service — Free filing options for extension filers',
+        name: 'Internal Revenue Service: Free filing options for extension filers',
         url: 'https://www.irs.gov/newsroom/dont-delay-filing-any-longer-several-free-filing-options-still-available',
       },
       {
-        name: 'Internal Revenue Service — Payment plans and installment agreements',
+        name: 'Internal Revenue Service: Payment plans and installment agreements',
         url: 'https://www.irs.gov/payments/payment-plans-installment-agreements',
       },
     ],
@@ -97,7 +97,7 @@ export const articles: Article[] = [
     slug: 'track-california-mail-ballot-2026-fix-problems',
     section: 'California',
     title:
-      'How to track your California mail ballot in 2026 — and fix a problem',
+      'How to track your California mail ballot in 2026; and fix a problem',
     dek: 'Where’s My Ballot provides automatic status notices in all 58 counties. A separate state page shows whether a ballot was counted, while replacement and signature-cure options address the most common problems.',
     body: [
       'California voters do not have to wait until the final canvass to learn what happened to a vote-by-mail ballot. The state’s Where’s My Ballot service can send email, text or voice notifications as the ballot moves through the process, and enrollment is available in all 58 counties.',
@@ -123,23 +123,23 @@ export const articles: Article[] = [
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
       {
-        name: 'California Secretary of State — Where’s My Ballot?',
+        name: 'California Secretary of State: Where’s My Ballot?',
         url: 'https://www.sos.ca.gov/elections/ballot-status/wheres-my-ballot',
       },
       {
-        name: 'California Secretary of State — Vote by Mail',
+        name: 'California Secretary of State: Vote by Mail',
         url: 'https://www.sos.ca.gov/elections/voter-registration/vote-mail',
       },
       {
-        name: 'California Secretary of State — Ballot Status',
+        name: 'California Secretary of State: Ballot Status',
         url: 'https://www.sos.ca.gov/elections/ballot-status',
       },
       {
-        name: 'California Secretary of State — Verify My Signature',
+        name: 'California Secretary of State: Verify My Signature',
         url: 'https://www.sos.ca.gov/elections/voter-registration/vote-mail/verify-my-signature',
       },
       {
-        name: 'California Secretary of State — Election Dates and Resources',
+        name: 'California Secretary of State: Election Dates and Resources',
         url: 'https://www.sos.ca.gov/elections/voting-resources/voting-california/election-dates-and-resources',
       },
     ],
@@ -151,7 +151,7 @@ export const articles: Article[] = [
     slug: 'california-minimum-wage-2027-rate-exempt-salary',
     section: 'Business',
     title:
-      'California minimum wage rises to $17.40 in 2027 — what workers and employers should check',
+      'California minimum wage rises to $17.40 in 2027; what workers and employers should check',
     dek: 'The statewide floor rises 50 cents on January 1. A higher $72,384 salary threshold also becomes part of the test for certain overtime exemptions, while local and industry rules may require more.',
     body: [
       'California’s statewide minimum wage rises from $16.90 to $17.40 an hour on January 1, 2027. The rate applies to most workers, including people paid by the piece, and does not change with an employer’s size.',
@@ -178,15 +178,15 @@ export const articles: Article[] = [
       'Ryan Hagerty / U.S. Fish and Wildlife Service via Wikimedia Commons (public domain)',
     sources: [
       {
-        name: 'California Department of Industrial Relations — 2027 minimum wage announcement',
+        name: 'California Department of Industrial Relations: 2027 minimum wage announcement',
         url: 'https://www.dir.ca.gov/DIRNews/2026/2026-66.html',
       },
       {
-        name: 'California Labor Commissioner’s Office — Minimum Wage FAQ',
+        name: 'California Labor Commissioner’s Office: Minimum Wage FAQ',
         url: 'https://www.dir.ca.gov/dlse/faq_minimumwage.htm',
       },
       {
-        name: 'California Labor Commissioner’s Office — How to File a Wage Claim',
+        name: 'California Labor Commissioner’s Office: How to File a Wage Claim',
         url: 'https://www.dir.ca.gov/dlse/HowToFileWageClaim.htm',
       },
     ],
@@ -198,7 +198,7 @@ export const articles: Article[] = [
     slug: 'california-climate-credit-2026-amounts-bill',
     section: 'California',
     title:
-      'California Climate Credit 2026 — the amounts and dates to check on your bill',
+      'California Climate Credit 2026; the amounts and dates to check on your bill',
     dek: 'PG&E, SCE and SDG&E moved residential electric credits to August and September this year. Smaller utilities use a different schedule, and no application is required.',
     body: [
       'Eligible California households do not need to apply for the 2026 California Climate Credit. Customers of the state’s three largest investor-owned electric utilities should check their August and September bills, although a utility’s billing cycle can push the credit onto the following month’s statement.',
@@ -207,7 +207,7 @@ export const articles: Article[] = [
       'The credit appears automatically as “CA Climate Credit” or “California Climate Credit.” It is not based on how much energy a household uses. Eligible residential customers of investor-owned utilities and community choice aggregators receive it through the utility bill rather than through a separate check or application.',
       'A missing credit should be raised with the utility first. The commission advises customers to contact their utility when the expected bill arrives without the line item. Submetered residents who are eligible but do not receive a utility bill directly should receive the credit from their property owner or billing provider.',
       'Natural-gas and small-business credits remain on separate tracks. The 2026 residential gas credit was issued in April: $46.26 for PG&E, $32.58 for SDG&E, $45.57 for Southwest Gas and $36.06 for Southern California Gas. Small-business electric credits continue in April and October.',
-      'This is a timing change, not a new benefit. The commission approved moving the large-utility residential electric credits from spring and fall to August and September, when summer electricity bills are typically higher. Beginning in 2027, residential natural-gas credits move from April to February. The practical test is the bill itself — check the named line item, the utility-specific amount and the relevant billing cycle.',
+      'This is a timing change, not a new benefit. The commission approved moving the large-utility residential electric credits from spring and fall to August and September, when summer electricity bills are typically higher. Beginning in 2027, residential natural-gas credits move from April to February. The practical test is the bill itself; check the named line item, the utility-specific amount and the relevant billing cycle.',
     ],
     keyPoints: [
       'PG&E, SCE and SDG&E residential electric customers receive credits in August and September in 2026.',
@@ -225,15 +225,15 @@ export const articles: Article[] = [
     imageCredit: 'Northwalker / Wikimedia Commons (CC0)',
     sources: [
       {
-        name: 'California Public Utilities Commission — California Climate Credit',
+        name: 'California Public Utilities Commission: California Climate Credit',
         url: 'https://www.cpuc.ca.gov/climatecredit',
       },
       {
-        name: 'California Public Utilities Commission — Climate Credit fact sheet',
+        name: 'California Public Utilities Commission: Climate Credit fact sheet',
         url: 'https://www.cpuc.ca.gov/-/media/cpuc-website/industries-and-topics/documents/natural-gas-and-oil-pipeline-regulation/climate-credit/fact-sheet-climate-credit.pdf',
       },
       {
-        name: 'California Public Utilities Commission — Climate Credit FAQ',
+        name: 'California Public Utilities Commission: Climate Credit FAQ',
         url: 'https://www.cpuc.ca.gov/industries-and-topics/natural-gas/greenhouse-gas-cap-and-trade-program/california-climate-credit/california-climate-credit---faq',
       },
     ],
@@ -245,7 +245,7 @@ export const articles: Article[] = [
     slug: 'california-2026-general-election-deadlines',
     section: 'California',
     title:
-      'California’s 2026 general election calendar — the deadlines voters need',
+      'California’s 2026 general election calendar; the deadlines voters need',
     dek: 'Ballots begin moving in early October. Registration closes October 19, but California’s same-day process provides a second path through Election Day.',
     body: [
       'California’s November 3 general election is entering the part of the calendar where dates matter. The state voter guide begins arriving in late September, ballots follow in early October and the standard registration deadline lands 15 days before Election Day.',
@@ -271,15 +271,15 @@ export const articles: Article[] = [
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
       {
-        name: 'California Secretary of State — General Election Key Dates and Deadlines',
+        name: 'California Secretary of State: General Election Key Dates and Deadlines',
         url: 'https://www.sos.ca.gov/elections/upcoming-elections/general-election-november-3-2026/key-dates-deadlines',
       },
       {
-        name: 'California Secretary of State — Election Dates and Resources',
+        name: 'California Secretary of State: Election Dates and Resources',
         url: 'https://www.sos.ca.gov/elections/voting-resources/voting-california/election-dates-and-resources',
       },
       {
-        name: 'California Secretary of State — Vote by Mail',
+        name: 'California Secretary of State: Vote by Mail',
         url: 'https://www.sos.ca.gov/elections/voter-registration/vote-mail',
       },
     ],
@@ -363,7 +363,7 @@ export const articles: Article[] = [
     dek: 'The first-in-the-nation framework will test whether transparency requirements can keep pace with fast-moving models.',
     body: [
       'California has signed a pair of artificial-intelligence measures built around a familiar regulatory idea: consequential systems should be examined by people who did not build them.',
-      'The measures establish standards for third-party audits and independent assessments. Their significance will depend on implementation — which systems qualify, how auditors demonstrate independence and what information reaches the public.',
+      'The measures establish standards for third-party audits and independent assessments. Their significance will depend on implementation: which systems qualify, how auditors demonstrate independence and what information reaches the public.',
       'For companies, the framework adds a new compliance layer in the country’s largest technology market. For residents, its value will be measured by whether failures become easier to identify before they cause harm.',
     ],
     keyPoints: [

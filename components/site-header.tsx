@@ -48,7 +48,7 @@ export function SiteHeader() {
       </div>
       <nav className="primary-nav" aria-label="Primary navigation">
         <div className="shell nav-track">
-          {nav.map((item) => <Link key={item} href={item === 'Latest' ? '/#latest' : item === 'Briefing Preview' ? '/briefing' : item === 'Live Desk' ? '/#live-desk' : item === 'Election Calendar' ? '/article/california-2026-general-election-deadlines' : `/section/${item.toLowerCase()}`}>{item}</Link>)}
+          {nav.map((item) => <Link key={item} href={item === 'Latest' ? '/#latest' : item === 'Briefing Preview' ? '/briefing' : item === 'Live Desk' ? '/live' : item === 'Election Calendar' ? '/article/california-2026-general-election-deadlines' : `/section/${item.toLowerCase()}`}>{item}</Link>)}
         </div>
       </nav>
     </header>

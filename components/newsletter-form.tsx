@@ -13,7 +13,7 @@ import { track } from '@vercel/analytics/react';
 import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 type NewsletterFormProps = {
-  placement?: 'homepage' | 'article' | 'briefing';
+  placement?: 'homepage' | 'article' | 'briefing' | 'live';
   articleSlug?: string;
 };
 
@@ -187,7 +187,7 @@ export function NewsletterForm({
       />
       <output aria-live="polite">
         {state === 'created' &&
-          'Thanks — your address is saved for the launch edition.'}
+          'Thanks; your address is saved for the launch edition.'}
         {state === 'existing' && 'You’re already on the launch list.'}
         {state === 'error' && 'We couldn’t add you just now. Please try again.'}
       </output>

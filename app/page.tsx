@@ -6,6 +6,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
+import { ReaderPulse } from '@/components/reader-pulse';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -129,9 +130,12 @@ export default async function Home() {
           </div>
           <p>
             Fresh signals from California, national, world, business, climate
-            and science primary sources—before the Journal’s reporting is
+            and science primary sources before the Journal’s reporting is
             complete.
           </p>
+          <Link className="live-desk-link" href="/live">
+            Open the live desk <ArrowRight size={14} />
+          </Link>
         </div>
         {developing.length ? (
           <ol className="signal-list">
@@ -162,13 +166,17 @@ export default async function Home() {
         )}
       </section>
 
+      <div className="shell homepage-reader-pulse">
+        <ReaderPulse pollId="coverage-priority-2026-09" />
+      </div>
+
       <section
         className="shell top-stories"
         aria-labelledby="top-stories-title"
       >
         <div className="section-heading">
           <h2 id="top-stories-title">Across the Golden Coast</h2>
-          <p>Reporting that explains what changed — and why it matters.</p>
+          <p>Reporting that explains what changed and why it matters.</p>
         </div>
         <div className="feature-pair">
           {featurePair.map((article) => (

@@ -18,9 +18,11 @@ The protected `/api/editorial/run` route:
 
 1. polls seven primary-source feeds;
 2. records and scores new story candidates;
-3. drafts at most two stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice;
+3. drafts at most one story through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, only while fewer than 12 drafts await review;
 4. stores new drafts in the review queue; and
 5. records every drafting, publishing, rejection and reopening action.
+
+Feed polling runs concurrently with an eight-second limit per source. Source-page reads and AI drafting are separately bounded, so a slow upstream cannot consume the full function lifetime. A later run closes any stale `running` ledger entry before beginning. Queue pressure pauses drafting without pausing source discovery; this keeps the review workload finite and preserves human review as a meaningful quality gate.
 
 Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer credential protects the review queue and editorial action routes. `AUTO_PUBLISH` remains `false` in every environment.
 
@@ -40,8 +42,10 @@ and Speed Insights. The author profile records one `Author Profile Viewed` event
 browser session in both measurement systems.
 
 The protected `/api/editorial/metrics` route returns publication, review queue, source
-candidate, section and subscriber totals without exposing subscriber identities. It uses
-the same `Authorization: Bearer $CRON_SECRET` credential as the other editorial routes.
+candidate, section, subscriber and pipeline-health totals without exposing subscriber
+identities. Pipeline health includes the latest run, its duration, stale-run count and
+24-hour status totals. It uses the same `Authorization: Bearer $CRON_SECRET` credential
+as the other editorial routes.
 
 ## Local development
 

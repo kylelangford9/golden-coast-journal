@@ -37,6 +37,12 @@ type CandidateRow = {
 };
 
 const autoPublishSourceIds = new Set(['nasa', 'noaa']);
+const FEED_TIMEOUT_MS = 8_000;
+const SOURCE_PAGE_TIMEOUT_MS = 12_000;
+const AI_DRAFT_TIMEOUT_MS = 75_000;
+const STALE_RUN_AFTER_MS = 15 * 60_000;
+const REVIEW_QUEUE_LIMIT = 12;
+const DRAFTS_PER_RUN = 1;
 
 function textFromTag(block: string, tag: string) {
   const match = block.match(
@@ -99,7 +105,7 @@ async function fetchReadablePage(url: string) {
     headers: {
       'user-agent': `GoldenCoastJournalBot/1.0 (+${publicationUrl}/standards)`,
     },
-    signal: AbortSignal.timeout(12000),
+    signal: AbortSignal.timeout(SOURCE_PAGE_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`Source returned ${response.status}`);
   const html = (await response.text()).slice(0, 500000);
@@ -195,6 +201,7 @@ async function draftCandidate(
         },
       },
     }),
+    signal: AbortSignal.timeout(AI_DRAFT_TIMEOUT_MS),
   });
   if (!response.ok) {
     const requestId = response.headers.get('x-request-id');
@@ -227,6 +234,19 @@ export async function runEditorialPipeline() {
   await seedDatabase();
   const runId = crypto.randomUUID();
   const startedAt = new Date().toISOString();
+  const staleBefore = new Date(Date.now() - STALE_RUN_AFTER_MS).toISOString();
+  unwrap(
+    await db
+      .from('gcj_pipeline_runs')
+      .update({
+        status: 'failed',
+        completed_at: startedAt,
+        error: 'Closed by a later run after exceeding the pipeline time budget.',
+      })
+      .eq('status', 'running')
+      .lt('started_at', staleBefore),
+    'Unable to close stale pipeline runs',
+  );
   unwrap(
     await db.from('gcj_pipeline_runs').insert({
       id: runId,
@@ -239,6 +259,9 @@ export async function runEditorialPipeline() {
 
   let discovered = 0;
   let drafted = 0;
+  let feedsSucceeded = 0;
+  let reviewBacklog = 0;
+  let draftingSkipped: string | null = null;
   const failures: string[] = [];
   const gatewayToken =
     process.env.AI_GATEWAY_API_KEY ||
@@ -257,75 +280,102 @@ export async function runEditorialPipeline() {
       'Unable to prune rate limits',
     );
 
-    for (const source of activeSources) {
-      try {
-        const response = await fetch(source.feed_url, {
-          headers: { 'user-agent': 'GoldenCoastJournalBot/1.0' },
-          signal: AbortSignal.timeout(10000),
-        });
-        if (!response.ok) throw new Error(`Feed returned ${response.status}`);
-        const entries = parseFeed(await response.text());
-        const rows = await Promise.all(
-          entries.map(async (entry) => {
-            const ageHours = entry.publishedAt
-              ? Math.max(
-                  0,
-                  (Date.now() - Date.parse(entry.publishedAt)) / 3600000,
-                )
-              : 48;
-            return {
-              id: await stableId(entry.url),
-              source_id: source.id,
-              external_url: entry.url,
-              title: entry.title,
-              summary: entry.summary,
-              published_at: entry.publishedAt || null,
-              discovered_at: new Date().toISOString(),
-              status: 'new',
-              score: Math.max(
-                1,
-                Math.round(
-                  source.trust_tier === 1 ? 100 - ageHours : 70 - ageHours,
+    const feedResults = await Promise.all(
+      activeSources.map(async (source) => {
+        try {
+          const response = await fetch(source.feed_url, {
+            headers: { 'user-agent': 'GoldenCoastJournalBot/1.0' },
+            signal: AbortSignal.timeout(FEED_TIMEOUT_MS),
+          });
+          if (!response.ok)
+            throw new Error(`Feed returned ${response.status}`);
+          const entries = parseFeed(await response.text());
+          const rows = await Promise.all(
+            entries.map(async (entry) => {
+              const ageHours = entry.publishedAt
+                ? Math.max(
+                    0,
+                    (Date.now() - Date.parse(entry.publishedAt)) / 3600000,
+                  )
+                : 48;
+              return {
+                id: await stableId(entry.url),
+                source_id: source.id,
+                external_url: entry.url,
+                title: entry.title,
+                summary: entry.summary,
+                published_at: entry.publishedAt || null,
+                discovered_at: new Date().toISOString(),
+                status: 'new',
+                score: Math.max(
+                  1,
+                  Math.round(
+                    source.trust_tier === 1 ? 100 - ageHours : 70 - ageHours,
+                  ),
                 ),
-              ),
-            };
-          }),
-        );
-        if (rows.length) {
-          const inserted = unwrap(
-            await db
-              .from('gcj_story_candidates')
-              .upsert(rows, {
-                onConflict: 'external_url',
-                ignoreDuplicates: true,
-              })
-              .select('id'),
-            `Unable to store candidates from ${source.name}`,
+              };
+            }),
           );
-          discovered += (inserted || []).length;
+          let sourceDiscovered = 0;
+          if (rows.length) {
+            const inserted = unwrap(
+              await db
+                .from('gcj_story_candidates')
+                .upsert(rows, {
+                  onConflict: 'external_url',
+                  ignoreDuplicates: true,
+                })
+                .select('id'),
+              `Unable to store candidates from ${source.name}`,
+            );
+            sourceDiscovered = (inserted || []).length;
+          }
+          unwrap(
+            await db
+              .from('gcj_sources')
+              .update({ last_fetched_at: new Date().toISOString() })
+              .eq('id', source.id),
+            `Unable to update ${source.name}`,
+          );
+          return { discovered: sourceDiscovered, error: null };
+        } catch (error) {
+          return {
+            discovered: 0,
+            error: `${source.name}: ${error instanceof Error ? error.message : 'unknown feed error'}`,
+          };
         }
-        unwrap(
-          await db
-            .from('gcj_sources')
-            .update({ last_fetched_at: new Date().toISOString() })
-            .eq('id', source.id),
-          `Unable to update ${source.name}`,
-        );
-      } catch (error) {
-        failures.push(
-          `${source.name}: ${error instanceof Error ? error.message : 'unknown feed error'}`,
-        );
-      }
-    }
+      }),
+    );
+    discovered = feedResults.reduce(
+      (total, result) => total + result.discovered,
+      0,
+    );
+    feedsSucceeded = feedResults.filter((result) => !result.error).length;
+    failures.push(
+      ...feedResults.flatMap((result) =>
+        result.error ? [result.error] : [],
+      ),
+    );
 
-    if (gatewayToken) {
+    const reviewCount = await db
+      .from('gcj_articles')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'review');
+    if (reviewCount.error)
+      throw new Error(`Unable to count review queue: ${reviewCount.error.message}`);
+    reviewBacklog = reviewCount.count || 0;
+    if (reviewBacklog >= REVIEW_QUEUE_LIMIT)
+      draftingSkipped = 'review_queue_limit';
+    else if (!gatewayToken) draftingSkipped = 'ai_unavailable';
+
+    if (gatewayToken && !draftingSkipped) {
       const candidates = unwrap(
         await db
           .from('gcj_story_candidates')
           .select('*')
           .eq('status', 'new')
           .order('score', { ascending: false })
-          .limit(2),
+          .limit(DRAFTS_PER_RUN),
         'Unable to load drafting candidates',
       ) as CandidateRow[];
       for (const candidate of candidates) {
@@ -340,6 +390,16 @@ export async function runEditorialPipeline() {
         ) as SourceRow | null;
         if (!source) continue;
         try {
+          const claimed = unwrap(
+            await db
+              .from('gcj_story_candidates')
+              .update({ status: 'selected' })
+              .eq('id', candidate.id)
+              .eq('status', 'new')
+              .select('id'),
+            'Unable to claim drafting candidate',
+          );
+          if (!(claimed || []).length) continue;
           const draft = await draftCandidate(candidate, source, gatewayToken);
           const now = new Date().toISOString();
           const publish =
@@ -401,6 +461,11 @@ export async function runEditorialPipeline() {
             'Unable to mark candidate processed',
           );
         } catch (error) {
+          await db
+            .from('gcj_story_candidates')
+            .update({ status: 'new' })
+            .eq('id', candidate.id)
+            .eq('status', 'selected');
           failures.push(
             `${candidate.title}: ${error instanceof Error ? error.message : 'draft failed'}`,
           );
@@ -412,6 +477,12 @@ export async function runEditorialPipeline() {
       discovered,
       drafted,
       failures: failures.length,
+      feedSources: activeSources.length,
+      feedsSucceeded,
+      reviewBacklog,
+      reviewQueueLimit: REVIEW_QUEUE_LIMIT,
+      draftingSkipped,
+      durationMs: Date.now() - Date.parse(startedAt),
       aiConfigured: Boolean(gatewayToken),
       autoPublish: process.env.AUTO_PUBLISH === 'true',
     };

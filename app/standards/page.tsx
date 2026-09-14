@@ -1,10 +1,12 @@
+import type { Metadata } from 'next';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Standards & AI Policy',
   description:
     'The sourcing, automation and publication standards of The Golden Coast Journal.',
+  alternates: { canonical: '/standards' },
 };
 
 const standards = [

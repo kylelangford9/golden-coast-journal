@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('..', import.meta.url));
+
+async function source(relativePath) {
+  return readFile(
+    new URL(relativePath, `file:///${root.replaceAll('\\', '/')}/`),
+    'utf8',
+  );
+}
+
+const layout = await source('app/layout.tsx');
+assert.doesNotMatch(
+  layout,
+  /alternates:\s*{\s*canonical:/,
+  'Shared layout must not force every route to use the homepage canonical.',
+);
+
+const canonicalRoutes = new Map([
+  ['app/page.tsx', '/'],
+  ['app/about/page.tsx', '/about'],
+  ['app/standards/page.tsx', '/standards'],
+  ['app/corrections/page.tsx', '/corrections'],
+  ['app/privacy/page.tsx', '/privacy'],
+  ['app/search/page.tsx', '/search'],
+]);
+
+for (const [file, canonical] of canonicalRoutes) {
+  const content = await source(file);
+  assert.match(
+    content,
+    new RegExp(`canonical:\\s*['"]${canonical.replaceAll('/', '\\/')}['"]`),
+    `${file} must declare its own canonical URL.`,
+  );
+}
+
+const author = await source('app/authors/kyle-langford/page.tsx');
+assert.match(author, /canonical:\s*KYLE_LANGFORD_AUTHOR\.path/);
+
+const section = await source('app/section/[section]/page.tsx');
+assert.match(
+  section,
+  /canonical:\s*`\/section\/\$\{section\.toLowerCase\(\)\}`/,
+);
+assert.match(section, /if \(!isKnown\) notFound\(\)/);
+
+const search = await source('app/search/page.tsx');
+assert.match(search, /robots:\s*{\s*index:\s*false,\s*follow:\s*true\s*}/);
+
+console.log('Journal canonical metadata checks passed.');

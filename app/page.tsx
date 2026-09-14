@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { connection } from 'next/server';
@@ -9,6 +10,10 @@ import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
+
 export default async function Home() {
   await connection();
   const [articles, developing] = await Promise.all([
@@ -19,8 +24,7 @@ export default async function Home() {
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
   const leadImage = getApprovedEditorialAsset(lead.imageUrl);
-  const origin =
-    process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+  const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const publicationJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'NewsMediaOrganization',

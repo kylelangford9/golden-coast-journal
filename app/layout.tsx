@@ -8,8 +8,7 @@ import './globals.css';
 
 const sans = Libre_Franklin({ variable: '--font-sans', subsets: ['latin'] });
 const serif = Newsreader({ variable: '--font-serif', subsets: ['latin'] });
-const origin =
-  process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(origin),
@@ -21,7 +20,6 @@ export const metadata: Metadata = {
     'Independent reporting and analysis from California to the world. No paywall. No ads.',
   applicationName: 'The Golden Coast Journal',
   alternates: {
-    canonical: '/',
     types: { 'application/rss+xml': '/feed.xml' },
   },
   openGraph: {

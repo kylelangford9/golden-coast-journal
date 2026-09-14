@@ -1,10 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'About',
   description: 'Why The Golden Coast Journal exists and how we work.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {

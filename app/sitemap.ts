@@ -51,13 +51,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'daily' as const,
     priority: article.featured ? 0.9 : 0.7,
   }));
-  const sectionPages = sections.map((section) => ({
-    url: `${origin}/section/${section.toLowerCase()}`,
-    lastModified: latestUpdate(
-      articles.filter((article) => article.section === section),
-    ),
-    changeFrequency: 'daily' as const,
-    priority: 0.7,
-  }));
+  const sectionPages = sections
+    .map((section) => ({
+      section,
+      own: articles.filter((article) => article.section === section),
+    }))
+    .filter(({ own }) => own.length > 0)
+    .map(({ section, own }) => ({
+      url: `${origin}/section/${section.toLowerCase()}`,
+      lastModified: latestUpdate(own),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    }));
   return [...staticPages, ...sectionPages, ...storyPages];
 }

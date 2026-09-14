@@ -20,10 +20,18 @@ export async function generateMetadata({
     (item) => item.toLowerCase() === section.toLowerCase(),
   );
   if (!isKnown) return { title: 'Section not found', robots: { index: false } };
+  const articles = await listPublished();
+  const hasOwnStories = articles.some(
+    (item) => item.section.toLowerCase() === title.toLowerCase(),
+  );
   return {
     title,
     description: `Latest ${title} reporting and analysis from The Golden Coast Journal.`,
     alternates: { canonical: `/section/${section.toLowerCase()}` },
+    // An empty desk shows four stories borrowed from other desks. Fine for a reader who
+    // lands on it, a near-duplicate of those desks for a crawler. Index it once it has
+    // reporting of its own.
+    ...(hasOwnStories ? {} : { robots: { index: false, follow: true } }),
   };
 }
 

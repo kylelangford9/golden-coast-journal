@@ -423,7 +423,7 @@ export const articles: Article[] = [
   {
     id: 'gcj-005',
     slug: 'california-unemployment-august-brief',
-    section: 'Economy',
+    section: 'Business',
     title:
       'California labor market shows improvement, with pressure still uneven',
     dek: 'The statewide unemployment rate improved to 5.1 percent, but a single headline number cannot describe every region or industry.',

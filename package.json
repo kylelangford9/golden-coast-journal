@@ -25,6 +25,7 @@
     "test:deadlines": "node scripts/california-deadlines.test.mjs",
     "test:propositions": "node scripts/california-propositions.test.mjs",
     "test:candidates": "node scripts/california-candidates.test.mjs",
+    "test:election-hub": "node scripts/california-election-hub.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...[
       '/about',
       '/briefing',
+      '/california-election-2026',
       '/california-candidates-2026',
       '/california-propositions-2026',
       '/california-deadlines',

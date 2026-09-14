@@ -66,6 +66,18 @@ export const readerPolls: ReaderPollDefinition[] = [
       { id: 'education-and-elections', label: 'Education and elections' },
     ],
   },
+  {
+    id: 'election-help-priority-2026',
+    question: 'What do you still need before you can finish your ballot?',
+    context:
+      'Choose the part where one more sourced guide would save the most time.',
+    options: [
+      { id: 'candidate-comparisons', label: 'Candidate comparisons' },
+      { id: 'proposition-details', label: 'Proposition details' },
+      { id: 'local-ballot', label: 'My local ballot' },
+      { id: 'voting-logistics', label: 'Voting logistics' },
+    ],
+  },
 ];
 
 export function findReaderPoll(pollId: string) {

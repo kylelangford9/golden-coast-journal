@@ -7,6 +7,7 @@ const nav = [
   'Latest',
   'Briefing Preview',
   'Live Desk',
+  '2026 Election',
   '2026 Candidates',
   '2026 Propositions',
   'Deadlines',
@@ -92,6 +93,8 @@ export function SiteHeader() {
                     ? '/briefing'
                     : item === 'Live Desk'
                       ? '/live'
+                      : item === '2026 Election'
+                        ? '/california-election-2026'
                       : item === '2026 Candidates'
                         ? '/california-candidates-2026'
                         : item === '2026 Propositions'

@@ -10,6 +10,7 @@ import { ArticleTime } from '@/components/article-time';
 import { ReaderPulse } from '@/components/reader-pulse';
 import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
+import { ElectionHubLink } from '@/components/election-hub';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -121,6 +122,7 @@ export default async function Home() {
           </p>
         </div>
         <div className="election-promo-actions">
+          <ElectionHubLink placement="homepage" />
           <CandidateGuideLink placement="homepage" />
           <PropositionGuideLink placement="homepage">
             Review propositions

@@ -20,7 +20,8 @@ type NewsletterFormProps = {
     | 'live'
     | 'deadlines'
     | 'propositions'
-    | 'candidates';
+    | 'candidates'
+    | 'election-hub';
   articleSlug?: string;
 };
 

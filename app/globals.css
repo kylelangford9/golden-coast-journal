@@ -3,6 +3,7 @@
 @import 'shadcn/tailwind.css';
 @import './propositions.css';
 @import './candidates.css';
+@import './election-hub.css';
 
 @theme inline {
   --color-background: var(--paper);

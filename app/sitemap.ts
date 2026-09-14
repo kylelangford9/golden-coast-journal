@@ -5,7 +5,7 @@ import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-14T00:00:00.000Z');
-const articleTemplateModified = new Date('2026-09-14T17:57:53.000Z');
+const articleTemplateModified = new Date('2026-09-14T21:08:32.137Z');
 const propositionPagesModified = new Date('2026-09-14T19:41:31.000Z');
 
 export const revalidate = 900;

@@ -4,6 +4,7 @@ import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-14T00:00:00.000Z');
+const articleTemplateModified = new Date('2026-09-14T17:57:53.000Z');
 
 export const revalidate = 900;
 
@@ -16,13 +17,17 @@ function latestUpdate(values: Array<{ updatedAt: string }>) {
     : institutionalModified;
 }
 
+function laterDate(first: Date, second: Date) {
+  return first.getTime() >= second.getTime() ? first : second;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = await listPublished();
   const publicationModified = latestUpdate(articles);
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: origin,
-      lastModified: publicationModified,
+      lastModified: laterDate(publicationModified, articleTemplateModified),
       changeFrequency: 'daily',
       priority: 1,
     },
@@ -48,7 +53,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   const storyPages = articles.map((article) => ({
     url: `${origin}/article/${article.slug}`,
-    lastModified: new Date(effectiveArticleUpdatedAt(article)),
+    lastModified: laterDate(
+      new Date(effectiveArticleUpdatedAt(article)),
+      articleTemplateModified,
+    ),
     changeFrequency: 'daily' as const,
     priority: article.featured ? 0.9 : 0.7,
   }));

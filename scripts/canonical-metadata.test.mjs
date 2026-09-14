@@ -38,6 +38,17 @@ const content = await source('lib/content.ts');
 assert.match(content, /export function formatArticleDateTime/);
 assert.match(content, /timeZoneName: 'short'/);
 
+const sitemap = await source('app/sitemap.ts');
+assert.match(sitemap, /const articleTemplateModified = new Date\('/);
+assert.match(
+  sitemap,
+  /lastModified: laterDate\(publicationModified, articleTemplateModified\)/,
+);
+assert.match(
+  sitemap,
+  /new Date\(effectiveArticleUpdatedAt\(article\)\),\s+articleTemplateModified/,
+);
+
 const canonicalRoutes = new Map([
   ['app/page.tsx', '/'],
   ['app/about/page.tsx', '/about'],

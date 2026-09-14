@@ -54,6 +54,14 @@ export const editorialAssets = {
     kind: 'photograph',
     aiGenerated: false,
   },
+  kyleLangfordPortrait: {
+    url: '/kyle-langford.jpg',
+    alt: 'Kyle Langford, publisher of The Golden Coast Journal',
+    credit: 'Courtesy of Kyle Langford',
+    provenanceUrl: 'https://www.goldencoastjournal.com/authors/kyle-langford',
+    kind: 'photograph',
+    aiGenerated: false,
+  },
   californiaAiSafeguards: {
     url: '/ai-safeguards.png',
     alt: 'Official graphic announcing California artificial intelligence safeguards',

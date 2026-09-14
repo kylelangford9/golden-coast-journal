@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { AuthorProfileTracker } from '@/components/author-profile-tracker';
 import { SiteFooter } from '@/components/site-footer';
+import { editorialAssets, editorialAssetLabel } from '@/lib/imagery';
 import { SiteHeader } from '@/components/site-header';
 import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
 
@@ -15,11 +17,13 @@ export const metadata: Metadata = {
 };
 
 export default function KyleLangfordAuthorPage() {
+  const portrait = editorialAssets.kyleLangfordPortrait;
   const personJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: KYLE_LANGFORD_AUTHOR.name,
     url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
+    image: `${origin}${editorialAssets.kyleLangfordPortrait.url}`,
     worksFor: {
       '@type': 'NewsMediaOrganization',
       '@id': `${origin}/#organization`,
@@ -35,13 +39,30 @@ export default function KyleLangfordAuthorPage() {
         dangerouslySetInnerHTML={{ __html: personJson }}
       />
       <article className="institutional shell">
-        <p className="eyebrow">Publisher and author</p>
-        <h1>Kyle Langford</h1>
-        <p className="standfirst">
-          Kyle Langford created and publishes The Golden Coast Journal. His
-          articles use a direct, evidence-led voice: the verified news first,
-          the strongest support next and the practical consequence after that.
-        </p>
+        <div className="author-masthead">
+          <div>
+            <p className="eyebrow">Publisher and author</p>
+            <h1>Kyle Langford</h1>
+            <p className="standfirst">
+              Kyle Langford created and publishes The Golden Coast Journal. His
+              articles use a direct, evidence-led voice: the verified news
+              first, the strongest support next and the practical consequence
+              after that.
+            </p>
+          </div>
+          <figure className="author-portrait photo-frame ratio-portrait">
+            <Image
+              src={portrait.url}
+              alt={portrait.alt}
+              fill
+              priority
+              sizes="(max-width: 760px) 100vw, 340px"
+            />
+            <figcaption className="photo-caption">
+              {editorialAssetLabel(portrait)} · {portrait.credit}
+            </figcaption>
+          </figure>
+        </div>
         <div className="institutional-grid">
           <section>
             <h2>How he writes</h2>

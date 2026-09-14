@@ -21,6 +21,18 @@ export type ReaderPollResult = Omit<ReaderPollDefinition, 'options'> & {
 
 export const readerPolls: ReaderPollDefinition[] = [
   {
+    id: 'voter-guide-help-priority-2026',
+    question: 'What should the Journal help you find in the 2026 voter guides?',
+    context:
+      'Choose the part where one more sourced shortcut would save you the most time.',
+    options: [
+      { id: 'statewide-propositions', label: 'Statewide propositions' },
+      { id: 'statewide-candidates', label: 'Statewide candidates' },
+      { id: 'local-races-and-measures', label: 'Local races and measures' },
+      { id: 'voting-rules-and-dates', label: 'Voting rules and dates' },
+    ],
+  },
+  {
     id: 'coverage-priority-2026-09',
     question: 'What should the Journal explain next?',
     context: 'Help the newsroom choose the next useful California explainer.',

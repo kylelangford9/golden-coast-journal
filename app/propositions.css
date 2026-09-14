@@ -27,7 +27,8 @@
   line-height: 1.45;
 }
 .proposition-promo > a,
-.proposition-hub-callout > a {
+.proposition-hub-callout > a,
+.article-election-actions > a {
   display: inline-flex;
   min-height: 46px;
   align-items: center;
@@ -45,14 +46,21 @@
 .proposition-promo > a:hover,
 .proposition-promo > a:focus-visible,
 .proposition-hub-callout > a:hover,
-.proposition-hub-callout > a:focus-visible {
+.proposition-hub-callout > a:focus-visible,
+.article-election-actions > a:hover,
+.article-election-actions > a:focus-visible {
   background: white;
   color: var(--navy);
 }
 .proposition-promo svg,
-.proposition-hub-callout svg {
+.proposition-hub-callout svg,
+.article-election-actions svg {
   width: 14px;
   height: 14px;
+}
+.article-election-actions {
+  display: grid;
+  gap: 8px;
 }
 .proposition-hub-callout {
   display: grid;

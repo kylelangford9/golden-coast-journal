@@ -10,6 +10,8 @@ import { ArticleShare } from '@/components/article-share';
 import { ElectionCalendarDownload } from '@/components/election-calendar-download';
 import { DeadlineHubLink } from '@/components/deadline-hub-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
+import { CandidateGuideLink } from '@/components/candidate-guide-link';
+import { ReaderPulse } from '@/components/reader-pulse';
 import {
   effectiveArticleUpdatedAt,
   formatArticleDateTime,
@@ -67,6 +69,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     'california-tax-extension-deadline-2026-october-15',
     'track-california-mail-ballot-2026-fix-problems',
     'california-minimum-wage-2027-rate-exempt-salary',
+    'california-voter-guide-2026-mailing-state-county',
   ].includes(article.slug);
   const newsArticleJson = JSON.stringify({
     '@context': 'https://schema.org',
@@ -181,6 +184,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 </div>
                 <PropositionGuideLink placement="article" />
               </section>
+            )}
+            {article.slug ===
+              'california-voter-guide-2026-mailing-state-county' && (
+              <>
+                <section className="proposition-hub-callout">
+                  <div>
+                    <p className="eyebrow">Review the guide</p>
+                    <h2>Separate the statewide and local ballot.</h2>
+                    <p>
+                      Start with the statewide propositions and candidates; use
+                      the official county guide for local races and measures.
+                    </p>
+                  </div>
+                  <div className="article-election-actions">
+                    <PropositionGuideLink placement="article" />
+                    <CandidateGuideLink placement="article" />
+                  </div>
+                </section>
+                <ReaderPulse
+                  pollId="voter-guide-help-priority-2026"
+                  compact
+                />
+              </>
             )}
             <section className="source-box" aria-labelledby="sources-heading">
               <h2 id="sources-heading">Sources & methodology</h2>

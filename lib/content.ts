@@ -35,6 +35,56 @@ export function effectiveArticleUpdatedAt(article: Article) {
 
 export const articles: Article[] = [
   {
+    id: 'gcj-012',
+    slug: 'california-voter-guide-2026-mailing-state-county',
+    section: 'California',
+    title: 'California voter guide 2026; when it arrives and what is inside',
+    dek: 'The online state guide is available now; state and county guides are scheduled to enter the mail from September 24 through October 13. They answer different parts of the ballot.',
+    body: [
+      'California’s online Official Voter Information Guide for the November 3 general election is available now; printed state and county guides are scheduled to enter the mail from September 24 through October 13. The two guides are not interchangeable, and neither one is the vote-by-mail ballot.',
+      'The state guide explains contests shared across California. For each statewide proposition, the Secretary of State says it includes an impartial analysis prepared by the Legislative Analyst’s Office, the potential cost to taxpayers, arguments for and against the measure, the proposal’s text and an official title and summary. It also carries statewide candidate information, voting instructions and the California Voter Bill of Rights.',
+      'The county guide is the local document, historically called the sample ballot. It shows a voter’s sample ballot and contains information about local candidates and measures. Depending on the county, it may also identify a polling place. That is why a statewide guide alone cannot show every race or measure a voter will see.',
+      'The mailing rules also differ. The Secretary of State sends the state guide to California households with at least one registered voter. County elections officials send county guides to registered voters. The state election calendar gives both operations the same September 24 through October 13 mailing window.',
+      'A missing paper guide does not require waiting for the mail. The official state guide is already online, and the Secretary of State provides versions in English, Spanish, Chinese, Hindi, Japanese, Khmer, Korean, Tagalog, Thai and Vietnamese. Audio and large-print editions can also be requested through the state elections office.',
+      'Voters who expect a paper copy should check the address attached to their registration now through My Voter Status. California permits a voter to choose an electronic state guide instead, but every registered voter in a household must opt out before the state stops mailing that household a paper copy.',
+      'The guide is not the ballot. County officials must begin mailing vote-by-mail ballots no later than October 5, while the ordinary registration deadline is October 19. Conditional voter registration remains available from October 20 through Election Day at county election offices and voting locations.',
+      'The practical sequence is simple; open the state guide now, use the county guide or county elections website for local contests, confirm the registration address, and compare both documents with the ballot when it arrives. The Journal’s candidate and proposition guides can help organize that review, but the Secretary of State and the voter’s county elections office remain the authoritative sources.',
+    ],
+    keyPoints: [
+      'The official online state guide is available now; state and county guide mailing runs from September 24 through October 13.',
+      'The state guide covers statewide candidates and propositions; the county guide covers the voter’s sample ballot, local candidates and local measures.',
+      'Vote-by-mail ballots are separate; counties must begin mailing them no later than October 5.',
+    ],
+    author: 'Kyle Langford',
+    publishedAt: '2026-09-14T12:00:00-07:00',
+    updatedAt: '2026-09-14T12:00:00-07:00',
+    readingMinutes: 4,
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
+    imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
+    sources: [
+      {
+        name: 'California Secretary of State: 2026 Official Voter Information Guide',
+        url: 'https://voterguide.sos.ca.gov/',
+      },
+      {
+        name: 'California Secretary of State: General Election Key Dates and Deadlines',
+        url: 'https://www.sos.ca.gov/elections/upcoming-elections/general-election-november-3-2026/key-dates-deadlines',
+      },
+      {
+        name: 'California Secretary of State: State Voter Information Guide vs. County Voter Information Guide',
+        url: 'https://www.sos.ca.gov/elections/publications-and-resources/state-county-vig/',
+      },
+      {
+        name: 'California Secretary of State: Statewide Voter Information Guide release',
+        url: 'https://www.sos.ca.gov/administration/news-releases-and-advisories/2026-news-releases-and-advisories/california-secretary-state-shirley-n-weber-phd-announces-statewide-voter-information-guide-november-3-2026-general-election-avai',
+      },
+    ],
+    status: 'published',
+    featured: true,
+  },
+  {
     id: 'gcj-011',
     slug: 'california-tax-extension-deadline-2026-october-15',
     section: 'Business',

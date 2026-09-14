@@ -170,6 +170,9 @@ button { color: inherit; }
 .article-body { grid-column: 2; }
 .article-body > p { margin: 0 0 1.25em; font-family: var(--font-serif), Georgia, serif; font-size: clamp(20px, 2vw, 23px); line-height: 1.62; }
 .article-body > p:first-child::first-letter { float: left; margin: .07em .09em 0 0; color: var(--rust); font-size: 4em; line-height: .72; }
+.article-body > .reader-pulse { margin: 42px 0; padding: 28px; }
+.article-body > .reader-pulse .reader-pulse-heading { grid-template-columns: 1fr; gap: 12px; }
+.article-body > .reader-pulse .reader-pulse-heading h2 { font-size: clamp(29px, 4vw, 40px); }
 .source-box { margin-top: 45px; padding: 26px; background: #ebe4d7; border-top: 1px solid var(--ink); }
 .source-box h2 { margin: 0 0 8px; font-family: var(--font-serif), Georgia, serif; font-size: 25px; }
 .source-box p { color: var(--muted); font-size: 12px; line-height: 1.5; }

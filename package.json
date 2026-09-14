@@ -21,6 +21,7 @@
     "test:climate-credit": "node scripts/climate-credit-service-journalism.test.mjs",
     "test:minimum-wage": "node scripts/minimum-wage-service-journalism.test.mjs",
     "test:tax-extension": "node scripts/tax-extension-service-journalism.test.mjs",
+    "test:voter-guide": "node scripts/voter-guide-service-journalism.test.mjs",
     "test:live": "node scripts/live-reader-polls.test.mjs",
     "test:deadlines": "node scripts/california-deadlines.test.mjs",
     "test:propositions": "node scripts/california-propositions.test.mjs",

@@ -10,7 +10,7 @@ export function CandidateGuideLink({
   className,
   children = 'Open the candidate guide',
 }: {
-  placement: 'homepage' | 'propositions' | 'deadlines';
+  placement: 'homepage' | 'propositions' | 'deadlines' | 'article';
   className?: string;
   children?: React.ReactNode;
 }) {

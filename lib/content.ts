@@ -516,3 +516,82 @@ export function formatArticleDate(value: string) {
     timeZone: 'America/Los_Angeles',
   }).format(new Date(value));
 }
+
+const PACIFIC = 'America/Los_Angeles';
+
+function pacificYear(value: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    timeZone: PACIFIC,
+  }).format(value);
+}
+
+/** "Sep 12", or "Sep 12, 2025" once the story is from an earlier year. */
+export function formatShortDate(value: string, now: number = Date.now()) {
+  const then = new Date(value);
+  const sameYear = pacificYear(then) === pacificYear(new Date(now));
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+    timeZone: PACIFIC,
+  }).format(then);
+}
+
+export type ArticleTimestamp = {
+  /** ISO 8601, for the <time dateTime> attribute. */
+  dateTime: string;
+  /** "3h ago" inside a day, a short date beyond it. */
+  label: string;
+  /** "Updated" when the story moved after publication, otherwise empty. */
+  prefix: string;
+  /** Full date, for the title tooltip. */
+  fullDate: string;
+};
+
+/**
+ * Recency for a story card. Returns null rather than rendering a broken stamp:
+ * unparseable dates and future timestamps (clock skew, scheduled publication)
+ * must never surface as "NaNm ago" or a negative age.
+ */
+export function articleTimestamp(
+  article: Article,
+  now: number = Date.now(),
+): ArticleTimestamp | null {
+  const updated = effectiveArticleUpdatedAt(article);
+  const publishedMs = Date.parse(article.publishedAt);
+  const updatedMs = Date.parse(updated);
+
+  // Only call it an update when it is real and at least a minute after publication.
+  const useUpdated =
+    Number.isFinite(updatedMs) &&
+    Number.isFinite(publishedMs) &&
+    updatedMs - publishedMs >= 60_000;
+
+  const value = useUpdated
+    ? updated
+    : Number.isFinite(publishedMs)
+      ? article.publishedAt
+      : updated;
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return null;
+
+  const minutes = Math.floor((now - ms) / 60_000);
+  const label =
+    minutes < 0
+      ? formatShortDate(value, now)
+      : minutes < 1
+        ? 'Just now'
+        : minutes < 60
+          ? `${minutes}m ago`
+          : minutes < 1440
+            ? `${Math.floor(minutes / 60)}h ago`
+            : formatShortDate(value, now);
+
+  return {
+    dateTime: new Date(ms).toISOString(),
+    label,
+    prefix: useUpdated ? 'Updated' : '',
+    fullDate: formatArticleDate(value),
+  };
+}

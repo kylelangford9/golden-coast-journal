@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { ArticleTime } from '@/components/article-time';
 import { listPublished } from '@/lib/repository';
 
 type SearchProps = { searchParams: Promise<{ q?: string }> };
@@ -56,6 +57,10 @@ export default async function SearchPage({ searchParams }: SearchProps) {
                 <Link href={`/article/${article.slug}`}>{article.title}</Link>
               </h2>
               <p>{article.dek}</p>
+              <span className="source-note">
+                <ArticleTime article={article} separator="after" />
+                {article.section}
+              </span>
             </article>
           ))}
         </div>

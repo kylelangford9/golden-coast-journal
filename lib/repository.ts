@@ -174,6 +174,18 @@ export type DevelopingSignal = {
   discoveredAt: string;
 };
 
+/**
+ * These readers fall back to bundled content so a database outage never blanks
+ * the paper. Left silent, that same fallback also hides a real outage behind a
+ * page that looks merely quiet, so every fallback is logged before it is taken.
+ */
+function reportFallback(source: string, error: unknown) {
+  console.error(
+    `[gcj] ${source} fell back to bundled content:`,
+    error instanceof Error ? error.message : error,
+  );
+}
+
 export async function listDevelopingSignals(
   limit = 5,
 ): Promise<DevelopingSignal[]> {
@@ -207,7 +219,8 @@ export async function listDevelopingSignals(
       publishedAt: row.published_at,
       discoveredAt: row.discovered_at,
     }));
-  } catch {
+  } catch (error) {
+    reportFallback('listDevelopingSignals', error);
     return [];
   }
 }
@@ -225,7 +238,8 @@ export async function listPublished(): Promise<Article[]> {
       'Unable to load published stories',
     ) as ArticleRow[];
     return rows.length ? rows.map(fromArticleRow) : articles;
-  } catch {
+  } catch (error) {
+    reportFallback('listPublished', error);
     return articles;
   }
 }
@@ -245,7 +259,8 @@ export async function findPublishedBySlug(
       'Unable to load story',
     ) as ArticleRow | null;
     return row ? fromArticleRow(row) : undefined;
-  } catch {
+  } catch (error) {
+    reportFallback('findPublishedBySlug', error);
     return articles.find((article) => article.slug === slug);
   }
 }

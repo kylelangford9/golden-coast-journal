@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { ArticleTime } from '@/components/article-time';
 import { sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -64,6 +65,7 @@ export default async function SectionPage({ params }: SectionProps) {
               </h2>
               <p>{article.dek}</p>
               <span className="source-note">
+                <ArticleTime article={article} separator="after" />
                 By {article.author} · {article.readingMinutes} min
               </span>
             </div>

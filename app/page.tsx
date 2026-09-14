@@ -6,6 +6,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { NewsletterForm } from '@/components/newsletter-form';
+import { ArticleTime } from '@/components/article-time';
 import { ReaderPulse } from '@/components/reader-pulse';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
@@ -159,10 +160,14 @@ export default async function Home() {
             ))}
           </ol>
         ) : (
-          <p className="signal-empty">
-            The live desk is checking official sources. Published reporting
-            remains available below.
-          </p>
+          <div className="signal-empty">
+            <p>No new primary-source signals right now.</p>
+            <p className="signal-empty-note">
+              The desk re-checks California, national, world, business, climate
+              and science sources every hour. Published reporting continues
+              below.
+            </p>
+          </div>
         )}
       </section>
 
@@ -200,7 +205,10 @@ export default async function Home() {
                 <Link href={`/article/${article.slug}`}>{article.title}</Link>
               </h3>
               <p>{article.dek}</p>
-              <span>{article.readingMinutes} min read</span>
+              <span>
+                <ArticleTime article={article} separator="after" />
+                {article.readingMinutes} min read
+              </span>
             </article>
           ))}
         </div>
@@ -225,6 +233,7 @@ export default async function Home() {
               </h3>
               <p>{article.dek}</p>
               <span className="source-note">
+                <ArticleTime article={article} separator="after" />
                 By {article.author} · {article.readingMinutes} min
               </span>
             </article>

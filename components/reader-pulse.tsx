@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Link2, Share2 } from 'lucide-react';
 import { track } from '@vercel/analytics/react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -33,6 +33,7 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
   );
   const [choice, setChoice] = useState<string | null>(null);
   const [status, setStatus] = useState('');
+  const [shareStatus, setShareStatus] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -58,6 +59,56 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
   }, [definition, pollId]);
 
   if (!definition || !result) return null;
+  const question = definition.question;
+
+  function shareUrl() {
+    const url = new URL(window.location.href);
+    url.hash = `reader-pulse-${pollId}`;
+    url.searchParams.set('utm_source', 'reader_referral');
+    url.searchParams.set('utm_medium', 'referral');
+    url.searchParams.set('utm_campaign', 'journal_reader_poll');
+    url.searchParams.set('utm_content', pollId);
+    return url.toString();
+  }
+
+  function recordShare(method: 'native' | 'copy') {
+    const metadata = {
+      method,
+      poll_id: pollId,
+      surface: 'reader_pulse',
+    };
+    track('Reader Poll Shared', metadata);
+    trackPortfolioGrowth('share_started', metadata);
+  }
+
+  async function copyQuestion() {
+    try {
+      await navigator.clipboard.writeText(shareUrl());
+      recordShare('copy');
+      setShareStatus('Question link copied.');
+    } catch {
+      setShareStatus('Copy failed; please copy the address from your browser.');
+    }
+  }
+
+  async function shareQuestion() {
+    if (!navigator.share) {
+      await copyQuestion();
+      return;
+    }
+    try {
+      await navigator.share({
+        title: 'Reader pulse | The Golden Coast Journal',
+        text: question,
+        url: shareUrl(),
+      });
+      recordShare('native');
+      setShareStatus('Question shared.');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setShareStatus('Sharing is unavailable; copy the question link instead.');
+    }
+  }
 
   async function vote(optionId: string) {
     if (choice || submitting) return;
@@ -150,6 +201,27 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
       <output className="reader-pulse-status" aria-live="polite">
         {status}
       </output>
+      {choice && (
+        <div className="reader-pulse-followup">
+          <p>
+            Bring another reader into the question; shared links never include
+            your answer.
+          </p>
+          <div>
+            <Button type="button" onClick={() => void shareQuestion()}>
+              <Share2 aria-hidden="true" /> Share question
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void copyQuestion()}
+            >
+              <Link2 aria-hidden="true" /> Copy link
+            </Button>
+          </div>
+          <output aria-live="polite">{shareStatus}</output>
+        </div>
+      )}
     </section>
   );
 }

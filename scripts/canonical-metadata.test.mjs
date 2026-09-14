@@ -20,6 +20,23 @@ assert.doesNotMatch(
 assert.match(layout, /rel="alternate"/);
 assert.match(layout, /type="application\/rss\+xml"/);
 assert.ok(layout.includes('href={`${origin}/feed.xml`}'));
+assert.match(layout, /url: '\/favicon\.png'/);
+assert.doesNotMatch(layout, /favicon\.svg/);
+
+const home = await source('app/page.tsx');
+assert.match(home, /'@type': 'WebSite'/);
+assert.match(home, /name: 'The Golden Coast Journal'/);
+assert.match(home, /alternateName:/);
+assert.match(home, /url: `\$\{origin\}\/`/);
+
+const articlePage = await source('app/article/[slug]/page.tsx');
+assert.match(articlePage, /<time dateTime=\{article\.publishedAt\}>/);
+assert.match(articlePage, /formatArticleDateTime\(article\.publishedAt\)/);
+assert.match(articlePage, /isAccessibleForFree: true/);
+
+const content = await source('lib/content.ts');
+assert.match(content, /export function formatArticleDateTime/);
+assert.match(content, /timeZoneName: 'short'/);
 
 const canonicalRoutes = new Map([
   ['app/page.tsx', '/'],

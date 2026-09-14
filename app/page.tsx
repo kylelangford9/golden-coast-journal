@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
+const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
+
 export default async function Home() {
   await connection();
   const [articles, developing] = await Promise.all([
@@ -29,8 +31,21 @@ export default async function Home() {
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
   const leadImage = getApprovedEditorialAsset(lead.imageUrl);
+  const websiteJson = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    name: 'The Golden Coast Journal',
+    alternateName: ['Golden Coast Journal', 'GCJ', 'goldencoastjournal.com'],
+    url: `${origin}/`,
+    publisher: { '@id': `${origin}/#organization` },
+  }).replace(/</g, '\\u003c');
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: websiteJson }}
+      />
       <a className="skip-link" href="#main-story">
         Skip to content
       </a>

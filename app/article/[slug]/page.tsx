@@ -10,7 +10,10 @@ import { ArticleShare } from '@/components/article-share';
 import { ElectionCalendarDownload } from '@/components/election-calendar-download';
 import { DeadlineHubLink } from '@/components/deadline-hub-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
-import { effectiveArticleUpdatedAt, formatArticleDate } from '@/lib/content';
+import {
+  effectiveArticleUpdatedAt,
+  formatArticleDateTime,
+} from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
@@ -86,6 +89,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       name: 'The Golden Coast Journal',
       url: origin,
     },
+    isAccessibleForFree: true,
     articleSection: article.section,
   }).replace(/</g, '\\u003c');
 
@@ -115,7 +119,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 )}
               </strong>
             </span>
-            <span>Published {formatArticleDate(article.publishedAt)}</span>
+            <time dateTime={article.publishedAt}>
+              Published {formatArticleDateTime(article.publishedAt)}
+            </time>
             <span>{article.readingMinutes} min read</span>
           </div>
           <ArticleShare

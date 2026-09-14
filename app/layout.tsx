@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       'Independent reporting and analysis from California to the world. No paywall. No ads.',
     images: ['/og.png'],
   },
-  icons: { icon: '/favicon.svg' },
+  icons: { icon: { url: '/favicon.png', type: 'image/png', sizes: '96x96' } },
 };
 
 export default function RootLayout({

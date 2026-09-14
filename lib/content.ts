@@ -517,6 +517,18 @@ export function formatArticleDate(value: string) {
   }).format(new Date(value));
 }
 
+export function formatArticleDateTime(value: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
+    timeZone: 'America/Los_Angeles',
+  }).format(new Date(value));
+}
+
 const PACIFIC = 'America/Los_Angeles';
 
 function pacificYear(value: Date) {

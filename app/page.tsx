@@ -11,6 +11,7 @@ import { ReaderPulse } from '@/components/reader-pulse';
 import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { ElectionHubLink } from '@/components/election-hub';
+import { HomepageStoryLink } from '@/components/homepage-story-link';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
@@ -73,9 +74,23 @@ export default async function Home() {
         <article className="lead-copy">
           <p className="eyebrow">The California Briefing</p>
           <h1>
-            <Link href={`/article/${lead.slug}`}>{lead.title}</Link>
+            <HomepageStoryLink
+              href={`/article/${lead.slug}`}
+              articleSlug={lead.slug}
+              surface="lead_headline"
+            >
+              {lead.title}
+            </HomepageStoryLink>
           </h1>
           <p className="lead-dek">{lead.dek}</p>
+          <HomepageStoryLink
+            href={`/article/${lead.slug}`}
+            articleSlug={lead.slug}
+            surface="lead_cta"
+            className="lead-read-link"
+          >
+            Read the full report <ArrowRight size={14} aria-hidden="true" />
+          </HomepageStoryLink>
           <div className="byline-row">
             <div className="byline-mark">GCJ</div>
             <div>
@@ -87,10 +102,12 @@ export default async function Home() {
             </div>
           </div>
         </article>
-        <Link
+        <HomepageStoryLink
           href={`/article/${lead.slug}`}
+          articleSlug={lead.slug}
+          surface="lead_image"
           className="lead-visual photo-frame ratio-card"
-          aria-label={`Read: ${lead.title}`}
+          ariaLabel={`Read: ${lead.title}`}
         >
           <Image
             src={leadImage.url}
@@ -102,7 +119,7 @@ export default async function Home() {
           <span className="photo-caption">
             {editorialAssetLabel(leadImage)} · {leadImage.credit}
           </span>
-        </Link>
+        </HomepageStoryLink>
       </section>
 
       <section className="newsletter-band" id="newsletter">

@@ -71,6 +71,8 @@ button { color: inherit; }
   .lead-copy h1 { font-size: clamp(46px, 15cqi, 72px); }
 }
 .lead-dek { max-width: 590px; margin: 0; color: #3f403b; font-family: var(--font-serif), Georgia, serif; font-size: clamp(19px, 2vw, 25px); line-height: 1.34; }
+.lead-read-link { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; margin-top: 24px; padding: 0 17px; border: 1px solid var(--ink); background: var(--ink); color: white; font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; transition: background .18s ease, border-color .18s ease; }
+.lead-read-link:hover, .lead-read-link:focus-visible { border-color: var(--rust); background: var(--rust); }
 .byline-row { display: flex; gap: 12px; align-items: center; margin-top: 36px; font-size: 12px; }
 .byline-row p { margin: 0 0 3px; font-weight: 700; }
 .byline-row span { color: var(--muted); }

@@ -55,7 +55,7 @@ export default async function Home() {
           <strong>Live desk</strong>
           <span>
             {developing[0]?.title ||
-              'Red-flag warnings prompt expanded fire readiness across Northern California'}
+              'Read the latest published reporting from the Journal'}
           </span>
           {developing[0] ? (
             <a href={developing[0].url} target="_blank" rel="noreferrer">
@@ -110,10 +110,11 @@ export default async function Home() {
           <div>
             <p className="eyebrow">Reader briefing</p>
             <h2>
-              Start informed.
+              California, with context.
               <br />
-              Stay unhurried.
+              A briefing worth opening.
             </h2>
+            <p style={{ maxWidth: '36rem', lineHeight: 1.7, margin: '14px 0' }}>Reporting, source links and useful California guides in one reader briefing. Preview it before you subscribe.</p>
             <Link className="briefing-preview-link" href="/briefing">
               Preview your briefing <ArrowRight size={14} />
             </Link>

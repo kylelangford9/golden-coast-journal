@@ -5,6 +5,7 @@ import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 const institutionalModified = new Date('2026-09-14T00:00:00.000Z');
+const homepageTemplateModified = new Date('2026-09-14T22:44:03.000Z');
 const articleTemplateModified = new Date('2026-09-14T21:08:32.137Z');
 const propositionPagesModified = new Date('2026-09-14T19:41:31.000Z');
 
@@ -29,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: origin,
-      lastModified: laterDate(publicationModified, articleTemplateModified),
+      lastModified: laterDate(publicationModified, homepageTemplateModified),
       changeFrequency: 'daily',
       priority: 1,
     },

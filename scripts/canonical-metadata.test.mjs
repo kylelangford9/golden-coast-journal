@@ -40,9 +40,10 @@ assert.match(content, /timeZoneName: 'short'/);
 
 const sitemap = await source('app/sitemap.ts');
 assert.match(sitemap, /const articleTemplateModified = new Date\('/);
+assert.match(sitemap, /const homepageTemplateModified = new Date\('/);
 assert.match(
   sitemap,
-  /lastModified: laterDate\(publicationModified, articleTemplateModified\)/,
+  /lastModified: laterDate\(publicationModified, homepageTemplateModified\)/,
 );
 assert.match(
   sitemap,

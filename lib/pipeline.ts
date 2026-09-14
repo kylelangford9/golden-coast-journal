@@ -8,6 +8,7 @@ import {
 import { seedDatabase } from '@/lib/repository';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { decodeHtmlEntities } from '@/lib/text';
+import { notifyWebSubHub } from '@/lib/websub';
 
 type FeedEntry = {
   title: string;
@@ -270,6 +271,8 @@ export async function runEditorialPipeline() {
   let feedsSucceeded = 0;
   let reviewBacklog = 0;
   let draftingSkipped: string | null = null;
+  let webSubNotifications = 0;
+  let webSubFailures = 0;
   const failures: string[] = [];
   const gatewayToken =
     process.env.AI_GATEWAY_API_KEY ||
@@ -460,6 +463,11 @@ export async function runEditorialPipeline() {
               'Unable to record draft action',
             );
             drafted++;
+            if (publish) {
+              const notification = await notifyWebSubHub();
+              if (notification.ok) webSubNotifications++;
+              else webSubFailures++;
+            }
           }
           unwrap(
             await db
@@ -493,6 +501,8 @@ export async function runEditorialPipeline() {
       durationMs: Date.now() - Date.parse(startedAt),
       aiConfigured: Boolean(gatewayToken),
       autoPublish: process.env.AUTO_PUBLISH === 'true',
+      webSubNotifications,
+      webSubFailures,
     };
     unwrap(
       await db

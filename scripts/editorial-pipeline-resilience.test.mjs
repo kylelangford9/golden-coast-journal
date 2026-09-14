@@ -15,6 +15,8 @@ assert.match(pipeline, /activeSources\.map\(async \(source\)/);
 assert.match(pipeline, /signal: AbortSignal\.timeout\(AI_DRAFT_TIMEOUT_MS\)/);
 assert.match(pipeline, /\.eq\('status', 'review'\)/);
 assert.match(pipeline, /draftingSkipped = 'review_queue_limit'/);
+assert.match(pipeline, /webSubNotifications/);
+assert.match(pipeline, /webSubFailures/);
 assert.match(pipeline, /Unable to close stale pipeline runs/);
 assert.match(pipeline, /\.update\(\{ status: 'selected' \}\)/);
 assert.match(pipeline, /\.update\(\{ status: 'new' \}\)/);

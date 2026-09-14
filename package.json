@@ -28,6 +28,7 @@
     "test:election-hub": "node scripts/california-election-hub.test.mjs",
     "test:contact": "node scripts/editorial-contact.test.mjs",
     "test:pipeline": "node scripts/editorial-pipeline-resilience.test.mjs",
+    "test:discovery": "node scripts/websub-discovery.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

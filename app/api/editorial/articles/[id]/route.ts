@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyEditorialRequest } from '@/lib/editorial-auth';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
+import { notifyWebSubHub } from '@/lib/websub';
 
 type ActionRouteProps = { params: Promise<{ id: string }> };
 type EditorialAction = 'publish' | 'reject' | 'reopen';
@@ -66,11 +67,16 @@ export async function POST(request: Request, { params }: ActionRouteProps) {
   const result = rows[0];
   if (!result)
     return NextResponse.json({ error: 'Article not found' }, { status: 404 });
+  const discoveryNotification =
+    result.previous_status !== 'published' && result.next_status === 'published'
+      ? await notifyWebSubHub()
+      : null;
   return NextResponse.json({
     id: result.article_id,
     previousStatus: result.previous_status,
     status: result.next_status,
     action: result.recorded_action,
     updatedAt: result.updated_at,
+    discoveryNotification,
   });
 }

@@ -22,6 +22,53 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    id: 'gcj-009',
+    slug: 'california-minimum-wage-2027-rate-exempt-salary',
+    section: 'Business',
+    title:
+      'California minimum wage rises to $17.40 in 2027 — what workers and employers should check',
+    dek: 'The statewide floor rises 50 cents on January 1. A higher $72,384 salary threshold also becomes part of the test for certain overtime exemptions, while local and industry rules may require more.',
+    body: [
+      'California’s statewide minimum wage rises from $16.90 to $17.40 an hour on January 1, 2027. The rate applies to most workers, including people paid by the piece, and does not change with an employer’s size.',
+      'The statewide number is a floor, not necessarily the final rate for every job. Some cities and counties require a higher local minimum wage, and separate rules cover fast-food workers and certain health-care workers. The practical check is the work location and industry, not only the statewide announcement.',
+      'The increase also raises the salary threshold used in certain overtime exemptions. Beginning January 1, an employee must earn at least $72,384 a year to meet the salary portion of an exemption test. Salary alone does not make someone exempt: the employee must also satisfy the duties and other requirements for the specific exemption.',
+      'Employers should update payroll for work performed on and after January 1, confirm whether a higher local or industry rate applies, and display both the statewide minimum-wage order and the industry wage order that covers the workplace. California also requires the employee’s wage rate to appear on the pay stub.',
+      'Workers can compare their hourly rate, workplace location, industry and pay stub against the applicable rules. California does not allow an employer to count tips toward the state minimum wage, and the same state minimum applies to adults and minors unless a specific exemption controls.',
+      'A worker who appears to be underpaid should keep records of hours, pay stubs and the amount received, then raise the issue with the employer. If it is not corrected, the Labor Commissioner’s Office accepts wage claims online, by email, by mail or in person. The agency says workers can file regardless of immigration status.',
+      'The useful number is the rate that applies to the particular job. For most California workers that will be at least $17.40 on January 1, but location, industry and job duties can change the answer.',
+    ],
+    keyPoints: [
+      'California’s statewide minimum wage becomes $17.40 an hour on January 1, 2027.',
+      'A $72,384 annual salary meets only the salary portion of certain overtime-exemption tests.',
+      'Higher local and industry-specific rates can override the statewide floor.',
+    ],
+    author: 'Kyle Langford',
+    publishedAt: '2026-09-14T00:39:54-07:00',
+    updatedAt: '2026-09-14T00:39:54-07:00',
+    readingMinutes: 3,
+    imageUrl:
+      'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Worker_inspects_construction.jpg/1280px-Worker_inspects_construction.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org',
+    imageAlt: 'A worker inspecting a construction site',
+    imageCredit:
+      'Ryan Hagerty / U.S. Fish and Wildlife Service via Wikimedia Commons (public domain)',
+    sources: [
+      {
+        name: 'California Department of Industrial Relations — 2027 minimum wage announcement',
+        url: 'https://www.dir.ca.gov/DIRNews/2026/2026-66.html',
+      },
+      {
+        name: 'California Labor Commissioner’s Office — Minimum Wage FAQ',
+        url: 'https://www.dir.ca.gov/dlse/faq_minimumwage.htm',
+      },
+      {
+        name: 'California Labor Commissioner’s Office — How to File a Wage Claim',
+        url: 'https://www.dir.ca.gov/dlse/HowToFileWageClaim.htm',
+      },
+    ],
+    status: 'published',
+    featured: true,
+  },
+  {
     id: 'gcj-008',
     slug: 'california-climate-credit-2026-amounts-bill',
     section: 'California',

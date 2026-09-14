@@ -8,6 +8,16 @@ export type EditorialAsset = {
 };
 
 export const editorialAssets = {
+  workerInspectingConstruction: {
+    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Worker_inspects_construction.jpg/1280px-Worker_inspects_construction.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org',
+    alt: 'A worker inspecting a construction site',
+    credit:
+      'Ryan Hagerty / U.S. Fish and Wildlife Service via Wikimedia Commons (public domain)',
+    provenanceUrl:
+      'https://commons.wikimedia.org/wiki/File:Worker_inspects_construction.jpg',
+    kind: 'photograph',
+    aiGenerated: false,
+  },
   californiaPowerLines: {
     url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Path_27_Power_Lines_in_California_0.JPG/1280px-Path_27_Power_Lines_in_California_0.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail',
     alt: 'High-voltage power lines running beside Interstate 15 in California',

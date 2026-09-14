@@ -17,6 +17,9 @@ assert.doesNotMatch(
   /alternates:\s*{\s*canonical:/,
   'Shared layout must not force every route to use the homepage canonical.',
 );
+assert.match(layout, /rel="alternate"/);
+assert.match(layout, /type="application\/rss\+xml"/);
+assert.ok(layout.includes('href={`${origin}/feed.xml`}'));
 
 const canonicalRoutes = new Map([
   ['app/page.tsx', '/'],

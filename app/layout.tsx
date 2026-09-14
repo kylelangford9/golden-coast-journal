@@ -19,9 +19,6 @@ export const metadata: Metadata = {
   description:
     'Independent reporting and analysis from California to the world. No paywall. No ads.',
   applicationName: 'The Golden Coast Journal',
-  alternates: {
-    types: { 'application/rss+xml': '/feed.xml' },
-  },
   openGraph: {
     type: 'website',
     siteName: 'The Golden Coast Journal',
@@ -77,6 +74,14 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="The Golden Coast Journal"
+          href={`${origin}/feed.xml`}
+        />
+      </head>
       <body className={`${sans.variable} ${serif.variable}`}>
         <script
           type="application/ld+json"

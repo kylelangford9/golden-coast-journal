@@ -11,19 +11,36 @@ import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
 
 type SectionProps = { params: Promise<{ section: string }> };
 
+/**
+ * A desk exists if it is on the masthead, or if a published story is filed
+ * under it.
+ *
+ * The list alone was not enough. An article in the database carrying a section
+ * that is not in `sections` renders its own section name on the page, links to
+ * /section/<that name>, and lands the reader on a 404. That is an orphan
+ * created by a single row, and it stays invisible until someone clicks it.
+ * Following the data instead means a live story can never link into nothing.
+ */
+function sectionExists(slug: string, published: { section: string }[]) {
+  const wanted = slug.toLowerCase();
+  return (
+    sections.some((item) => item.toLowerCase() === wanted) ||
+    published.some((item) => item.section.toLowerCase() === wanted)
+  );
+}
+
 export async function generateMetadata({
   params,
 }: SectionProps): Promise<Metadata> {
   const { section } = await params;
   const title = section.charAt(0).toUpperCase() + section.slice(1);
-  const isKnown = sections.some(
-    (item) => item.toLowerCase() === section.toLowerCase(),
-  );
-  if (!isKnown) return { title: 'Section not found', robots: { index: false } };
   const articles = await listPublished();
   const hasOwnStories = articles.some(
-    (item) => item.section.toLowerCase() === title.toLowerCase(),
+    (item) => item.section.toLowerCase() === section.toLowerCase(),
   );
+  if (!sectionExists(section, articles)) {
+    return { title: 'Section not found', robots: { index: false } };
+  }
   return {
     title,
     description: `Latest ${title} reporting and analysis from The Golden Coast Journal.`,
@@ -38,13 +55,10 @@ export async function generateMetadata({
 export default async function SectionPage({ params }: SectionProps) {
   const { section } = await params;
   const title = section.charAt(0).toUpperCase() + section.slice(1);
-  const isKnown = sections.some(
-    (item) => item.toLowerCase() === section.toLowerCase(),
-  );
-  if (!isKnown) notFound();
   const articles = await listPublished();
+  if (!sectionExists(section, articles)) notFound();
   const direct = articles.filter(
-    (item) => item.section.toLowerCase() === title.toLowerCase(),
+    (item) => item.section.toLowerCase() === section.toLowerCase(),
   );
   const stories = direct.length
     ? direct

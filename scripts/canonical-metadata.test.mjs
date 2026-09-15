@@ -77,7 +77,9 @@ assert.match(
   section,
   /canonical:\s*`\/section\/\$\{section\.toLowerCase\(\)\}`/,
 );
-assert.match(section, /if \(!isKnown\) notFound\(\)/);
+assert.match(section, /if \(!sectionExists\(section, articles\)\) notFound\(\)/);
+// A desk that exists only in the data must not 404 its own live stories.
+assert.match(section, /published\.some\(\(item\) => item\.section\.toLowerCase\(\) === wanted\)/);
 
 const search = await source('app/search/page.tsx');
 assert.match(search, /robots:\s*{\s*index:\s*false,\s*follow:\s*true\s*}/);

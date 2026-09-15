@@ -74,10 +74,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
-  const sectionPages = sections
+  // Every desk that has reporting, whether or not it is on the masthead list:
+  // a story filed under an unlisted section is still a live page, and leaving
+  // it out of the sitemap is how it stays unindexed. Empty desks stay out,
+  // because they render borrowed stories and are noindexed for that reason.
+  // Keyed case-insensitively, because "Economy" and "economy" are one desk and
+  // one URL. Emitting both would put a duplicate in the sitemap.
+  const sectionNames = [
+    ...new Map(
+      [...sections, ...articles.map((article) => article.section)].map(
+        (name) => [name.toLowerCase(), name],
+      ),
+    ).values(),
+  ];
+  const sectionPages = sectionNames
     .map((section) => ({
       section,
-      own: articles.filter((article) => article.section === section),
+      own: articles.filter(
+        (article) => article.section.toLowerCase() === section.toLowerCase(),
+      ),
     }))
     .filter(({ own }) => own.length > 0)
     .map(({ section, own }) => ({

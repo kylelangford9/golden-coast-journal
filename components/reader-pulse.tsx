@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Link2, Share2 } from 'lucide-react';
 import { track } from '@vercel/analytics/react';
@@ -155,6 +156,18 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
       className={`reader-pulse${compact ? ' reader-pulse-compact' : ''}`}
       aria-labelledby={`reader-pulse-${pollId}`}
     >
+      <div className="reader-pulse-visual photo-frame">
+        <Image
+          src="/oroville.jpg"
+          alt="Aerial photograph of Lake Oroville and the surrounding California foothills"
+          fill
+          sizes="(max-width: 760px) 100vw, 640px"
+          loading="lazy"
+        />
+        <span className="photo-caption">
+          Photograph · Florence Low / California Department of Water Resources
+        </span>
+      </div>
       <div className="reader-pulse-heading">
         <div>
           <p className="eyebrow">Reader pulse</p>

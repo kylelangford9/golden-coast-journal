@@ -14,6 +14,7 @@ import { ElectionHubLink } from '@/components/election-hub';
 import { HomepageStoryLink } from '@/components/homepage-story-link';
 import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
+import { selectEditorialAsset } from '@/lib/editorial-assets';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 
@@ -25,14 +26,34 @@ const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 
 export default async function Home() {
   await connection();
-  const [articles, developing] = await Promise.all([
+  const [articles, rawDeveloping] = await Promise.all([
     listPublished(),
     listDevelopingSignals(5),
   ]);
+  // A primary-source signal has no photograph of its own, so it borrows the
+  // approved one its desk would use; the credit travels with it.
+  const developing = await Promise.all(
+    rawDeveloping.map(async (signal) => ({
+      ...signal,
+      asset: await selectEditorialAsset({
+        section: signal.section,
+        title: signal.title,
+        rotationKey: signal.url,
+      }),
+    })),
+  );
   const [lead, ...rest] = articles;
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
   const leadImage = editorialAssetForArticle(lead);
+  const [bandImage, promoImage] = await Promise.all([
+    selectEditorialAsset({ section: 'California', rotationKey: 'homepage-newsletter-band' }),
+    selectEditorialAsset({
+      section: 'California',
+      title: 'California 2026 election candidates propositions ballot deadlines',
+      rotationKey: 'homepage-election-promo',
+    }),
+  ]);
   const websiteJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -143,6 +164,18 @@ export default async function Home() {
               See a sample briefing <ArrowRight size={14} />
             </Link>
           </div>
+          <figure className="band-visual photo-frame ratio-card">
+            <Image
+              src={bandImage.url}
+              alt={bandImage.alt}
+              fill
+              sizes="(max-width: 900px) 100vw, 520px"
+              loading="lazy"
+            />
+            <figcaption className="photo-caption">
+              {editorialAssetLabel(bandImage)} · {bandImage.credit}
+            </figcaption>
+          </figure>
           <NewsletterForm />
         </div>
       </section>
@@ -161,6 +194,18 @@ export default async function Home() {
             put registration, ballot and voting dates in order.
           </p>
         </div>
+        <figure className="promo-visual photo-frame ratio-card">
+          <Image
+            src={promoImage.url}
+            alt={promoImage.alt}
+            fill
+            sizes="(max-width: 900px) 100vw, 420px"
+            loading="lazy"
+          />
+          <figcaption className="photo-caption">
+            {editorialAssetLabel(promoImage)} · {promoImage.credit}
+          </figcaption>
+        </figure>
         <div className="election-promo-actions">
           <ElectionHubLink placement="homepage" />
           <CandidateGuideLink placement="homepage" />
@@ -198,6 +243,9 @@ export default async function Home() {
               <li key={signal.id}>
                 <span className="signal-index">
                   {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="signal-thumb photo-frame">
+                  <Image src={signal.asset.url} alt="" fill sizes="96px" />
                 </span>
                 <div>
                   <a href={signal.url} target="_blank" rel="noreferrer">
@@ -237,7 +285,7 @@ export default async function Home() {
           <h2 id="top-stories-title">Across the Golden Coast</h2>
           <p>Reporting that explains what changed and why it matters.</p>
         </div>
-        <div className="feature-pair">
+        <StoryDeck label="Across the Golden Coast" perView={2}>
           {featurePair.map((article) => (
             <article className="image-story" key={article.slug}>
               <Link
@@ -268,7 +316,7 @@ export default async function Home() {
               </span>
             </article>
           ))}
-        </div>
+        </StoryDeck>
       </section>
 
       <section

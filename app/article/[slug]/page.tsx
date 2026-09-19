@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { findMentionedOfficials } from '@/lib/people';
+import { OfficialMentions } from '@/components/official-mentions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -56,6 +58,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await findPublishedBySlug(slug);
   if (!article) notFound();
+  // Officials this story actually names, with the portraits and official links
+  // already curated in the California Votes representatives register.
+  const officials = await findMentionedOfficials(
+    `${article.title} ${article.dek} ${article.body.join(' ')}`,
+  );
   const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();
   const related = articles
@@ -153,6 +160,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </figcaption>
         </figure>
         <div className="article-layout shell">
+          <OfficialMentions officials={officials} />
           <aside className="key-points" aria-label="Key points">
             <strong>What to know</strong>
             <ul>

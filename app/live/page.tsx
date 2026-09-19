@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { LiveNewsroom, type LiveNewsStory } from '@/components/live-newsroom';
@@ -94,13 +95,6 @@ export default async function LivePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: pageJson }}
       />
-      <div className="shell live-page-intro">
-        <p className="eyebrow">The California desk</p>
-        <p>
-          A continuously refreshed view of what the Journal has reported and
-          what trusted primary sources are publishing now.
-        </p>
-      </div>
       <div className="shell live-page-body">
         <LiveNewsroom
           stories={stories}
@@ -114,6 +108,18 @@ export default async function LivePage() {
       <section className="live-page-newsletter">
         <div className="shell live-page-newsletter-inner">
           <div>
+            <figure className="live-newsletter-photo photo-frame ratio-card">
+              <Image
+                src="/california-coast.jpg"
+                alt="Aerial photograph of Santa Barbara, California, meeting the Pacific Ocean"
+                fill
+                sizes="(max-width: 760px) 100vw, 420px"
+                loading="lazy"
+              />
+              <figcaption className="photo-caption">
+                Photograph · Clayton Cardinalli / Unsplash
+              </figcaption>
+            </figure>
             <p className="eyebrow">Take the desk with you</p>
             <h2>The signal; with the context that matters.</h2>
             <p>

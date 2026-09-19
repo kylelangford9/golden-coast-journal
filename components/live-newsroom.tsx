@@ -200,6 +200,15 @@ export function LiveNewsroom({
               onClick={() => chooseStory(index)}
             >
               <span>{String(index + 1).padStart(2, '0')}</span>
+              <span className="live-queue-thumb photo-frame">
+                <Image
+                  src={story.imageUrl}
+                  alt=""
+                  fill
+                  sizes="86px"
+                  loading="lazy"
+                />
+              </span>
               <span>
                 <strong>{story.title}</strong>
                 <small>

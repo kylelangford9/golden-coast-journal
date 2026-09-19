@@ -20,6 +20,7 @@ export type BriefingPreviewStory = {
 
 type BriefingPreviewBuilderProps = {
   sections: string[];
+  sectionImages?: Record<string, string>;
   stories: BriefingPreviewStory[];
 };
 
@@ -38,6 +39,7 @@ function trackOnce(eventName: string, analyticsName: string) {
 
 export function BriefingPreviewBuilder({
   sections,
+  sectionImages,
   stories,
 }: BriefingPreviewBuilderProps) {
   const [selected, setSelected] = useState<string[]>([]);
@@ -91,6 +93,15 @@ export function BriefingPreviewBuilder({
                 className="briefing-topic"
                 onClick={() => toggleSection(section)}
               >
+                {sectionImages?.[section] ? (
+                  <Image
+                    className="briefing-topic-photo"
+                    src={sectionImages[section]}
+                    alt=""
+                    width={44}
+                    height={44}
+                  />
+                ) : null}
                 {isSelected && <Check aria-hidden="true" />}
                 {section}
               </Button>

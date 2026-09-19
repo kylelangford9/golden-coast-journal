@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { TrackedNetworkLink } from '@/components/tracked-network-link';
 
@@ -9,6 +10,18 @@ export function SiteFooter() {
           <p className="footer-mark">
             <span>The</span> Golden Coast Journal
           </p>
+          <div className="footer-masthead-photo photo-frame ratio-card">
+            <Image
+              src="/oroville.jpg"
+              alt="Aerial photograph of Lake Oroville and the surrounding California foothills"
+              fill
+              sizes="(max-width: 760px) 100vw, 320px"
+              loading="lazy"
+            />
+            <span className="photo-caption">
+              Photograph · Florence Low / California Department of Water Resources
+            </span>
+          </div>
           <p className="footer-note">
             News for the whole coast. No paywall. No ads.
           </p>
@@ -62,6 +75,18 @@ export function SiteFooter() {
             The One
           </TrackedNetworkLink>
         </nav>
+      </div>
+      <div className="footer-visual photo-frame">
+        <Image
+          src="/california-coast.jpg"
+          alt="Aerial photograph of Santa Barbara, California, meeting the Pacific Ocean"
+          fill
+          sizes="100vw"
+          loading="lazy"
+        />
+        <span className="photo-caption">
+          Photograph · Clayton Cardinalli / Unsplash
+        </span>
       </div>
       <div className="shell footer-bottom">
         <span>© 2026 The Golden Coast Journal</span>

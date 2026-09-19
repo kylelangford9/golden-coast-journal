@@ -21,9 +21,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  */
 export function StoryDeck({
   label,
+  perView = 3,
   children,
 }: {
   label: string;
+  /** Cards visible at once on a wide screen; phones always show one. */
+  perView?: 2 | 3;
   children: React.ReactNode;
 }) {
   const track = useRef<HTMLDivElement>(null);
@@ -71,7 +74,7 @@ export function StoryDeck({
 
   return (
     <div
-      className="story-deck"
+      className={`story-deck deck-per-${perView}`}
       aria-roledescription="carousel"
       aria-label={label}
     >

@@ -22,7 +22,7 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-serif);
 }
-:root { --paper: #f6f1e7; --ink: #161713; --muted: #636057; --line: #c9c1b2; --rust: #a63d2f; --navy: #17364a; --popover: #fffdf8; --popover-foreground: #161713; --ui-muted: #ebe5d9; --radius: .25rem; }
+:root { --paper: #f6f1e7; --ink: #161713; --muted: #545148; --line: #c9c1b2; --rust: #952c1e; --navy: #17364a; --popover: #fffdf8; --popover-foreground: #161713; --ui-muted: #ebe5d9; --radius: .25rem; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-sans), Arial, sans-serif; }
@@ -96,7 +96,8 @@ button { color: inherit; }
 .live-desk-heading h2 { margin: 10px 0 18px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(38px, 4.5vw, 62px); font-weight: 560; line-height: .96; letter-spacing: -.04em; }
 .live-desk-heading > p { max-width: 410px; color: var(--muted); font-family: var(--font-serif), Georgia, serif; font-size: 17px; line-height: 1.45; }
 .signal-list { margin: 0; padding: 0; list-style: none; border-top: 4px solid var(--navy); }
-.signal-list li { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 16px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+.signal-list li { display: grid; grid-template-columns: 42px 96px minmax(0, 1fr); gap: 16px; align-items: start; padding: 17px 0; border-bottom: 1px solid var(--line); }
+.signal-thumb { position: relative; aspect-ratio: 3 / 2; }
 .signal-index { color: var(--rust); font-family: var(--font-serif), Georgia, serif; font-size: 16px; }
 .signal-list a { display: inline-flex; align-items: baseline; gap: 6px; font-family: var(--font-serif), Georgia, serif; font-size: 20px; font-weight: 590; line-height: 1.16; }
 .signal-list a:hover { color: var(--rust); }
@@ -118,6 +119,7 @@ button { color: inherit; }
 .deck-track::-webkit-scrollbar { display: none; }
 .deck-track:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .deck-slide { flex: 0 0 calc((100% - 36px) / 3); scroll-snap-align: start; }
+.deck-per-2 .deck-slide { flex: 0 0 calc((100% - 18px) / 2); }
 .deck-slide .brief-card { padding-right: 0; }
 .deck-slide + .deck-slide .brief-card { border-left: 0; padding-left: 0; }
 .deck-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 14px 0 2px; }
@@ -346,23 +348,24 @@ button { color: inherit; }
 .live-newsroom-status { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 18px; padding: 15px 22px; border-bottom: 1px solid rgba(255, 255, 255, .16); color: #c7d2d8; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
 .live-newsroom-status strong { color: white; }
 .live-newsroom-beacon { width: 8px; height: 8px; border-radius: 50%; background: var(--rust); box-shadow: 0 0 0 5px rgba(174, 66, 36, .2); }
-.live-newsroom-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 38px; align-items: end; min-height: 410px; padding: clamp(30px, 5vw, 66px); }
+.live-newsroom-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: end; padding: clamp(24px, 4vw, 52px); }
 .live-newsroom-story { max-width: 980px; }
 .live-newsroom-story .eyebrow { color: #e7b86d; }
 .live-newsroom-story h1 { margin: 18px 0 20px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(44px, 6.4vw, 92px); font-weight: 550; line-height: .91; letter-spacing: -.05em; text-wrap: balance; }
 .live-newsroom-story > p:not(.eyebrow) { max-width: 760px; color: #cad4da; font-family: var(--font-serif), Georgia, serif; font-size: clamp(18px, 2vw, 24px); line-height: 1.42; }
 .live-newsroom-read { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; padding-bottom: 4px; border-bottom: 1px solid #e7b86d; color: white; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.live-newsroom-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 170px; }
+.live-newsroom-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .live-newsroom-controls button { border-radius: 0; border-color: rgba(255, 255, 255, .35); background: transparent; color: white; }
 .live-newsroom-controls button:hover, .live-newsroom-controls button:focus-visible { background: white; color: var(--navy); }
 .live-refresh-button { flex-basis: 100%; }
 .live-newsroom-queue { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(255, 255, 255, .16); }
-.live-newsroom-queue button { display: grid; width: 100%; grid-template-columns: 42px minmax(0, 1fr); gap: 18px; padding: 18px 24px; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .1); background: transparent; color: white; text-align: left; cursor: pointer; }
+.live-newsroom-queue button { display: grid; width: 100%; grid-template-columns: 42px 86px minmax(0, 1fr); gap: 18px; align-items: start; padding: 18px 24px; border: 0; border-bottom: 1px solid rgba(255, 255, 255, .1); background: transparent; color: white; text-align: left; cursor: pointer; }
+.live-queue-thumb { position: relative; aspect-ratio: 3 / 2; background: #0e1f2a; }
 .live-newsroom-queue button:hover, .live-newsroom-queue button:focus-visible, .live-newsroom-queue button[aria-current="true"] { background: rgba(255, 255, 255, .08); }
-.live-newsroom-queue button > span:first-child { color: #e7b86d; font-family: var(--font-serif), Georgia, serif; font-size: 20px; }
+.live-newsroom-queue button > span:first-child { color: #e9ba6f; font-family: var(--font-serif), Georgia, serif; font-size: 20px; }
 .live-newsroom-queue strong, .live-newsroom-queue small { display: block; }
 .live-newsroom-queue strong { font-family: var(--font-serif), Georgia, serif; font-size: 19px; line-height: 1.15; }
-.live-newsroom-queue small { margin-top: 6px; color: #aebfc7; font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
+.live-newsroom-queue small { margin-top: 6px; color: #b3c4cc; font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
 .live-newsroom-disclosure { margin: 0; padding: 18px 24px; background: #111d24; color: #aebfc7; font-size: 11px; line-height: 1.55; }
 .live-newsroom-empty { padding: 40px; background: var(--navy); color: white; }
 .live-page-poll { padding-bottom: 68px; }
@@ -426,7 +429,7 @@ button { color: inherit; }
   .brief-grid { grid-template-columns: 1fr; }
   .briefing-preview-list li { grid-template-columns: 42px minmax(0, 1fr); }
   .briefing-preview-visual { grid-column: 1 / -1; }
-  .deck-slide { flex: 0 0 82%; }
+  .deck-slide, .deck-per-2 .deck-slide { flex: 0 0 82%; }
   .deck-controls { justify-content: space-between; }
   .brief-card + .brief-card { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .article-layout { grid-template-columns: 1fr; }
@@ -438,8 +441,8 @@ button { color: inherit; }
   .briefing-builder-controls { position: static; }
   .briefing-newsletter-inner { grid-template-columns: 1fr; gap: 28px; }
   .reader-pulse-heading { grid-template-columns: 1fr; gap: 15px; }
-  .live-newsroom-stage { grid-template-columns: 1fr; align-items: start; }
-  .live-newsroom-controls { justify-content: flex-start; max-width: none; }
+  .live-newsroom-stage { grid-template-columns: 1fr; align-items: start; gap: 18px; }
+  .live-newsroom-controls { justify-content: flex-start; flex-wrap: nowrap; }
   .live-refresh-button { flex-basis: auto; }
   .live-page-newsletter-inner { grid-template-columns: 1fr; gap: 28px; }
   .deadline-method-grid, .deadline-newsletter-inner { grid-template-columns: 1fr; gap: 28px; }
@@ -501,10 +504,10 @@ button { color: inherit; }
   .live-page-intro { display: block; padding-top: 38px; }
   .live-page-intro > p:last-child { margin-top: 12px; }
   .live-page-body { width: 100%; padding-bottom: 42px; }
-  .live-newsroom-stage { min-height: 360px; padding: 34px 20px; }
+  .live-newsroom-stage { padding: 22px 18px; }
   .live-newsroom-story h1 { font-size: 50px; }
-  .live-newsroom-controls { max-width: 220px; }
-  .live-newsroom-queue button { padding: 16px 18px; }
+  .live-newsroom-controls { gap: 6px; }
+  .live-newsroom-queue button { padding: 16px 18px; grid-template-columns: 30px 72px minmax(0, 1fr); gap: 12px; }
   .live-page-poll { padding-bottom: 48px; }
   .deadlines-hero { padding-top: 48px; }
   .deadlines-hero h1 { font-size: 57px; }
@@ -520,3 +523,53 @@ button { color: inherit; }
 }
 
 .live-newsroom-visual { margin: 0 0 20px; }
+
+@media (max-width: 760px) {
+  .signal-list li { grid-template-columns: 28px 76px minmax(0, 1fr); gap: 12px; }
+}
+
+.band-visual { position: relative; margin: 0 0 22px; }
+.promo-visual { position: relative; margin: 0; }
+.footer-visual { position: relative; height: 190px; margin-bottom: 34px; }
+@media (max-width: 760px) {
+  .footer-visual { height: 150px; }
+  .promo-visual { margin-top: 20px; }
+}
+.reader-pulse-visual { position: relative; height: 170px; margin-bottom: 22px; }
+
+/* A deck card is a teaser, not the article. Clamping the dek keeps the card
+   short enough that its photograph stays on screen while the card is read,
+   which is the point of a deck. */
+.deck-slide .brief-card > p:not(.eyebrow) { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.deck-slide .brief-card h3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+@media (max-width: 760px) {
+  /* A phone reads one card at a time, so the card's photograph can be the
+     larger part of it; a 3:2 crop left a screenful of text with no picture. */
+  .deck-slide .brief-visual { aspect-ratio: 4 / 5; }
+}
+.footer-masthead-photo { display: block; margin: 16px 0 20px; }
+.live-newsletter-photo { position: relative; margin: 0 0 20px; }
+.briefing-hero-photo { position: relative; margin: 0 0 26px; }
+.briefing-topic-photo { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; margin-right: 10px; flex: none; }
+.briefing-topic { height: auto; padding-top: 10px; padding-bottom: 10px; }
+.briefing-newsletter-photo { position: relative; margin: 0 0 20px; }
+
+/* The eyebrow is rust by default, which is close to unreadable on the live
+   desk's navy. On dark surfaces it takes the same warm gold the queue numbers
+   use, which clears WCAG AA against that background. */
+.live-newsroom .eyebrow,
+.live-newsroom-story .eyebrow { color: #e9ba6f !important; }
+
+/* People named in the story: a face and a route to the primary source. */
+.official-mentions { margin: 0 0 26px; padding: 16px 0 4px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.official-mentions ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.official-mentions li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; }
+.official-portrait { position: relative; width: 56px; height: 56px; border-radius: 50%; overflow: hidden; }
+/* Official portraits are mostly landscape headshots, so a centred square crop
+   cuts the face at the chin. Biasing upward keeps the head in frame. */
+.official-portrait img { object-fit: cover; object-position: center 22%; }
+.official-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.official-copy strong { font-family: var(--font-serif), Georgia, serif; font-size: 17px; line-height: 1.15; }
+.official-copy small { color: var(--muted); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.official-copy a { display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; color: var(--rust); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }

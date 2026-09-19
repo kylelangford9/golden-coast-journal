@@ -10,90 +10,129 @@ import {
 } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+const AUTO_ADVANCE_MS = 60_000;
+const FLY_DISTANCE = 520;
+const THROW_THRESHOLD = 70;
+
 /**
- * A horizontal deck of story cards: one card per swipe on a phone, arrows and
- * keyboard on a pointer device.
+ * A deck of story cards, one per card, dealt like a hand.
  *
- * Scroll snapping does the work, so the swipe is the browser's own inertial
- * scroll rather than a re-implementation of it in pointer handlers. That keeps
- * momentum, rubber-banding and accessibility behaving the way the platform
- * already does, and it still reads as a deck.
+ * Built on the ballot matchup deck from kylelangford.org: the cards underneath
+ * are blank slabs rather than real cards, because rendering the full card
+ * behind lets its text hang out below the top one and collide with the
+ * controls. A slab's corner is all that is needed to show there is a stack,
+ * and it cannot overflow because it holds nothing.
+ *
+ * The top card is the only one in flow, so the deck is exactly as tall as the
+ * card actually on top.
  */
 export function StoryDeck({
   label,
-  perView = 3,
   children,
 }: {
   label: string;
-  /** Cards visible at once on a wide screen; phones always show one. */
-  perView?: 2 | 3;
   children: React.ReactNode;
 }) {
-  const track = useRef<HTMLDivElement>(null);
   const slides = Children.toArray(children).filter(isValidElement);
-  const [active, setActive] = useState(0);
-
-  const step = useCallback((direction: -1 | 1) => {
-    const node = track.current;
-    if (!node) return;
-    const first = node.firstElementChild as HTMLElement | null;
-    const width = first
-      ? first.getBoundingClientRect().width + 18
-      : node.clientWidth;
-    node.scrollBy({
-      left: direction * width,
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth',
-    });
-  }, []);
+  const [index, setIndex] = useState(0);
+  const [drag, setDrag] = useState(0);
+  const [flying, setFlying] = useState<0 | 1 | -1>(0);
+  const [reduced, setReduced] = useState(false);
+  // Dragging is the only thing that reads this during a gesture, so it lives in
+  // state rather than a ref the render would have to peek at.
+  const [dragging, setDragging] = useState(false);
+  const grab = useRef<{ x: number } | null>(null);
+  const paused = useRef(false);
 
   useEffect(() => {
-    const node = track.current;
-    if (!node) return;
-    let frame = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const first = node.firstElementChild as HTMLElement | null;
-        const width = first
-          ? first.getBoundingClientRect().width + 18
-          : node.clientWidth;
-        if (width > 0)
-          setActive(Math.round(node.scrollLeft / width));
-      });
-    };
-    node.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      node.removeEventListener('scroll', onScroll);
-    };
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setReduced(query.matches);
+    onChange();
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
   }, []);
+
+  const go = useCallback(
+    (direction: 1 | -1) => {
+      if (slides.length < 2) return;
+      setFlying(direction);
+      window.setTimeout(
+        () => {
+          setIndex((current) => (current + (direction === 1 ? 1 : slides.length - 1)) % slides.length);
+          setDrag(0);
+          setFlying(0);
+        },
+        reduced ? 0 : 180,
+      );
+    },
+    [reduced, slides.length],
+  );
+
+  // Deals itself a new card every minute, so a desk left open keeps moving.
+  // Pauses while a finger is down so it never snatches a card mid-drag.
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const timer = window.setInterval(() => {
+      if (!paused.current) go(1);
+    }, AUTO_ADVANCE_MS);
+    return () => window.clearInterval(timer);
+  }, [go, slides.length]);
 
   if (!slides.length) return null;
 
+  const offset = flying === 0 ? drag : flying * FLY_DISTANCE;
+
   return (
-    <div
-      className={`story-deck deck-per-${perView}`}
-      aria-roledescription="carousel"
-      aria-label={label}
-    >
-      {/* The track carries no tabIndex or key handler of its own. Each card
-          holds a link, so tabbing already walks the deck and the browser
-          scrolls the next card into view; the arrow buttons below cover the
-          same ground for anyone who would rather click. Adding a focusable
-          wrapper on top of that only creates a second, emptier tab stop. */}
-      <div ref={track} className="deck-track">
-        {slides.map((slide, index) => (
+    <div className="story-deck" aria-roledescription="carousel" aria-label={label}>
+      <div className="deck">
+        {[2, 1].map((depth) => (
           <div
-            className="deck-slide"
-            key={index}
-            aria-roledescription="slide"
-            aria-label={`${index + 1} of ${slides.length}`}
-          >
-            {slide}
-          </div>
+            key={`slab-${depth}`}
+            aria-hidden="true"
+            className="deck-card is-under"
+            style={{
+              transform: `translate(${depth * 9}px, ${depth * 9}px) scale(${1 - depth * 0.028})`,
+            }}
+          />
         ))}
+
+        <div
+          className="deck-card is-top"
+          aria-roledescription="slide"
+          aria-label={`${index + 1} of ${slides.length}`}
+          style={{
+            transform: `translateX(${offset}px) rotate(${offset / 28}deg)`,
+            transition: dragging && flying === 0 ? 'none' : `transform ${reduced ? 0 : 180}ms ease-out`,
+            opacity: flying !== 0 ? 0 : 1,
+          }}
+          onPointerDown={(event) => {
+            if (slides.length < 2) return;
+            event.currentTarget.setPointerCapture?.(event.pointerId);
+            grab.current = { x: event.clientX };
+            paused.current = true;
+            setDragging(true);
+          }}
+          onPointerMove={(event) => {
+            if (!grab.current) return;
+            setDrag(event.clientX - grab.current.x);
+          }}
+          onPointerUp={() => {
+            const thrown = Math.abs(drag) > THROW_THRESHOLD;
+            grab.current = null;
+            paused.current = false;
+            setDragging(false);
+            if (thrown) go(drag < 0 ? 1 : -1);
+            else setDrag(0);
+          }}
+          onPointerCancel={() => {
+            grab.current = null;
+            paused.current = false;
+            setDragging(false);
+            setDrag(0);
+          }}
+        >
+          {slides[index]}
+        </div>
       </div>
 
       <div className="deck-controls">
@@ -101,20 +140,18 @@ export function StoryDeck({
           type="button"
           className="deck-arrow"
           aria-label="Previous story"
-          disabled={active <= 0}
-          onClick={() => step(-1)}
+          onClick={() => go(-1)}
         >
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
         <p className="deck-count" aria-live="polite">
-          {Math.min(active + 1, slides.length)} / {slides.length}
+          {index + 1}/{slides.length}
         </p>
         <button
           type="button"
           className="deck-arrow"
           aria-label="Next story"
-          disabled={active >= slides.length - 1}
-          onClick={() => step(1)}
+          onClick={() => go(1)}
         >
           <ChevronRight size={18} aria-hidden="true" />
         </button>

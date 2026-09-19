@@ -287,7 +287,7 @@ export default async function Home() {
           <h2 id="top-stories-title">Across the Golden Coast</h2>
           <p>Reporting that explains what changed and why it matters.</p>
         </div>
-        <StoryDeck label="Across the Golden Coast" perView={2}>
+        <StoryDeck label="Across the Golden Coast">
           {featurePair.map((article) => (
             <article className="image-story" key={article.slug}>
               <Link

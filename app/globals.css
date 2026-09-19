@@ -111,24 +111,7 @@ button { color: inherit; }
 .section-heading p { color: var(--muted); font-size: 13px; }
 .brief-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
 
-/* A deck of story cards. Snapping carries the swipe, so momentum and
-   rubber-banding stay the browser's; the arrows exist for pointer devices and
-   the track is focusable so the keyboard can page through it too. */
-.story-deck { border-top: 1px solid var(--line); }
-.deck-track { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.deck-track::-webkit-scrollbar { display: none; }
-.deck-track:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.deck-slide { flex: 0 0 calc((100% - 36px) / 3); scroll-snap-align: start; }
-.deck-per-2 .deck-slide { flex: 0 0 calc((100% - 18px) / 2); }
-.deck-slide .brief-card { padding-right: 0; }
-.deck-slide + .deck-slide .brief-card { border-left: 0; padding-left: 0; }
-.deck-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 14px 0 2px; }
-.deck-arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; transition: background .18s ease, border-color .18s ease; }
-.deck-arrow:hover:not(:disabled) { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.deck-arrow:disabled { opacity: .3; cursor: default; }
-.deck-count { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #6b6960; font-variant-numeric: tabular-nums; }
 
-@media (prefers-reduced-motion: reduce) { .deck-track { scroll-behavior: auto; } }
 .brief-card { position: relative; padding: 31px 36px 10px 0; }
 .brief-visual { display: block; margin-bottom: 16px; }
 .brief-card + .brief-card { border-left: 1px solid var(--line); padding-left: 36px; }
@@ -434,7 +417,6 @@ button { color: inherit; }
   .brief-grid { grid-template-columns: 1fr; }
   .briefing-preview-list li { grid-template-columns: 42px minmax(0, 1fr); }
   .briefing-preview-visual { grid-column: 1 / -1; }
-  .deck-slide, .deck-per-2 .deck-slide { flex: 0 0 82%; }
   .deck-controls { justify-content: space-between; }
   .brief-card + .brief-card { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .article-layout { grid-template-columns: 1fr; }
@@ -545,13 +527,11 @@ button { color: inherit; }
 /* A deck card is a teaser, not the article. Clamping the dek keeps the card
    short enough that its photograph stays on screen while the card is read,
    which is the point of a deck. */
-.deck-slide .brief-card > p:not(.eyebrow) { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .deck-slide .brief-card h3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 @media (max-width: 760px) {
   /* A phone reads one card at a time, so the card's photograph can be the
      larger part of it; a 3:2 crop left a screenful of text with no picture. */
-  .deck-slide .brief-visual { aspect-ratio: 4 / 5; }
 }
 .footer-masthead-photo { display: block; margin: 16px 0 20px; }
 .live-newsletter-photo { position: relative; margin: 0 0 20px; }
@@ -616,3 +596,31 @@ button { color: inherit; }
 .desk-time { color: #6f8590; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .source-monitor-beacon { animation: none; } }
 @media (max-width: 760px) { .source-monitor-head { padding: 11px 18px; } .source-monitor-desks { padding: 0 18px 10px; } }
+
+/* A deck of story cards, dealt one at a time.
+   Only the top card is in flow, so the deck is exactly as tall as the card on
+   top and the stack can never overlap the controls. The cards behind are blank
+   slabs: a real card rendered behind lets its own text hang out below the top
+   one, and a slab's corner shows the stack just as well. */
+.story-deck { border-top: 1px solid var(--line); padding-top: 22px; }
+.deck { position: relative; }
+.deck-card { position: relative; border-radius: 14px; background: var(--paper); }
+.deck-card.is-under { position: absolute; inset: 0; margin: 0; border: 1px solid var(--line); background: #efe9dc; pointer-events: none; filter: brightness(.97); }
+.deck-card.is-top { touch-action: pan-y; cursor: grab; will-change: transform; z-index: 3; }
+.deck-card.is-top:active { cursor: grabbing; }
+.deck-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 0 2px; }
+.deck-arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; transition: background .18s ease, color .18s ease; }
+.deck-arrow:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.deck-count { font: 700 11px/1 ui-monospace, monospace; letter-spacing: .1em; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* The source monitor: one compact line, not a list that eats the screen. */
+.source-monitor { border-bottom: 1px solid rgba(255,255,255,.14); }
+.source-monitor-head { display: flex; align-items: center; gap: 9px; padding: 10px 20px; color: #b3c4cc; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
+.source-monitor-head strong { color: #fff; font-weight: 700; }
+.source-monitor.is-checking .source-monitor-head strong { color: var(--live); }
+.source-monitor-beacon { width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex: none; animation: gcj-pulse 2.4s ease-in-out infinite; }
+.source-monitor.is-checking .source-monitor-beacon { animation-duration: .8s; }
+.source-monitor-count { overflow: hidden; text-overflow: ellipsis; }
+.source-monitor-next { margin-left: auto; flex: none; font-variant-numeric: tabular-nums; color: #8fa3ad; }
+@media (prefers-reduced-motion: reduce) { .source-monitor-beacon { animation: none; } }
+@media (max-width: 760px) { .source-monitor-head { padding: 9px 16px; gap: 7px; font-size: 9px; } }

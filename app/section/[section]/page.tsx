@@ -78,7 +78,7 @@ export default async function SectionPage({ params }: SectionProps) {
         </p>
       </header>
       <section className="section-list shell" aria-label={`${title} stories`}>
-        <StoryDeck label={`${title} stories`} perView={2}>
+        <StoryDeck label={`${title} stories`}>
         {stories.map((article, index) => (
           <article className="section-story" key={article.slug}>
             <div>

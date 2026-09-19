@@ -85,37 +85,29 @@ export function LiveSourceMonitor({ initialSourceCount }: { initialSourceCount: 
   const desks = status?.desks || [];
   const checked = desks.length || initialSourceCount;
 
+  const freshest = desks
+    .map((desk) => (desk.lastCheckedAt ? Date.parse(desk.lastCheckedAt) : 0))
+    .sort((a, b) => b - a)[0];
+
   return (
     <div
       className={`source-monitor${running || flash ? ' is-checking' : ''}`}
       aria-live="polite"
     >
+      {/* One line. The desk roster used to be listed out here and it ate most
+          of a phone screen before the story even started. */}
       <div className="source-monitor-head">
         <span className="source-monitor-beacon" aria-hidden="true" />
-        <strong>{running ? 'Checking now' : 'Live source monitor'}</strong>
-        <span className="source-monitor-count">{checked} official desks</span>
-        <span className="source-monitor-next">
+        <strong>{running ? 'Checking' : 'Live'}</strong>
+        <span className="source-monitor-count">
           {running
-            ? `${status?.run?.feedsSucceeded ?? 0}/${status?.run?.feedSources ?? checked} desks read`
-            : `next check ${countdown(status?.nextCheckAt || null, now)}`}
+            ? `${status?.run?.feedsSucceeded ?? 0}/${status?.run?.feedSources ?? checked} desks`
+            : `${checked} desks · ${ago(freshest ? new Date(freshest).toISOString() : null, now)}`}
+        </span>
+        <span className="source-monitor-next">
+          {running ? 'now' : countdown(status?.nextCheckAt || null, now)}
         </span>
       </div>
-
-      <ol className="source-monitor-desks">
-        {desks.map((desk) => {
-          const secs = desk.lastCheckedAt
-            ? (now - Date.parse(desk.lastCheckedAt)) / 1000
-            : Infinity;
-          const fresh = secs < 90;
-          return (
-            <li key={desk.id} className={fresh ? 'is-fresh' : undefined}>
-              <span className="desk-dot" aria-hidden="true" />
-              <span className="desk-name">{desk.name}</span>
-              <span className="desk-time">{ago(desk.lastCheckedAt, now)}</span>
-            </li>
-          );
-        })}
-      </ol>
     </div>
   );
 }

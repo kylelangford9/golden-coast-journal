@@ -91,7 +91,7 @@ export function StoryDeck({
             aria-hidden="true"
             className="deck-card is-under"
             style={{
-              transform: `translate(${depth * 9}px, ${depth * 9}px) scale(${1 - depth * 0.028})`,
+              transform: `translateY(${depth * 6}px) scale(${1 - depth * 0.035})`,
             }}
           />
         ))}

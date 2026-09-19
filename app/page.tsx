@@ -44,8 +44,10 @@ export default async function Home() {
     })),
   );
   const [lead, ...rest] = articles;
-  const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
+  // A single deck at the top of the page carries the lead and everything
+  // behind it, so the reader can thumb the whole front page from one stack.
+  const deckStories = articles.slice(0, 12);
   const leadImage = editorialAssetForArticle(lead);
   const [bandImage, promoImage] = await Promise.all([
     selectEditorialAsset({ section: 'California', rotationKey: 'homepage-newsletter-band' }),
@@ -92,6 +94,48 @@ export default async function Home() {
           )}
         </div>
       </div>
+
+      <section
+        className="shell top-stories"
+        aria-labelledby="top-stories-title"
+      >
+        <div className="section-heading">
+          <h2 id="top-stories-title">Across the Golden Coast</h2>
+          <p>Reporting that explains what changed and why it matters.</p>
+        </div>
+        <StoryDeck label="Across the Golden Coast">
+          {deckStories.map((article) => (
+            <article className="image-story" key={article.slug}>
+              <Link
+                href={`/article/${article.slug}`}
+                className="image-frame photo-frame ratio-card"
+              >
+                <Image
+                  src={article.imageUrl}
+                  alt={article.imageAlt}
+                  fill
+                  sizes="(max-width: 760px) 100vw, 50vw"
+                />
+                <span className="photo-caption">
+                  {editorialAssetLabel(
+                    editorialAssetForArticle(article),
+                  )}{' '}
+                  · {editorialAssetForArticle(article).credit}
+                </span>
+              </Link>
+              <p className="eyebrow">{article.section}</p>
+              <h3>
+                <Link href={`/article/${article.slug}`}>{article.title}</Link>
+              </h3>
+              <p>{article.dek}</p>
+              <span>
+                <ArticleTime article={article} separator="after" />
+                {article.readingMinutes} min read
+              </span>
+            </article>
+          ))}
+        </StoryDeck>
+      </section>
 
       <section className="shell lead-grid" id="main-story">
         <article className="lead-copy">
@@ -165,7 +209,6 @@ export default async function Home() {
               See a sample briefing <ArrowRight size={14} />
             </Link>
           </div>
-          <CaliforniaPulseMap />
           <figure className="band-visual photo-frame ratio-card">
             <Image
               src={bandImage.url}
@@ -179,6 +222,7 @@ export default async function Home() {
             </figcaption>
           </figure>
           <NewsletterForm />
+          <CaliforniaPulseMap />
         </div>
       </section>
 
@@ -230,11 +274,6 @@ export default async function Home() {
             <p className="eyebrow">Source monitor</p>
             <h2 id="live-desk-title">Developing now</h2>
           </div>
-          <p>
-            Fresh signals from California, national, world, business, climate
-            and science primary sources before the Journal’s reporting is
-            complete.
-          </p>
           <Link className="live-desk-link" href="/live">
             Open the live desk <ArrowRight size={14} />
           </Link>
@@ -279,47 +318,6 @@ export default async function Home() {
         <ReaderPulse pollId="coverage-priority-2026-09" />
       </div>
 
-      <section
-        className="shell top-stories"
-        aria-labelledby="top-stories-title"
-      >
-        <div className="section-heading">
-          <h2 id="top-stories-title">Across the Golden Coast</h2>
-          <p>Reporting that explains what changed and why it matters.</p>
-        </div>
-        <StoryDeck label="Across the Golden Coast">
-          {featurePair.map((article) => (
-            <article className="image-story" key={article.slug}>
-              <Link
-                href={`/article/${article.slug}`}
-                className="image-frame photo-frame ratio-card"
-              >
-                <Image
-                  src={article.imageUrl}
-                  alt={article.imageAlt}
-                  fill
-                  sizes="(max-width: 760px) 100vw, 50vw"
-                />
-                <span className="photo-caption">
-                  {editorialAssetLabel(
-                    editorialAssetForArticle(article),
-                  )}{' '}
-                  · {editorialAssetForArticle(article).credit}
-                </span>
-              </Link>
-              <p className="eyebrow">{article.section}</p>
-              <h3>
-                <Link href={`/article/${article.slug}`}>{article.title}</Link>
-              </h3>
-              <p>{article.dek}</p>
-              <span>
-                <ArticleTime article={article} separator="after" />
-                {article.readingMinutes} min read
-              </span>
-            </article>
-          ))}
-        </StoryDeck>
-      </section>
 
       <section
         className="shell briefing"
@@ -330,7 +328,7 @@ export default async function Home() {
           <h2 id="briefing-title">The Sunday Briefing</h2>
           <p>Essential reporting, without the noise.</p>
         </div>
-        <StoryDeck label="The Sunday Briefing">
+        <div className="brief-grid">
           {latest.map((article, index) => (
             <article className="brief-card" key={article.slug}>
               <Link
@@ -362,7 +360,7 @@ export default async function Home() {
               </span>
             </article>
           ))}
-        </StoryDeck>
+        </div>
       </section>
 
       <SiteFooter />

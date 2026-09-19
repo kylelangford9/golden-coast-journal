@@ -173,11 +173,15 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
           <p className="eyebrow">Reader pulse</p>
           <h2 id={`reader-pulse-${pollId}`}>{definition.question}</h2>
         </div>
-        <p>{definition.context}</p>
       </div>
       <div className="reader-pulse-options">
         {result.options.map((option) => {
-          const percentage = result.totalVotes
+          // A poll with no votes in it has no percentages to report. Printing
+          // 0% against every option reads as a broken widget rather than an
+          // empty one, so the bars and figures only appear once there is
+          // something to show.
+          const hasResults = result.totalVotes > 0;
+          const percentage = hasResults
             ? Math.round((option.votes / result.totalVotes) * 100)
             : 0;
           const selected = choice === option.id;
@@ -191,14 +195,28 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
                 onClick={() => void vote(option.id)}
               >
                 <span className="reader-pulse-option-copy">
-                  <span>
+                  <span className="reader-pulse-option-label">
+                    {option.image ? (
+                      <Image
+                        className="reader-pulse-thumb"
+                        src={option.image}
+                        alt=""
+                        width={44}
+                        height={44}
+                      />
+                    ) : null}
                     {selected && <Check aria-hidden="true" />}
                     {option.label}
                   </span>
-                  <strong>{percentage}%</strong>
+                  {hasResults ? <strong>{percentage}%</strong> : null}
                 </span>
               </Button>
-              <Progress value={percentage} aria-label={`${option.label}: ${percentage}%`} />
+              {hasResults ? (
+                <Progress
+                  value={percentage}
+                  aria-label={`${option.label}: ${percentage}%`}
+                />
+              ) : null}
             </div>
           );
         })}

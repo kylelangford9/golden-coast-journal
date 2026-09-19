@@ -1,6 +1,8 @@
 export type ReaderPollOption = {
   id: string;
   label: string;
+  /** A small approved photograph, so an option reads as a subject not a row. */
+  image?: string;
 };
 
 export type ReaderPollDefinition = {
@@ -26,10 +28,10 @@ export const readerPolls: ReaderPollDefinition[] = [
     context:
       'Choose the part where one more sourced shortcut would save you the most time.',
     options: [
-      { id: 'statewide-propositions', label: 'Statewide propositions' },
-      { id: 'statewide-candidates', label: 'Statewide candidates' },
-      { id: 'local-races-and-measures', label: 'Local races and measures' },
-      { id: 'voting-rules-and-dates', label: 'Voting rules and dates' },
+      { id: 'statewide-propositions', label: 'Statewide propositions', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg' },
+      { id: 'statewide-candidates', label: 'Statewide candidates', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/us-capitol.jpg' },
+      { id: 'local-races-and-measures', label: 'Local races and measures', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/la-city-hall.jpg' },
+      { id: 'voting-rules-and-dates', label: 'Voting rules and dates', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-library.jpg' },
     ],
   },
   {
@@ -37,10 +39,10 @@ export const readerPolls: ReaderPollDefinition[] = [
     question: 'What should the Journal explain next?',
     context: 'Help the newsroom choose the next useful California explainer.',
     options: [
-      { id: 'cost-of-living', label: 'Cost of living' },
-      { id: 'wildfire-readiness', label: 'Wildfire readiness' },
-      { id: 'state-government', label: 'State government' },
-      { id: 'technology-and-jobs', label: 'Technology and jobs' },
+      { id: 'cost-of-living', label: 'Cost of living', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/sd-skyline.jpg' },
+      { id: 'wildfire-readiness', label: 'Wildfire readiness', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/lake-oroville.jpg' },
+      { id: 'state-government', label: 'State government', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg' },
+      { id: 'technology-and-jobs', label: 'Technology and jobs', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/nasa-astronaut-training.jpg' },
     ],
   },
   {
@@ -48,10 +50,10 @@ export const readerPolls: ReaderPollDefinition[] = [
     question: 'Which Journal update would you actually open?',
     context: 'Tell us which rhythm would earn a place in your day.',
     options: [
-      { id: 'five-minute-morning', label: 'Five-minute morning briefing' },
-      { id: 'major-developments', label: 'Major developments only' },
-      { id: 'sunday-edition', label: 'Sunday edition' },
-      { id: 'deep-explainers', label: 'Deep explainers when needed' },
+      { id: 'five-minute-morning', label: 'Five-minute morning briefing', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/golden-gate-bridge.jpg' },
+      { id: 'major-developments', label: 'Major developments only', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg' },
+      { id: 'sunday-edition', label: 'Sunday edition', image: '/california-coast.jpg' },
+      { id: 'deep-explainers', label: 'Deep explainers when needed', image: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-library.jpg' },
     ],
   },
   {

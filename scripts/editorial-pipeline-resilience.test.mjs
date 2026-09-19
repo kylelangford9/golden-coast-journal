@@ -1,16 +1,42 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [pipeline, metrics, readme] = await Promise.all([
+const [pipeline, settings, assets, metrics, readme] = await Promise.all([
   readFile('lib/pipeline.ts', 'utf8'),
+  readFile('lib/editorial-settings.ts', 'utf8'),
+  readFile('lib/editorial-assets.ts', 'utf8'),
   readFile('app/api/editorial/metrics/route.ts', 'utf8'),
   readFile('README.md', 'utf8'),
 ]);
 
 assert.match(pipeline, /const FEED_TIMEOUT_MS = 8_000/);
 assert.match(pipeline, /const AI_DRAFT_TIMEOUT_MS = 75_000/);
-assert.match(pipeline, /const REVIEW_QUEUE_LIMIT = 12/);
-assert.match(pipeline, /const DRAFTS_PER_RUN = 1/);
+
+// Queue pressure, drafting volume and the publication threshold are read from
+// gcj_editorial_settings, never hardcoded, so the newsroom retunes without a
+// redeploy. Guard against a constant creeping back in.
+assert.match(pipeline, /const settings = await getEditorialSettings\(\)/);
+assert.match(pipeline, /reviewBacklog >= settings\.reviewQueueLimit/);
+assert.match(pipeline, /\.limit\(settings\.draftsPerRun\)/);
+assert.match(pipeline, /draft\.confidence >= settings\.minConfidenceToPublish/);
+assert.doesNotMatch(pipeline, /const REVIEW_QUEUE_LIMIT/);
+assert.doesNotMatch(pipeline, /const DRAFTS_PER_RUN/);
+assert.doesNotMatch(pipeline, /autoPublishSourceIds/);
+assert.doesNotMatch(pipeline, /confidence >= 9\d/);
+
+// Auto-publication is governed by the database row plus the per-source flag.
+assert.match(pipeline, /settings\.autoPublish/);
+assert.match(pipeline, /source\.auto_publish === true/);
+assert.match(settings, /gcj_editorial_settings/);
+assert.match(settings, /autoPublish: false/);
+
+// Imagery is selected per story from the approved registry, never a constant.
+assert.match(pipeline, /const image = await selectEditorialAsset\(\{/);
+assert.doesNotMatch(pipeline, /editorialAssets\.californiaCoast/);
+assert.match(assets, /gcj_editorial_assets/);
+assert.match(assets, /article_eligible/);
+assert.match(assets, /aiGenerated: false/);
+
 assert.match(pipeline, /activeSources\.map\(async \(source\)/);
 assert.match(pipeline, /signal: AbortSignal\.timeout\(AI_DRAFT_TIMEOUT_MS\)/);
 assert.match(pipeline, /\.eq\('status', 'review'\)/);
@@ -23,6 +49,7 @@ assert.match(pipeline, /\.update\(\{ status: 'new' \}\)/);
 assert.match(metrics, /automation: \{/);
 assert.match(metrics, /staleRunning/);
 assert.match(metrics, /last24Hours/);
-assert.match(readme, /only while fewer than 12 drafts await review/);
+assert.match(readme, /only while the review queue sits below `review_queue_limit`/);
+assert.match(readme, /check \(ai_generated = false\)/);
 
 console.log('Editorial pipeline resilience contract verified.');

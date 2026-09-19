@@ -9,8 +9,8 @@ An independent California newspaper with no paywall, advertising or documentary 
 - Forced row-level security on every Journal table, with a server-only application key layered over the Supabase publishable key
 - Vercel Cron newsroom runs at seven minutes past each hour
 - Vercel AI Gateway drafting through short-lived OIDC credentials; no direct provider key is required in production
-- Human review queue by default, with automatic publication disabled unless explicitly enabled
-- Authentic, attributable documentary photography selected only from the approved asset registry
+- Newsroom tuning held in `gcj_editorial_settings`, so publication thresholds and queue limits change with a SQL update rather than a redeploy
+- Authentic, attributable documentary photography selected per story from the approved `gcj_editorial_assets` registry
 
 ## Editorial pipeline
 
@@ -18,13 +18,29 @@ The protected `/api/editorial/run` route:
 
 1. polls seven primary-source feeds;
 2. records and scores new story candidates;
-3. drafts at most one story through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, only while fewer than 12 drafts await review;
-4. stores new drafts in the review queue; and
-5. records every drafting, publishing, rejection and reopening action.
+3. drafts stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, at the volume set by `drafts_per_run` and only while the review queue sits below `review_queue_limit`;
+4. selects an approved photograph for each draft from `gcj_editorial_assets`, matching the desk first and then the headline and dek against each asset's keywords;
+5. publishes the draft when `auto_publish` is on, the source carries `auto_publish`, and model confidence clears `min_confidence_to_publish`; otherwise it stores the draft in the review queue; and
+6. records every drafting, publishing, rejection and reopening action.
 
 Feed polling runs concurrently with an eight-second limit per source. Source-page reads and AI drafting are separately bounded, so a slow upstream cannot consume the full function lifetime. A later run closes any stale `running` ledger entry before beginning. Queue pressure pauses drafting without pausing source discovery; this keeps the review workload finite and preserves human review as a meaningful quality gate.
 
-Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer credential protects the review queue and editorial action routes. `AUTO_PUBLISH` remains `false` in every environment.
+Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer credential protects the review queue and editorial action routes.
+
+Automatic publication is governed entirely by the database, not by a per-environment variable, so there is one switch and it is visible in one place:
+
+```sql
+-- stop automatic publication immediately
+update public.gcj_editorial_settings set value = 'false'::jsonb where key = 'auto_publish';
+-- publish more conservatively
+update public.gcj_editorial_settings set value = '92'::jsonb where key = 'min_confidence_to_publish';
+-- withdraw a single source
+update public.gcj_sources set auto_publish = false where id = 'whitehouse';
+```
+
+A draft publishes only when all three agree: the `auto_publish` setting is true, the originating source is flagged `auto_publish`, and the model's confidence clears `min_confidence_to_publish`. Anything short of that falls to the review queue.
+
+Imagery is never generated. `gcj_editorial_assets` carries a `check (ai_generated = false)` constraint, so an AI image cannot be stored even by direct SQL, and every row requires a credit and a provenance URL.
 
 Future pipeline drafts carry Kyle Langford’s byline. The public author profile and standards page disclose the role of drafting assistance and define what the byline does and does not claim. Existing desk-bylined stories retain their original attribution.
 

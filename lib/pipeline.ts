@@ -1,5 +1,6 @@
 import { getVercelOidcToken } from '@vercel/oidc';
-import { editorialAssets } from '@/lib/imagery';
+import { selectEditorialAsset } from '@/lib/editorial-assets';
+import { getEditorialSettings } from '@/lib/editorial-settings';
 import {
   JOURNAL_DRAFT_INSTRUCTIONS,
   KYLE_LANGFORD_AUTHOR,
@@ -24,6 +25,7 @@ type SourceRow = {
   section: string;
   trust_tier: number;
   active: boolean;
+  auto_publish: boolean;
   last_fetched_at: string | null;
 };
 type CandidateRow = {
@@ -38,13 +40,10 @@ type CandidateRow = {
   score: number;
 };
 
-const autoPublishSourceIds = new Set(['nasa', 'noaa']);
 const FEED_TIMEOUT_MS = 8_000;
 const SOURCE_PAGE_TIMEOUT_MS = 12_000;
 const AI_DRAFT_TIMEOUT_MS = 75_000;
 const STALE_RUN_AFTER_MS = 15 * 60_000;
-const REVIEW_QUEUE_LIMIT = 12;
-const DRAFTS_PER_RUN = 1;
 
 function textFromTag(block: string, tag: string) {
   const match = block.match(
@@ -241,6 +240,9 @@ function slugify(value: string) {
 export async function runEditorialPipeline() {
   const db = getSupabase();
   await seedDatabase();
+  // Imagery, publication thresholds and queue limits all come from the
+  // database so the newsroom can be retuned without a redeploy.
+  const settings = await getEditorialSettings();
   const runId = crypto.randomUUID();
   const startedAt = new Date().toISOString();
   const staleBefore = new Date(Date.now() - STALE_RUN_AFTER_MS).toISOString();
@@ -375,7 +377,7 @@ export async function runEditorialPipeline() {
     if (reviewCount.error)
       throw new Error(`Unable to count review queue: ${reviewCount.error.message}`);
     reviewBacklog = reviewCount.count || 0;
-    if (reviewBacklog >= REVIEW_QUEUE_LIMIT)
+    if (reviewBacklog >= settings.reviewQueueLimit)
       draftingSkipped = 'review_queue_limit';
     else if (!gatewayToken) draftingSkipped = 'ai_unavailable';
 
@@ -386,7 +388,7 @@ export async function runEditorialPipeline() {
           .select('*')
           .eq('status', 'new')
           .order('score', { ascending: false })
-          .limit(DRAFTS_PER_RUN),
+          .limit(settings.draftsPerRun),
         'Unable to load drafting candidates',
       ) as CandidateRow[];
       for (const candidate of candidates) {
@@ -414,10 +416,14 @@ export async function runEditorialPipeline() {
           const draft = await draftCandidate(candidate, source, gatewayToken);
           const now = new Date().toISOString();
           const publish =
-            process.env.AUTO_PUBLISH === 'true' &&
-            autoPublishSourceIds.has(source.id) &&
-            draft.confidence >= 92;
-          const image = editorialAssets.californiaCoast;
+            settings.autoPublish &&
+            source.auto_publish === true &&
+            draft.confidence >= settings.minConfidenceToPublish;
+          const image = await selectEditorialAsset({
+            section: draft.section,
+            title: draft.title,
+            dek: draft.dek,
+          });
           const articleId = crypto.randomUUID();
           const inserted = unwrap(
             await db
@@ -496,11 +502,12 @@ export async function runEditorialPipeline() {
       feedSources: activeSources.length,
       feedsSucceeded,
       reviewBacklog,
-      reviewQueueLimit: REVIEW_QUEUE_LIMIT,
+      reviewQueueLimit: settings.reviewQueueLimit,
       draftingSkipped,
       durationMs: Date.now() - Date.parse(startedAt),
       aiConfigured: Boolean(gatewayToken),
-      autoPublish: process.env.AUTO_PUBLISH === 'true',
+      autoPublish: settings.autoPublish,
+      minConfidenceToPublish: settings.minConfidenceToPublish,
       webSubNotifications,
       webSubFailures,
     };

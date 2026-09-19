@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
@@ -13,6 +14,8 @@ export type BriefingPreviewStory = {
   title: string;
   dek: string;
   readingMinutes: number;
+  imageUrl: string;
+  imageAlt: string;
 };
 
 type BriefingPreviewBuilderProps = {
@@ -122,6 +125,19 @@ export function BriefingPreviewBuilder({
               {preview.map((story, index) => (
                 <li key={story.slug}>
                   <span>{String(index + 1).padStart(2, '0')}</span>
+                  <Link
+                    href={`/article/${story.slug}`}
+                    className="briefing-preview-visual photo-frame ratio-card"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  >
+                    <Image
+                      src={story.imageUrl}
+                      alt=""
+                      fill
+                      sizes="(max-width: 760px) 90vw, 220px"
+                    />
+                  </Link>
                   <div>
                     <p className="eyebrow">{story.section}</p>
                     <h3>

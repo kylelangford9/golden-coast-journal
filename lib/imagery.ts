@@ -100,3 +100,33 @@ export function getApprovedEditorialAsset(
 export function editorialAssetLabel(asset: EditorialAsset) {
   return asset.kind === 'photograph' ? 'Photograph' : 'Source graphic';
 }
+
+/**
+ * Resolve the image to render for a stored article.
+ *
+ * Imagery is validated when it is written: `gcj_editorial_assets` requires a
+ * credit and a provenance URL and forbids AI-generated images at the database
+ * level, so a stored image is already an approved one. Prefer the bundled entry
+ * when the URL is one this build knows about, because that carries the asset's
+ * `kind`; otherwise trust what the row stores. Only a row with no image at all
+ * falls through to the registry default.
+ */
+export function editorialAssetForArticle(article: {
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  imageCredit?: string | null;
+}): EditorialAsset {
+  const bundled = article.imageUrl ? assetsByUrl.get(article.imageUrl) : undefined;
+  if (bundled) return bundled;
+  if (article.imageUrl && article.imageCredit) {
+    return {
+      url: article.imageUrl,
+      alt: article.imageAlt || '',
+      credit: article.imageCredit,
+      provenanceUrl: '',
+      kind: 'photograph',
+      aiGenerated: false,
+    };
+  }
+  return editorialAssets.californiaCoast;
+}

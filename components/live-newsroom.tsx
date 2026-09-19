@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,6 +25,9 @@ export type LiveNewsStory = {
   section: string;
   source: string;
   publishedAt: string;
+  imageUrl: string;
+  imageAlt: string;
+  imageCredit: string;
 };
 
 type LiveNewsroomProps = {
@@ -110,6 +114,19 @@ export function LiveNewsroom({
 
       <div className="live-newsroom-stage">
         <div className="live-newsroom-story">
+          <figure className="live-newsroom-visual photo-frame ratio-hero">
+            <Image
+              key={current.imageUrl}
+              src={current.imageUrl}
+              alt={current.imageAlt}
+              fill
+              sizes="(max-width: 760px) 100vw, 640px"
+              priority
+            />
+            <figcaption className="photo-caption">
+              Photograph · {current.imageCredit}
+            </figcaption>
+          </figure>
           <p className="eyebrow">
             {current.section}; {current.source}
           </p>

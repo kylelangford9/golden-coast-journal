@@ -423,6 +423,7 @@ export async function runEditorialPipeline() {
             section: draft.section,
             title: draft.title,
             dek: draft.dek,
+            rotationKey: candidate.external_url,
           });
           const articleId = crypto.randomUUID();
           const inserted = unwrap(

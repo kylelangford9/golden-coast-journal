@@ -56,7 +56,10 @@ function scoreAsset(asset: EditorialAssetRow, section: string, haystack: string)
   let score = 0;
   if (asset.section && asset.section.toLowerCase() === section.toLowerCase()) {
     score += 50;
-    if (asset.is_section_default) score += 20;
+    // A nudge, not a veto: this must stay inside ROTATION_BAND or the desk's
+    // default photograph would outscore its siblings on every story and the
+    // rotation below would never have more than one candidate to choose from.
+    if (asset.is_section_default) score += 5;
   } else if (asset.section) {
     // An asset tied to a different desk is a poor fit; only the global
     // fallback should rescue a story with no sectional match.
@@ -88,10 +91,33 @@ function toAsset(row: EditorialAssetRow): EditorialAsset {
  * coast photograph if the table is unreachable, so drafting never fails for
  * want of a picture.
  */
+/**
+ * A small stable hash, so a given story keeps the same photograph on every
+ * render and across machines. Math.random would reshuffle the page on each
+ * request and make the paper look unstable.
+ */
+function stableHash(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+/** Candidates this close to the best score are treated as equally good fits. */
+const ROTATION_BAND = 12;
+
 export async function selectEditorialAsset(input: {
   section: string;
   title?: string;
   dek?: string;
+  /**
+   * Distinguishes stories that would otherwise score identically, so six
+   * California items do not all run the same photograph of the Capitol. Pass
+   * something stable per story, such as the slug or the source URL.
+   */
+  rotationKey?: string;
 }): Promise<EditorialAsset> {
   let rows: EditorialAssetRow[] = [];
   try {
@@ -102,21 +128,29 @@ export async function selectEditorialAsset(input: {
   if (!rows.length) return getApprovedEditorialAsset(null);
 
   const haystack = `${input.title || ''} ${input.dek || ''}`.toLowerCase();
-  let best: EditorialAssetRow | null = null;
-  let bestScore = -Infinity;
+  const scored = rows
+    .map((row) => ({ row, score: scoreAsset(row, input.section, haystack) }))
+    .sort((a, b) => b.score - a.score || b.row.priority - a.row.priority);
 
-  for (const row of rows) {
-    const score = scoreAsset(row, input.section, haystack);
-    if (score > bestScore || (score === bestScore && best && row.priority > best.priority)) {
-      best = row;
-      bestScore = score;
-    }
-  }
+  if (!scored.length) return getApprovedEditorialAsset(null);
 
-  if (!best) return getApprovedEditorialAsset(null);
+  const bestScore = scored[0].score;
   if (bestScore <= 0) {
     const fallback = rows.find((row) => row.is_global_default);
     if (fallback) return toAsset(fallback);
+    return toAsset(scored[0].row);
   }
-  return toAsset(best);
+
+  // Rotate among the assets that fit this story equally well. A keyword match
+  // still wins outright; this only breaks the ties that would otherwise put
+  // one photograph on every story of a desk.
+  const contenders = scored.filter(
+    (entry) => entry.score >= bestScore - ROTATION_BAND,
+  );
+  const key = input.rotationKey || input.title || '';
+  const picked =
+    contenders.length > 1 && key
+      ? contenders[stableHash(key) % contenders.length]
+      : contenders[0];
+  return toAsset(picked.row);
 }

@@ -1,5 +1,5 @@
 import { articles, type Article } from '@/lib/content';
-import { getApprovedEditorialAsset } from '@/lib/imagery';
+import { editorialAssetForArticle } from '@/lib/imagery';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { decodeHtmlEntities } from '@/lib/text';
 
@@ -118,7 +118,11 @@ function toRow(article: Article) {
 }
 
 export function fromArticleRow(row: ArticleRow): Article {
-  const approvedAsset = getApprovedEditorialAsset(row.image_url);
+  const approvedAsset = editorialAssetForArticle({
+    imageUrl: row.image_url,
+    imageAlt: row.image_alt,
+    imageCredit: row.image_credit,
+  });
   const body = parseArray<string>(row.body_json);
   return {
     id: row.id,

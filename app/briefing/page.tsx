@@ -35,6 +35,8 @@ export default async function BriefingPage() {
     title: article.title,
     dek: article.dek,
     readingMinutes: article.readingMinutes,
+    imageUrl: article.imageUrl,
+    imageAlt: article.imageAlt,
   }));
   const sections = Array.from(new Set(stories.map((story) => story.section))).slice(
     0,

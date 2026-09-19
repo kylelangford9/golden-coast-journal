@@ -12,9 +12,10 @@ import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { ElectionHubLink } from '@/components/election-hub';
 import { HomepageStoryLink } from '@/components/homepage-story-link';
+import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { formatArticleDate } from '@/lib/content';
-import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
+import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
@@ -31,7 +32,7 @@ export default async function Home() {
   const [lead, ...rest] = articles;
   const featurePair = rest.slice(0, 2);
   const latest = rest.slice(2);
-  const leadImage = getApprovedEditorialAsset(lead.imageUrl);
+  const leadImage = editorialAssetForArticle(lead);
   const websiteJson = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -92,7 +93,13 @@ export default async function Home() {
             Read the full report <ArrowRight size={14} aria-hidden="true" />
           </HomepageStoryLink>
           <div className="byline-row">
-            <div className="byline-mark">GCJ</div>
+            <Image
+              className="byline-mark"
+              src="/kyle-langford-avatar.jpg"
+              alt="Kyle Langford"
+              width={40}
+              height={40}
+            />
             <div>
               <p>By {lead.author}</p>
               <span>
@@ -245,9 +252,9 @@ export default async function Home() {
                 />
                 <span className="photo-caption">
                   {editorialAssetLabel(
-                    getApprovedEditorialAsset(article.imageUrl),
+                    editorialAssetForArticle(article),
                   )}{' '}
-                  · {getApprovedEditorialAsset(article.imageUrl).credit}
+                  · {editorialAssetForArticle(article).credit}
                 </span>
               </Link>
               <p className="eyebrow">{article.section}</p>
@@ -273,9 +280,26 @@ export default async function Home() {
           <h2 id="briefing-title">The Sunday Briefing</h2>
           <p>Essential reporting, without the noise.</p>
         </div>
-        <div className="brief-grid">
+        <StoryDeck label="The Sunday Briefing">
           {latest.map((article, index) => (
             <article className="brief-card" key={article.slug}>
+              <Link
+                href={`/article/${article.slug}`}
+                className="brief-visual photo-frame ratio-card"
+                aria-hidden="true"
+                tabIndex={-1}
+              >
+                <Image
+                  src={article.imageUrl}
+                  alt=""
+                  fill
+                  sizes="(max-width: 760px) 82vw, 33vw"
+                />
+                <span className="photo-caption">
+                  {editorialAssetLabel(editorialAssetForArticle(article))} ·{' '}
+                  {editorialAssetForArticle(article).credit}
+                </span>
+              </Link>
               <span className="brief-number">0{index + 1}</span>
               <p className="eyebrow">{article.section}</p>
               <h3>
@@ -288,7 +312,7 @@ export default async function Home() {
               </span>
             </article>
           ))}
-        </div>
+        </StoryDeck>
       </section>
 
       <SiteFooter />

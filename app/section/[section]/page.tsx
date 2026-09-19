@@ -7,7 +7,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { ArticleTime } from '@/components/article-time';
 import { sections } from '@/lib/content';
 import { listPublished } from '@/lib/repository';
-import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
+import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 
 type SectionProps = { params: Promise<{ section: string }> };
 
@@ -100,9 +100,9 @@ export default async function SectionPage({ params }: SectionProps) {
               />
               <span className="photo-caption">
                 {editorialAssetLabel(
-                  getApprovedEditorialAsset(article.imageUrl),
+                  editorialAssetForArticle(article),
                 )}{' '}
-                · {getApprovedEditorialAsset(article.imageUrl).credit}
+                · {editorialAssetForArticle(article).credit}
               </span>
             </Link>
           </article>

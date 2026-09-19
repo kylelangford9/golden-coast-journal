@@ -7,7 +7,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { ArticleTime } from '@/components/article-time';
 import {
   editorialAssetLabel,
-  getApprovedEditorialAsset,
+  editorialAssetForArticle,
 } from '@/lib/imagery';
 import { listPublished } from '@/lib/repository';
 
@@ -82,9 +82,9 @@ export default async function SearchPage({ searchParams }: SearchProps) {
                 />
                 <span className="photo-caption">
                   {editorialAssetLabel(
-                    getApprovedEditorialAsset(article.imageUrl),
+                    editorialAssetForArticle(article),
                   )}{' '}
-                  · {getApprovedEditorialAsset(article.imageUrl).credit}
+                  · {editorialAssetForArticle(article).credit}
                 </span>
               </Link>
             </article>

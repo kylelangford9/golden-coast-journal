@@ -6,6 +6,7 @@ import { NewsletterForm } from '@/components/newsletter-form';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
+import { selectEditorialAsset } from '@/lib/editorial-assets';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 
@@ -39,17 +40,35 @@ export default async function LivePage() {
     section: article.section,
     source: 'The Golden Coast Journal',
     publishedAt: article.publishedAt,
+    imageUrl: article.imageUrl,
+    imageAlt: article.imageAlt,
+    imageCredit: article.imageCredit,
   }));
-  const sourceStories: LiveNewsStory[] = signals.map((signal) => ({
-    id: `source-${signal.id}`,
-    kind: 'official-source',
-    title: signal.title,
-    dek: `A current signal from ${signal.sourceName}; open the primary material for the full context.`,
-    href: signal.url,
-    section: signal.section,
-    source: signal.sourceName,
-    publishedAt: signal.publishedAt || signal.discoveredAt,
-  }));
+  // A source signal has no photograph of its own, so it borrows the approved
+  // one its desk would use. The credit still travels with it, and the rotation
+  // key keeps six signals from the same desk off the same picture.
+  const sourceStories: LiveNewsStory[] = await Promise.all(
+    signals.map(async (signal) => {
+      const asset = await selectEditorialAsset({
+        section: signal.section,
+        title: signal.title,
+        rotationKey: signal.url,
+      });
+      return {
+        id: `source-${signal.id}`,
+        kind: 'official-source' as const,
+        title: signal.title,
+        dek: `A current signal from ${signal.sourceName}; open the primary material for the full context.`,
+        href: signal.url,
+        section: signal.section,
+        source: signal.sourceName,
+        publishedAt: signal.publishedAt || signal.discoveredAt,
+        imageUrl: asset.url,
+        imageAlt: asset.alt,
+        imageCredit: asset.credit,
+      };
+    }),
+  );
   const stories = [
     ...journalStories.slice(0, 2),
     ...sourceStories.slice(0, 3),

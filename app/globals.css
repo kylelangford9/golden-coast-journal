@@ -76,7 +76,7 @@ button { color: inherit; }
 .byline-row { display: flex; gap: 12px; align-items: center; margin-top: 36px; font-size: 12px; }
 .byline-row p { margin: 0 0 3px; font-weight: 700; }
 .byline-row span { color: var(--muted); }
-.byline-mark { width: 40px; height: 40px; border: 1px solid var(--ink); border-radius: 50%; display: grid; place-items: center; font-family: var(--font-serif), Georgia, serif; font-size: 11px; font-weight: 700; }
+.byline-mark { width: 40px; height: 40px; border: 1px solid var(--ink); border-radius: 50%; object-fit: cover; flex: none; }
 /* One frame for every photograph: a fixed ratio so the crop is chosen here and
    not by the viewport, a hairline mat, and the caption bar. Heights used to be
    per-component pixel values re-tuned at each breakpoint, which let the box
@@ -109,7 +109,26 @@ button { color: inherit; }
 .section-heading h2 { margin: 0; font-family: var(--font-serif), Georgia, serif; font-size: clamp(32px, 4vw, 51px); font-weight: 560; letter-spacing: -.035em; }
 .section-heading p { color: var(--muted); font-size: 13px; }
 .brief-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+
+/* A deck of story cards. Snapping carries the swipe, so momentum and
+   rubber-banding stay the browser's; the arrows exist for pointer devices and
+   the track is focusable so the keyboard can page through it too. */
+.story-deck { border-top: 1px solid var(--line); }
+.deck-track { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.deck-track::-webkit-scrollbar { display: none; }
+.deck-track:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.deck-slide { flex: 0 0 calc((100% - 36px) / 3); scroll-snap-align: start; }
+.deck-slide .brief-card { padding-right: 0; }
+.deck-slide + .deck-slide .brief-card { border-left: 0; padding-left: 0; }
+.deck-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 14px 0 2px; }
+.deck-arrow { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; transition: background .18s ease, border-color .18s ease; }
+.deck-arrow:hover:not(:disabled) { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.deck-arrow:disabled { opacity: .3; cursor: default; }
+.deck-count { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #6b6960; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) { .deck-track { scroll-behavior: auto; } }
 .brief-card { position: relative; padding: 31px 36px 10px 0; }
+.brief-visual { display: block; margin-bottom: 16px; }
 .brief-card + .brief-card { border-left: 1px solid var(--line); padding-left: 36px; }
 .brief-number { position: absolute; top: 30px; right: 28px; color: #aba395; font-family: var(--font-serif), Georgia, serif; font-size: 17px; }
 .brief-card h3 { margin: 15px 0 14px; max-width: 390px; font-family: var(--font-serif), Georgia, serif; font-size: 29px; line-height: 1.03; font-weight: 590; letter-spacing: -.025em; }
@@ -277,7 +296,8 @@ button { color: inherit; }
 .briefing-preview-empty { display: grid; align-content: center; min-height: 400px; }
 .briefing-preview-empty > span { color: var(--rust); font-family: var(--font-serif), Georgia, serif; font-size: 70px; line-height: 1; }
 .briefing-preview-list { margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
-.briefing-preview-list li { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 18px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.briefing-preview-list li { display: grid; grid-template-columns: 42px 168px minmax(0, 1fr); gap: 18px; padding: 24px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.briefing-preview-visual { display: block; }
 .briefing-preview-list li > span { color: var(--rust); font-family: var(--font-serif), Georgia, serif; font-size: 22px; }
 .briefing-preview-list h3 { margin: 8px 0 7px; font-family: var(--font-serif), Georgia, serif; font-size: clamp(24px, 3vw, 35px); line-height: 1.02; }
 .briefing-preview-list div > p:not(.eyebrow) { margin: 0 0 9px; color: #4d4b45; font-family: var(--font-serif), Georgia, serif; font-size: 15px; line-height: 1.45; }
@@ -404,6 +424,10 @@ button { color: inherit; }
   .lead-visual { grid-row: 1; }
   .live-desk { grid-template-columns: 1fr; gap: 20px; }
   .brief-grid { grid-template-columns: 1fr; }
+  .briefing-preview-list li { grid-template-columns: 42px minmax(0, 1fr); }
+  .briefing-preview-visual { grid-column: 1 / -1; }
+  .deck-slide { flex: 0 0 82%; }
+  .deck-controls { justify-content: space-between; }
   .brief-card + .brief-card { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .article-layout { grid-template-columns: 1fr; }
   .article-body { grid-column: 1; }
@@ -494,3 +518,5 @@ button { color: inherit; }
   .deadline-tracker-cta { align-items: flex-start; flex-direction: column; padding: 22px 20px; }
   .deadline-references ol { columns: 1; }
 }
+
+.live-newsroom-visual { margin: 0 0 20px; }

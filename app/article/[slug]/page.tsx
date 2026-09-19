@@ -17,7 +17,7 @@ import {
   formatArticleDateTime,
 } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
-import { editorialAssetLabel, getApprovedEditorialAsset } from '@/lib/imagery';
+import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
@@ -56,7 +56,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await findPublishedBySlug(slug);
   if (!article) notFound();
-  const approvedImage = getApprovedEditorialAsset(article.imageUrl);
+  const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();
   const related = articles
     .filter((item) => item.slug !== article.slug)

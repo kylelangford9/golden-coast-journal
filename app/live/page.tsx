@@ -98,7 +98,6 @@ export default async function LivePage() {
       <div className="shell live-page-body">
         <LiveNewsroom
           stories={stories}
-          updatedAt={updatedAt}
           sourceCount={signals.length}
         />
       </div>

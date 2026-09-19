@@ -30,11 +30,12 @@ for (const fact of [
 
 assert.ok(story.includes("author: 'Kyle Langford'"));
 assert.equal((story.match(/https:\/\/www\.sos\.ca\.gov/g) || []).length, 3);
-assert.ok(story.includes('CA_State_Capitol.png'));
+assert.ok(story.includes('ca-state-capitol'));
 assert.ok(imagery.includes('Wikimedia Commons (CC0)'));
 assert.ok(imagery.includes('File:CA_State_Capitol.png'));
-assert.ok(nextConfig.includes("hostname: 'thumb.wikimedia.org'"));
-assert.ok(nextConfig.includes('https://thumb.wikimedia.org'));
+// Imagery is self-hosted; the Commons page survives only as provenance.
+assert.ok(!imagery.includes('https://thumb.wikimedia.org'));
+assert.ok(nextConfig.includes("hostname: 'eoifovdmuuqdcospamru.supabase.co'"));
 assert.ok(articlePage.includes('new URL(article.imageUrl, origin).toString()'));
 for (const affiliatedProject of [
   'LangBeat',

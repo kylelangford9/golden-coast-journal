@@ -44,7 +44,6 @@ assert.match(readerPulse, /trackPortfolioGrowth\('share_started', metadata\)/);
 assert.match(readerPulse, /utm_source', 'reader_referral'/);
 assert.match(readerPulse, /utm_medium', 'referral'/);
 assert.match(readerPulse, /utm_campaign', 'journal_reader_poll'/);
-assert.match(readerPulse, /shared links never include/);
 assert.match(
   readerPulse,
   /const metadata = \{ poll_id: pollId, surface: 'reader_pulse' \}/,

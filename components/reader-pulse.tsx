@@ -204,11 +204,6 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
         })}
       </div>
       <div className="reader-pulse-footnote">
-        <p>
-          {result.totalVotes
-            ? `${result.totalVotes} reader ${result.totalVotes === 1 ? 'response' : 'responses'}`
-            : 'No responses yet; be the first.'}
-        </p>
         <p>One response per poll per browser; results are directional, not scientific.</p>
       </div>
       <output className="reader-pulse-status" aria-live="polite">
@@ -216,10 +211,6 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
       </output>
       {choice && (
         <div className="reader-pulse-followup">
-          <p>
-            Bring another reader into the question; shared links never include
-            your answer.
-          </p>
           <div>
             <Button type="button" onClick={() => void shareQuestion()}>
               <Share2 aria-hidden="true" /> Share question

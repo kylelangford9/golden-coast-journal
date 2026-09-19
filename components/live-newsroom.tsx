@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { LiveSourceMonitor } from '@/components/live-source-monitor';
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -32,7 +33,6 @@ export type LiveNewsStory = {
 
 type LiveNewsroomProps = {
   stories: LiveNewsStory[];
-  updatedAt: string;
   sourceCount: number;
 };
 
@@ -51,7 +51,6 @@ function trackOnce(eventName: string, analyticsName: string) {
 
 export function LiveNewsroom({
   stories,
-  updatedAt,
   sourceCount,
 }: LiveNewsroomProps) {
   const router = useRouter();
@@ -97,20 +96,7 @@ export function LiveNewsroom({
 
   return (
     <section className="live-newsroom" aria-labelledby="live-newsroom-title">
-      <div className="live-newsroom-status">
-        <span className="live-newsroom-beacon" aria-hidden="true" />
-        <strong>Live source monitor</strong>
-        <span>{sourceCount} official desks checked</span>
-        <span>
-          Updated{' '}
-          {new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            timeZone: 'America/Los_Angeles',
-          }).format(new Date(updatedAt))}{' '}
-          PT
-        </span>
-      </div>
+      <LiveSourceMonitor initialSourceCount={sourceCount} />
 
       <div className="live-newsroom-stage">
         <div className="live-newsroom-story">

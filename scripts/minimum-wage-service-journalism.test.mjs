@@ -32,7 +32,7 @@ for (const fact of [
 
 assert.ok(story.includes("author: 'Kyle Langford'"));
 assert.equal((story.match(/https:\/\/www\.dir\.ca\.gov/g) || []).length, 3);
-assert.ok(story.includes('Worker_inspects_construction.jpg'));
+assert.ok(story.includes('photos/editorial/worker-construction.jpg'));
 assert.ok(story.includes('public domain'));
 assert.ok(imagery.includes('Ryan Hagerty / U.S. Fish and Wildlife Service'));
 assert.ok(imagery.includes('File:Worker_inspects_construction.jpg'));

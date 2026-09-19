@@ -42,6 +42,8 @@ A draft publishes only when all three agree: the `auto_publish` setting is true,
 
 Imagery is never generated. `gcj_editorial_assets` carries a `check (ai_generated = false)` constraint, so an AI image cannot be stored even by direct SQL, and every row requires a credit and a provenance URL.
 
+Imagery is also never hotlinked. A second constraint requires `url` to be a repo-relative path or a file in the project storage bucket, so a published article does not depend on a remote host staying reachable. Approved images are copied into `photos/editorial/`, while `credit` and `provenance_url` continue to name the photographer and the original page.
+
 Future pipeline drafts carry Kyle Langford’s byline. The public author profile and standards page disclose the role of drafting assistance and define what the byline does and does not claim. Existing desk-bylined stories retain their original attribution.
 
 ## Audience and network measurement

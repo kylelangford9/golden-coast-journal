@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site-header';
+import { StoryDeck } from '@/components/story-deck';
 import { SiteFooter } from '@/components/site-footer';
 import { ArticleTime } from '@/components/article-time';
 import { sections } from '@/lib/content';
@@ -77,6 +78,7 @@ export default async function SectionPage({ params }: SectionProps) {
         </p>
       </header>
       <section className="section-list shell" aria-label={`${title} stories`}>
+        <StoryDeck label={`${title} stories`} perView={2}>
         {stories.map((article, index) => (
           <article className="section-story" key={article.slug}>
             <div>
@@ -107,6 +109,7 @@ export default async function SectionPage({ params }: SectionProps) {
             </Link>
           </article>
         ))}
+        </StoryDeck>
       </section>
       <SiteFooter />
     </main>

@@ -12,6 +12,7 @@ import { CandidateGuideLink } from '@/components/candidate-guide-link';
 import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { ElectionHubLink } from '@/components/election-hub';
 import { HomepageStoryLink } from '@/components/homepage-story-link';
+import { CaliforniaPulseMap } from '@/components/california-pulse-map';
 import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
@@ -164,6 +165,7 @@ export default async function Home() {
               See a sample briefing <ArrowRight size={14} />
             </Link>
           </div>
+          <CaliforniaPulseMap />
           <figure className="band-visual photo-frame ratio-card">
             <Image
               src={bandImage.url}

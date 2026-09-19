@@ -4,13 +4,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'thumb.wikimedia.org',
-        pathname: '/wikipedia/commons/**',
-      },
-      // Official portraits from the California Votes representatives register,
-      // served by the chambers and agencies themselves.
+      // Editorial imagery is copied into our own storage, so the Journal's
+      // own pictures need exactly one entry here. The remaining hosts serve the
+      // official portraits in the California Votes representatives register,
+      // which other applications own and we only read.
+      { protocol: 'https', hostname: 'eoifovdmuuqdcospamru.supabase.co' },
       { protocol: 'https', hostname: 'webapi.assembly.ca.gov' },
       { protocol: 'https', hostname: 'clerk.house.gov' },
       { protocol: 'https', hostname: 'www.senate.ca.gov' },
@@ -23,7 +21,6 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'www.treasurer.ca.gov' },
       { protocol: 'https', hostname: 'oag.ca.gov' },
       { protocol: 'https', hostname: 'www.cde.ca.gov' },
-      { protocol: 'https', hostname: 'eoifovdmuuqdcospamru.supabase.co' },
     ],
   },
   async redirects() {

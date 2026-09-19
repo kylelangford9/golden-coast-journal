@@ -60,7 +60,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-14T12:00:00-07:00',
     readingMinutes: 4,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
     imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
@@ -110,7 +110,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-14T04:05:00-07:00',
     readingMinutes: 3,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
     imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
@@ -168,7 +168,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-14T02:15:00-07:00',
     readingMinutes: 3,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
     imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [
@@ -222,7 +222,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-14T00:39:54-07:00',
     readingMinutes: 3,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Worker_inspects_construction.jpg/1280px-Worker_inspects_construction.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/worker-construction.jpg',
     imageAlt: 'A worker inspecting a construction site',
     imageCredit:
       'Ryan Hagerty / U.S. Fish and Wildlife Service via Wikimedia Commons (public domain)',
@@ -269,7 +269,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-13T23:41:47-07:00',
     readingMinutes: 3,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Path_27_Power_Lines_in_California_0.JPG/1280px-Path_27_Power_Lines_in_California_0.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-power-lines.jpg',
     imageAlt:
       'High-voltage power lines running beside Interstate 15 in California',
     imageCredit: 'Northwalker / Wikimedia Commons (CC0)',
@@ -316,7 +316,7 @@ export const articles: Article[] = [
     updatedAt: '2026-09-14T02:52:00-07:00',
     readingMinutes: 3,
     imageUrl:
-      'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+      'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
     imageAlt: 'California State Capitol in Sacramento beneath a clear blue sky',
     imageCredit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     sources: [

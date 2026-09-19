@@ -25,7 +25,7 @@ for (const fact of [
 assert.ok(story.includes("author: 'Kyle Langford'"));
 assert.ok(story.includes('https://voterguide.sos.ca.gov/'));
 assert.equal((story.match(/https:\/\/www\.sos\.ca\.gov/g) || []).length, 3);
-assert.ok(story.includes('CA_State_Capitol.png'));
+assert.ok(story.includes('photos/editorial/ca-state-capitol.jpg'));
 
 for (const affiliatedProject of [
   'LangBeat',

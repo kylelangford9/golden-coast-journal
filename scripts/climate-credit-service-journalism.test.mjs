@@ -34,7 +34,7 @@ for (const fact of [
 
 assert.ok(story.includes("author: 'Kyle Langford'"));
 assert.equal((story.match(/https:\/\/www\.cpuc\.ca\.gov/g) || []).length, 3);
-assert.ok(story.includes('Path_27_Power_Lines_in_California_0.JPG'));
+assert.ok(story.includes('photos/editorial/ca-power-lines.jpg'));
 assert.ok(story.includes('amount may change'));
 assert.ok(imagery.includes('Northwalker / Wikimedia Commons (CC0)'));
 assert.ok(imagery.includes('File:Path_27_Power_Lines_in_California_0.JPG'));

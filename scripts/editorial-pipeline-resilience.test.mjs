@@ -51,5 +51,7 @@ assert.match(metrics, /staleRunning/);
 assert.match(metrics, /last24Hours/);
 assert.match(readme, /only while the review queue sits below `review_queue_limit`/);
 assert.match(readme, /check \(ai_generated = false\)/);
+assert.match(readme, /never hotlinked/);
+assert.match(assets, /self-hosted/i);
 
 console.log('Editorial pipeline resilience contract verified.');

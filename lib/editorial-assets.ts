@@ -9,6 +9,12 @@ import { getSupabase, unwrap } from '@/lib/supabase-server';
  * Every asset is a real, attributable photograph or source graphic. The table
  * carries a `check (ai_generated = false)` constraint, so an AI-generated image
  * cannot be stored even by a direct SQL insert.
+ *
+ * Imagery is also self-hosted. `url` must be a repo-relative path or a file in
+ * the project storage bucket, and a second check constraint enforces it, so the
+ * cron can never publish an article whose picture depends on a remote host
+ * staying up. When adding an asset, copy the file into storage first and keep
+ * `credit` and `provenance_url` pointing at the original source.
  */
 export type EditorialAssetRow = {
   id: string;

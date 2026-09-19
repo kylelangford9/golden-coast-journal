@@ -9,7 +9,7 @@ export type EditorialAsset = {
 
 export const editorialAssets = {
   workerInspectingConstruction: {
-    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Worker_inspects_construction.jpg/1280px-Worker_inspects_construction.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org',
+    url: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/worker-construction.jpg',
     alt: 'A worker inspecting a construction site',
     credit:
       'Ryan Hagerty / U.S. Fish and Wildlife Service via Wikimedia Commons (public domain)',
@@ -19,7 +19,7 @@ export const editorialAssets = {
     aiGenerated: false,
   },
   californiaPowerLines: {
-    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Path_27_Power_Lines_in_California_0.JPG/1280px-Path_27_Power_Lines_in_California_0.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail',
+    url: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-power-lines.jpg',
     alt: 'High-voltage power lines running beside Interstate 15 in California',
     credit: 'Northwalker / Wikimedia Commons (CC0)',
     provenanceUrl:
@@ -28,7 +28,7 @@ export const editorialAssets = {
     aiGenerated: false,
   },
   californiaStateCapitol: {
-    url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+    url: 'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
     alt: 'California State Capitol in Sacramento beneath a clear blue sky',
     credit: 'Earthquakesurprise / Wikimedia Commons (CC0)',
     provenanceUrl:
@@ -80,7 +80,7 @@ export const editorialAssets = {
  * gcj_articles row references the key.
  */
 const retiredAssetUrls: Record<string, EditorialAsset> = {
-  'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/CA_State_Capitol.png/1920px-CA_State_Capitol.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail':
+  'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg':
     editorialAssets.californiaStateCapitol,
 };
 

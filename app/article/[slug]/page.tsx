@@ -96,11 +96,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
         }
       : { '@type': 'Organization', name: article.author },
-    publisher: {
-      '@type': 'Organization',
-      name: 'The Golden Coast Journal',
-      url: origin,
-    },
+    // Point at the newsroom node in the root layout rather than restating a
+    // bare Organization. The restated copy carried no logo, so the pages that
+    // matter most to a news index were the ones describing their publisher
+    // without one; every other page already references this id.
+    publisher: { '@id': `${origin}/#organization` },
     isAccessibleForFree: true,
     articleSection: article.section,
   }).replace(/</g, '\\u003c');

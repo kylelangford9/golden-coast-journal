@@ -41,7 +41,19 @@ export const metadata: Metadata = {
       'Independent reporting and analysis from California to the world. No paywall. No ads.',
     images: ['/og.png'],
   },
-  icons: { icon: { url: '/favicon.png', type: 'image/png', sizes: '96x96' } },
+  // One PNG was the whole icon set, so iOS had no home-screen mark at all.
+  // Raster only, smallest first: the vector in public/ stays unreferenced on
+  // purpose, because the favicon crawler wants a PNG at a multiple of 48 and
+  // canonical-metadata.test.mjs holds that decision in place.
+  icons: {
+    icon: [
+      { url: '/favicon.png', type: 'image/png', sizes: '96x96' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+    shortcut: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
@@ -55,7 +67,17 @@ export default function RootLayout({
     url: origin,
     description:
       'Independent reporting and analysis from California to the world. No paywall. No ads.',
+    // The square mark, not the 1200x630 social card that used to be declared
+    // here. A share image is not a logo: it carries the headline artwork, and
+    // search results asking an organisation for its logo got a banner.
     logo: {
+      '@type': 'ImageObject',
+      url: `${origin}/icon-512.png`,
+      width: 512,
+      height: 512,
+      caption: 'The Golden Coast Journal',
+    },
+    image: {
       '@type': 'ImageObject',
       url: `${origin}/og.png`,
       width: 1200,

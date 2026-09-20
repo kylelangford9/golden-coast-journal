@@ -12,26 +12,27 @@ export type BroadcastItem = {
 };
 
 const DWELL_MS = 6_000;
-const PULL_TRIGGER = 26;
+const PULL_TRIGGER = 34;
+const STOW_SCROLL = 320;
 
 /**
  * A small broadcast monitor carrying the Journal's own stories.
  *
- * It never says it is live; it simply runs. The picture cuts from one story to
- * the next on its own, a tally light blinks, and the screen carries scan lines
- * and the glow of something switched on.
+ * It never says it is live; it simply runs. The picture cuts on its own, a
+ * tally light blinks, and the screen carries scan lines and the glow of
+ * something switched on. Tapping the screen opens whatever is showing.
  *
- * The screen is a link to whatever is showing. Beside it is a remote whose
- * handle can be pulled down to change the story; the pull is an enhancement
- * over a plain button, so a keyboard or a screen reader gets the same control
- * without needing the gesture.
+ * The remote beside it is pulled out to enlarge the set and pushed back to
+ * shrink it. Scrolling past the masthead stows it too, so an enlarged screen
+ * never follows the reader down the page. It is a button underneath the
+ * gesture, so a keyboard and a screen reader get the same control.
  */
 export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
   const [index, setIndex] = useState(0);
   const [cutting, setCutting] = useState(false);
-  const [pull, setPull] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [drag, setDrag] = useState(0);
   const grab = useRef<number | null>(null);
-  const paused = useRef(false);
 
   const advance = useCallback(() => {
     if (items.length < 2) return;
@@ -44,17 +45,25 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
 
   useEffect(() => {
     if (items.length < 2) return;
-    const timer = window.setInterval(() => {
-      if (!paused.current) advance();
-    }, DWELL_MS);
+    const timer = window.setInterval(advance, DWELL_MS);
     return () => window.clearInterval(timer);
   }, [advance, items.length]);
+
+  // Reading the page is the signal that the set has been watched enough.
+  useEffect(() => {
+    if (!open) return;
+    const onScroll = () => {
+      if (window.scrollY > STOW_SCROLL) setOpen(false);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [open]);
 
   if (!items.length) return null;
   const item = items[index];
 
   return (
-    <div className="broadcast">
+    <div className={`broadcast${open ? ' is-open' : ''}`}>
       <div className="broadcast-set">
         <Link
           href={item.href}
@@ -68,7 +77,7 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
               src={item.imageUrl}
               alt=""
               fill
-              sizes="72px"
+              sizes="(max-width: 760px) 40vw, 200px"
             />
           </span>
           <span className={`broadcast-copy${cutting ? ' is-cutting' : ''}`}>
@@ -79,44 +88,48 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
         </Link>
       </div>
 
-      <div className="broadcast-remote">
-        <button
-          type="button"
-          className="broadcast-knob"
-          aria-label="Next story"
-          title="Pull down for the next story"
-          style={{ transform: `translateY(${pull}px)` }}
-          onClick={advance}
-          onPointerDown={(event) => {
-            event.currentTarget.setPointerCapture?.(event.pointerId);
-            grab.current = event.clientY;
-            paused.current = true;
-          }}
-          onPointerMove={(event) => {
-            if (grab.current === null) return;
-            setPull(Math.max(0, Math.min(PULL_TRIGGER + 6, event.clientY - grab.current)));
-          }}
-          onPointerUp={() => {
-            const pulled = pull >= PULL_TRIGGER;
-            grab.current = null;
-            paused.current = false;
-            setPull(0);
-            // A click fires on its own when the handle has not moved, so only
-            // a real pull advances here; otherwise the story would skip twice.
-            if (pulled) advance();
-          }}
-          onPointerCancel={() => {
-            grab.current = null;
-            paused.current = false;
-            setPull(0);
-          }}
-        >
-          <span className="broadcast-knob-grip" aria-hidden="true" />
-        </button>
-        <span className="broadcast-count" aria-hidden="true">
+      <button
+        type="button"
+        className="remote"
+        aria-expanded={open}
+        aria-label={open ? 'Stow the remote and shrink the screen' : 'Pull the remote out to enlarge the screen'}
+        title={open ? 'Push back to shrink' : 'Pull out to enlarge'}
+        style={{ transform: `translateX(${drag}px)` }}
+        onClick={() => setOpen((v) => !v)}
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture?.(event.pointerId);
+          grab.current = event.clientX;
+        }}
+        onPointerMove={(event) => {
+          if (grab.current === null) return;
+          const dx = event.clientX - grab.current;
+          // Out is to the right when stowed, back to the left when open.
+          setDrag(open ? Math.min(0, Math.max(-PULL_TRIGGER - 8, dx)) : Math.max(0, Math.min(PULL_TRIGGER + 8, dx)));
+        }}
+        onPointerUp={() => {
+          const moved = Math.abs(drag) >= PULL_TRIGGER;
+          grab.current = null;
+          setDrag(0);
+          // A click fires anyway when the remote has not moved, so only a real
+          // pull toggles here; otherwise it would toggle twice and sit still.
+          if (moved) setOpen((v) => !v);
+        }}
+        onPointerCancel={() => {
+          grab.current = null;
+          setDrag(0);
+        }}
+      >
+        <span className="remote-body" aria-hidden="true">
+          <span className="remote-eye" />
+          <span className="remote-power" />
+          <span className="remote-pad">
+            <i /><i /><i /><i /><i /><i />
+          </span>
+        </span>
+        <span className="remote-count" aria-hidden="true">
           {index + 1}/{items.length}
         </span>
-      </div>
+      </button>
     </div>
   );
 }

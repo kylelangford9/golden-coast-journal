@@ -71,6 +71,11 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
           href={item.href}
           className={styles.broadcastScreen}
           aria-label={`${item.title}; open this story`}
+          // The minifier drops `display` from this rule in the emitted CSS, so
+          // the anchor fell back to inline and the screen collapsed to nothing.
+          // Everything else in the rule survives; pinning the one property it
+          // loses is cheaper than fighting the build.
+          style={{ display: 'flex' }}
         >
           <span className={styles.broadcastTally} aria-hidden="true" />
           <span className={styles.broadcastStill}>

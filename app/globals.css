@@ -409,7 +409,9 @@ button { color: inherit; }
 .deadline-newsletter-inner > div > p:last-child { color: var(--muted); font-family: var(--font-serif), Georgia, serif; font-size: 17px; line-height: 1.48; }
 @media (max-width: 900px) {
   .kicker, .weather { display: none; }
-  .masthead { display: block; text-align: center; }
+  /* 53px of padding around the wordmark is a lot of empty paper on a
+     phone before the reader reaches anything. */
+  .masthead { display: block; text-align: center; padding: 14px 0 12px; }
   .lead-grid { grid-template-columns: 1fr; }
   .lead-visual { grid-row: 1; }
   .live-desk { grid-template-columns: 1fr; gap: 20px; }

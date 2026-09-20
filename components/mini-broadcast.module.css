@@ -42,7 +42,7 @@
    (WCAG 2.5.5); the labels only appear at full size, where there is room for
    them. Key faces are picked for contrast on their own fill: white on rust is
    7.6:1, white on the navy tint 7.2:1, ink on the live green about 9:1. */
-.remote { position: relative; flex: none; width: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 30px 6px 6px; border-radius: 18px; background: linear-gradient(#33454f, #16222a); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 6px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.45); transform: translateY(var(--drag, 0px)); transition: transform .2s ease; }
+.remote { position: relative; flex: none; width: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 6px; border-radius: 18px; background: linear-gradient(#33454f, #16222a); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 6px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.45); transform: translateY(var(--drag, 0px)); transition: transform .2s ease; }
 .remote button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0; border: 0; cursor: pointer; }
 .remote button:focus-visible { outline: 2px solid #e9ba6f; outline-offset: 2px; }
 .remote button:active { transform: translateY(1px); }
@@ -51,31 +51,39 @@
 
 /* A tiny key in the top right corner, the way a real handset carries power.
    The face is 16px; the target around it is the full 44x44. */
-/* The face sits in the very corner of its 44x44 target rather than the
-   middle of it, so the target can stay full size without the key appearing to
-   touch the one underneath. */
-.remotePower { position: absolute; top: 0; right: 0; width: 44px; height: 44px; justify-content: flex-start; align-items: flex-end; padding: 5px 5px 0 0; border-radius: 50%; background: none; box-shadow: none; }
+/* Only on the handset. On the compact strip it read as a stray red dot in the
+   corner, and the strip has no need of it: the set runs itself there. The face
+   sits in the very corner of its 44x44 target rather than the middle, so the
+   target stays full size without appearing to touch the key underneath. */
+.remote .remotePower { display: none; position: absolute; top: 0; right: 0; width: 44px; height: 44px; justify-content: flex-start; align-items: flex-end; padding: 5px 5px 0 0; border-radius: 50%; background: none; box-shadow: none; }
 .remotePower::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(120% 120% at 32% 26%, #b8503f 0%, #952c1e 62%, #711f14 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.55); }
 .remotePower:not(.isOn)::before { background: radial-gradient(120% 120% at 32% 26%, #6b7880 0%, #4a565e 60%, #333d44 100%); }
 
 /* Slim in the slot so the screen keeps its width, full size in the hand.
    26px is still above the 24px minimum target of WCAG 2.5.8. */
 .remoteRow { display: flex; gap: 4px; }
-.remoteChannel { width: 26px; height: 44px; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.5); }
+.remoteChannel { width: 26px; height: 34px; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.5); }
 .isPrev { background: linear-gradient(#2f6a90, #1f4f6e); color: #fff; }
 .isNext { background: linear-gradient(#54dda0, #22b26a); color: #101a15; }
 
 /* The grip. It is the drag handle and, for a keyboard, the open/close control,
    so it stays a real button rather than a moulding on the case. */
-.remoteGrip { width: 56px; height: 40px; border-radius: 10px; background: linear-gradient(#e7edf1, #b9c7cf); color: #33454f; cursor: grab; touch-action: none; }
+.remoteGrip { width: 56px; height: 32px; border-radius: 9px; background: linear-gradient(#e7edf1, #b9c7cf); color: #33454f; cursor: grab; touch-action: none; }
 .remoteGrip:active { cursor: grabbing; }
 .remote button:disabled { opacity: .38; cursor: default; }
-.remoteCount { color: #ccd9e0; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
+/* The counter costs height the stowed strip cannot spare, and it left a dead
+   band of bezel under the picture. It stays in the hand, where there is room. */
+.remoteCount { display: none; align-self: center; color: #ccd9e0; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
 
 /* Pulled down, the handset leaves its slot beside the set and sits in the
    middle of the screen, in the hand. */
-.broadcast.isOpen .remote { position: fixed; left: 50%; bottom: 26px; z-index: 61; width: auto; gap: 8px; padding: 32px 12px 10px; border-radius: 26px; transform: translate(-50%, var(--drag, 0px)); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 10px 26px rgba(0,0,0,.5); }
+.broadcast.isOpen .remote { position: fixed; left: 50%; bottom: 26px; z-index: 61; width: auto; gap: 8px; padding: 34px 12px 10px; border-radius: 26px; transform: translate(-50%, var(--drag, 0px)); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 10px 26px rgba(0,0,0,.5); }
 /* The return key is the one a reader reaches for most, so it gets the width. */
+/* The handset is more heavily rounded than the strip, so the key has to come
+   further in from the corner or it sits on the curve and reads as falling off
+   the edge of the case. */
+.broadcast.isOpen .remote .remotePower { display: flex; padding: 13px 13px 0 0; }
+.broadcast.isOpen .remoteCount { display: block; }
 .broadcast.isOpen .remoteChannel { width: 52px; height: 46px; }
 .broadcast.isOpen .remoteGrip { width: 110px; height: 46px; border-radius: 12px; }
 

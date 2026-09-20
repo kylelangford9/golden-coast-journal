@@ -630,7 +630,7 @@ button { color: inherit; }
    party holding it. Pulse and palette from the Democrat Domination map. */
 @keyframes gcj-map-pulse { 0%, 100% { fill-opacity: .5; } 50% { fill-opacity: .8; } }
 .ca-map { margin: 0; display: grid; gap: 8px; justify-items: center; }
-.ca-map svg { width: 100%; max-width: 124px; height: auto; }
+.ca-map svg { width: 100%; max-width: 116px; height: auto; }
 .ca-district { stroke: rgba(255,255,255,.28); stroke-width: .6; animation: gcj-map-pulse 2s ease-in-out infinite; }
 .ca-district.is-r { animation-delay: .5s; }
 .ca-district.is-none { fill-opacity: .35; animation: none; }
@@ -715,21 +715,9 @@ button { color: inherit; }
    and everything after that point is dropped. A module keeps the widget out of
    that blast radius. */
 
-/* Real House matchups beside the map: seat, both candidates, who holds it.
-   A called race stops pulsing; a settled result is a fact, not a standing. */
-.matchups { display: grid; gap: 6px; width: 100%; margin: 12px 0 0; padding: 0; list-style: none; }
-.matchups li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid rgba(255,255,255,.12); }
-.matchup-seat { color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; }
-.matchup-pair { display: grid; gap: 3px; min-width: 0; }
-.matchup-person { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.matchup-face { position: relative; flex: none; width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #21384a; color: #cfe0e8; font: 700 8px/1 ui-monospace, monospace; }
-.matchup-face img { object-fit: cover; object-position: center 22%; }
-.matchup-name { font-size: 10.5px; color: #dbe7ed; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.matchup-person.is-d .matchup-face { box-shadow: 0 0 0 2px #7aa8ff; }
-.matchup-person.is-r .matchup-face { box-shadow: 0 0 0 2px #ff9a9a; }
-.matchup-person.is-o .matchup-face { box-shadow: 0 0 0 2px #c4b5fd; }
-.matchup-flag { flex: none; color: #9fb4c0; font-size: 8px; letter-spacing: .09em; text-transform: uppercase; }
-.matchups li.is-called .matchup-name { color: #fff; }
-
-/* Once every race is called the map holds still. */
 .ca-district.is-called, .ca-map.is-settled .ca-district { animation: none; fill-opacity: .82; }
+
+/* The map with a race either side of it, using width the map never needed.
+   Fixed columns so a cycling name cannot resize the card. */
+.ca-map-stage { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; width: 100%; }
+@media (max-width: 400px) { .ca-map-stage { gap: 6px; } }

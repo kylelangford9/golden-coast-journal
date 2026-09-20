@@ -23,14 +23,15 @@
 
 /* An actual remote: a dark slab with an infrared eye, a power key and a
    keypad. It is a button first; the drag is an enhancement on top. */
-.remote { flex: none; width: 40px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 5px 4px; border: 0; border-radius: 10px; background: linear-gradient(#39505f, #1d2b34); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 5px rgba(0,0,0,.45); cursor: grab; touch-action: none; transition: transform .2s ease; }
-.remote:active { cursor: grabbing; }
-.remote:focus-visible { outline: 2px solid #e9ba6f; outline-offset: 2px; }
+.remote { flex: none; width: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 6px 4px; border-radius: 10px; background: linear-gradient(#39505f, #1d2b34); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 5px rgba(0,0,0,.45); transition: transform .2s ease; }
+.remote button:focus-visible { outline: 2px solid #e9ba6f; outline-offset: 2px; }
 .remoteBody { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
 .remoteEye { width: 12px; height: 4px; border-radius: 2px; background: #10191f; box-shadow: inset 0 1px 1px rgba(0,0,0,.8); }
-.remotePower { width: 9px; height: 9px; border-radius: 50%; background: #ff5544; box-shadow: 0 0 6px rgba(255,85,68,.7); }
-.remotePad { display: grid; grid-template-columns: repeat(2, 7px); gap: 3px; }
-.remotePad i { width: 7px; height: 5px; border-radius: 1.5px; background: #8fa3ae; }
+.remotePower { width: 13px; height: 13px; padding: 0; border: 0; border-radius: 50%; background: #5a6b76; cursor: pointer; }
+.remotePower.isOn { background: #ff5544; box-shadow: 0 0 6px rgba(255,85,68,.7); }
+.remoteGrip { width: 26px; height: 22px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 5px; background: linear-gradient(#e7edf1, #b9c7cf); color: #33454f; cursor: grab; touch-action: none; }
+.remoteGrip:active { cursor: grabbing; }
+.remoteGrip:disabled { opacity: .35; cursor: default; }
 .remoteCount { color: #b3c4cc; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
 /* Pulled out, the remote leans away from the set. */
 .broadcast.isOpen .remote { background: linear-gradient(#486b7d, #1d2b34); }
@@ -47,3 +48,7 @@
   .broadcast.isOpen .broadcastScreen { min-height: 118px; }
   .broadcast.isOpen .broadcastStill { width: 100px; height: 100px; }
 }
+.remoteArrow { color: #cfe0e8; font: 700 13px/1 ui-monospace, monospace; }
+/* Switched off: a dark panel with nothing on it. */
+.isOff .broadcastScreen { background: #060d11; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); min-height: 50px; }
+.isOff .broadcastSet { filter: saturate(.5); }

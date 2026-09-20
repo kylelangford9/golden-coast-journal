@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import styles from './mini-broadcast.module.css';
+
 export type BroadcastItem = {
   title: string;
   href: string;
@@ -64,14 +66,14 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
 
   return (
     <div className={`broadcast${open ? ' is-open' : ''}`}>
-      <div className="broadcast-set">
+      <div className={styles.broadcastSet}>
         <Link
           href={item.href}
-          className="broadcast-screen"
+          className={styles.broadcastScreen}
           aria-label={`${item.title}; open this story`}
         >
-          <span className="broadcast-tally" aria-hidden="true" />
-          <span className="broadcast-still">
+          <span className={styles.broadcastTally} aria-hidden="true" />
+          <span className={styles.broadcastStill}>
             <Image
               key={item.imageUrl}
               src={item.imageUrl}
@@ -81,16 +83,16 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
             />
           </span>
           <span className={`broadcast-copy${cutting ? ' is-cutting' : ''}`}>
-            <span className="broadcast-slug">{item.section}</span>
-            <span className="broadcast-line">{item.title}</span>
+            <span className={styles.broadcastSlug}>{item.section}</span>
+            <span className={styles.broadcastLine}>{item.title}</span>
           </span>
-          <span className="broadcast-scan" aria-hidden="true" />
+          <span className={styles.broadcastScan} aria-hidden="true" />
         </Link>
       </div>
 
       <button
         type="button"
-        className="remote"
+        className={styles.remote}
         aria-expanded={open}
         aria-label={open ? 'Stow the remote and shrink the screen' : 'Pull the remote out to enlarge the screen'}
         title={open ? 'Push back to shrink' : 'Pull out to enlarge'}
@@ -119,14 +121,14 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
           setDrag(0);
         }}
       >
-        <span className="remote-body" aria-hidden="true">
-          <span className="remote-eye" />
-          <span className="remote-power" />
-          <span className="remote-pad">
+        <span className={styles.remoteBody} aria-hidden="true">
+          <span className={styles.remoteEye} />
+          <span className={styles.remotePower} />
+          <span className={styles.remotePad}>
             <i /><i /><i /><i /><i /><i />
           </span>
         </span>
-        <span className="remote-count" aria-hidden="true">
+        <span className={styles.remoteCount} aria-hidden="true">
           {index + 1}/{items.length}
         </span>
       </button>

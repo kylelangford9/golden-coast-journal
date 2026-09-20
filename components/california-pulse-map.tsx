@@ -1,74 +1,74 @@
 import { CA_DISTRICTS, CA_DISTRICT_VIEW_BOX } from '@/lib/ca-districts';
-import { getSupabase, unwrap } from '@/lib/supabase-server';
+import { getCongressionalRaces, sideOf } from '@/lib/races';
+import { RaceMatchups } from '@/components/race-matchups';
 
 /**
- * A mini California, coloured district by district.
+ * A mini California with the House matchups beside it.
  *
- * The shapes are the 52 real congressional districts from the California
- * Voters boundary set, and the colour of each is the party that actually holds
- * it, read live from the representatives register. The pulse and the palette
- * are carried over from the red-blue district map in Democrat Domination.
+ * Each of the 52 real congressional districts is coloured by the party that
+ * will hold it: the called winner once a race has one, and the current holder
+ * until then. There is no forecast column in this data and none is invented,
+ * so the map reports standing rather than prediction; when races are called it
+ * switches to results and stops moving.
  */
-type Held = Record<number, 'D' | 'R' | 'O'>;
-
-async function readDistricts(): Promise<{ held: Held; dem: number; rep: number } | null> {
-  try {
-    const rows =
-      (unwrap(
-        await getSupabase()
-          .from('representatives')
-          .select('party,district_number')
-          .eq('district_type', 'Congressional')
-          .neq('is_active', false),
-        'Unable to load districts',
-      ) as { party: string | null; district_number: number | null }[] | null) || [];
-    if (!rows.length) return null;
-
-    const held: Held = {};
-    let dem = 0;
-    let rep = 0;
-    for (const row of rows) {
-      if (row.district_number == null) continue;
-      const side = row.party === 'Democrat' ? 'D' : row.party === 'Republican' ? 'R' : 'O';
-      held[row.district_number] = side;
-      if (side === 'D') dem += 1;
-      if (side === 'R') rep += 1;
-    }
-    return { held, dem, rep };
-  } catch {
-    return null;
-  }
-}
-
 const FILL = { D: '#2563eb', R: '#dc2626', O: '#7c3aed' } as const;
 
 export async function CaliforniaPulseMap() {
-  const data = await readDistricts();
-  if (!data) return null;
+  const races = await getCongressionalRaces();
+  if (!races.length) return null;
 
-  const label = `California congressional delegation: ${data.dem} Democratic districts, ${data.rep} Republican`;
+  const byDistrict = new Map(races.map((race) => [race.district, race]));
+  const called = races.filter((race) => race.calledAt).length;
+  const settled = called === races.length && races.length > 0;
+
+  let dem = 0;
+  let rep = 0;
+  for (const race of races) {
+    const side = sideOf(race);
+    if (side === 'D') dem += 1;
+    if (side === 'R') rep += 1;
+  }
+
+  const label = settled
+    ? `California House result: ${dem} Democratic seats, ${rep} Republican`
+    : `California House seats as they stand: ${dem} Democratic, ${rep} Republican`;
 
   return (
-    <figure className="ca-map" aria-label={label}>
+    <figure className={`ca-map${settled ? ' is-settled' : ''}`} aria-label={label}>
       <svg viewBox={CA_DISTRICT_VIEW_BOX} aria-hidden="true">
         {CA_DISTRICTS.map((district) => {
-          const side = data.held[district.n];
+          const race = byDistrict.get(district.n);
+          const side = race ? sideOf(race) : null;
+          const isCalled = Boolean(race?.calledAt);
           return (
             <path
               key={district.n}
               d={district.d}
-              className={side ? `ca-district is-${side.toLowerCase()}` : 'ca-district is-none'}
+              className={[
+                'ca-district',
+                side ? `is-${side.toLowerCase()}` : 'is-none',
+                isCalled ? 'is-called' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               fill={side ? FILL[side] : '#64748b'}
             />
           );
         })}
       </svg>
+
+      <RaceMatchups races={races} />
+
       <figcaption>
         <span className="ca-map-tally">
-          <b className="is-dem">{data.dem} D</b>
-          <b className="is-rep">{data.rep} R</b>
+          <b className="is-dem">{dem} D</b>
+          <b className="is-rep">{rep} R</b>
         </span>
-        <span className="ca-map-note">California congressional districts</span>
+        <span className="ca-map-note">
+          {settled
+            ? 'California House results'
+            : `${races.length} House seats; ${called} called`}
+        </span>
       </figcaption>
     </figure>
   );

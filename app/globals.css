@@ -630,7 +630,7 @@ button { color: inherit; }
    party holding it. Pulse and palette from the Democrat Domination map. */
 @keyframes gcj-map-pulse { 0%, 100% { fill-opacity: .5; } 50% { fill-opacity: .8; } }
 .ca-map { margin: 0; display: grid; gap: 8px; justify-items: center; }
-.ca-map svg { width: 100%; max-width: 132px; height: auto; }
+.ca-map svg { width: 100%; max-width: 124px; height: auto; }
 .ca-district { stroke: rgba(255,255,255,.28); stroke-width: .6; animation: gcj-map-pulse 2s ease-in-out infinite; }
 .ca-district.is-r { animation-delay: .5s; }
 .ca-district.is-none { fill-opacity: .35; animation: none; }
@@ -708,52 +708,28 @@ button { color: inherit; }
   .proposition-promo { padding-top: 22px; padding-bottom: 22px; }
 }
 
-/* A small broadcast monitor, not a label that says "live".
-   The set is a bezel with a screen inset into it; scan lines, a phosphor glow
-   and a tally light that blinks the way a camera's does. Stories cut on their
-   own and the screen is a link to whatever is showing. Nothing states that the
-   desk is running; the picture does it. */
-.broadcast { display: flex; align-items: stretch; gap: 10px; padding: 5px 0; }
-.broadcast-set { flex: 1; min-width: 0; padding: 4px; border-radius: 10px; background: linear-gradient(#2b3f4c, #1b2a34); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 1px 3px rgba(0,0,0,.4); }
-.broadcast-screen { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 5px 10px 5px 22px; border-radius: 7px; background: radial-gradient(120% 140% at 50% 0%, #10323f 0%, #08181f 70%, #050f14 100%); box-shadow: inset 0 0 22px rgba(90,220,255,.10), inset 0 0 0 1px rgba(255,255,255,.07); transition: min-height .24s ease; }
-.broadcast-still { position: relative; flex: none; width: 46px; height: 42px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.12); transition: width .24s ease, height .24s ease; }
-.broadcast-still img { object-fit: cover; }
-.broadcast-copy { display: flex; flex-direction: column; gap: 1px; min-width: 0; transition: opacity .15s ease; }
-.broadcast-copy.is-cutting { opacity: 0; }
-.broadcast-slug { color: #7fb6c9; font-size: 8.5px; letter-spacing: .13em; text-transform: uppercase; }
-.broadcast-line { color: #e8f6fb; font-size: 12.5px; line-height: 1.22; font-weight: 600; text-shadow: 0 0 9px rgba(120,225,255,.35); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.broadcast-tally { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); width: 7px; height: 7px; border-radius: 50%; background: #ff4433; box-shadow: 0 0 7px rgba(255,68,51,.85); animation: gcj-tally 1.6s steps(1, end) infinite; }
-@keyframes gcj-tally { 0%, 64% { opacity: 1; } 65%, 100% { opacity: .28; } }
-.broadcast-scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.045) 0 1px, transparent 1px 3px); }
+/* The broadcast monitor styles live in components/mini-broadcast.module.css.
+   They were at the end of this file and never applied: this stylesheet stops
+   parsing partway through the Tailwind layer, where a shimmer utility uses
+   oklch(from currentColor ...) relative-colour syntax that some engines reject,
+   and everything after that point is dropped. A module keeps the widget out of
+   that blast radius. */
 
-/* Pulled out, the set grows. Scrolling past the masthead stows it again. */
-.broadcast.is-open .broadcast-screen { min-height: 132px; }
-.broadcast.is-open .broadcast-still { width: 118px; height: 118px; }
-.broadcast.is-open .broadcast-line { font-size: 15px; -webkit-line-clamp: 3; }
+/* Real House matchups beside the map: seat, both candidates, who holds it.
+   A called race stops pulsing; a settled result is a fact, not a standing. */
+.matchups { display: grid; gap: 6px; width: 100%; margin: 12px 0 0; padding: 0; list-style: none; }
+.matchups li { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid rgba(255,255,255,.12); }
+.matchup-seat { color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; }
+.matchup-pair { display: grid; gap: 3px; min-width: 0; }
+.matchup-person { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.matchup-face { position: relative; flex: none; width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #21384a; color: #cfe0e8; font: 700 8px/1 ui-monospace, monospace; }
+.matchup-face img { object-fit: cover; object-position: center 22%; }
+.matchup-name { font-size: 10.5px; color: #dbe7ed; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.matchup-person.is-d .matchup-face { box-shadow: 0 0 0 2px #7aa8ff; }
+.matchup-person.is-r .matchup-face { box-shadow: 0 0 0 2px #ff9a9a; }
+.matchup-person.is-o .matchup-face { box-shadow: 0 0 0 2px #c4b5fd; }
+.matchup-flag { flex: none; color: #9fb4c0; font-size: 8px; letter-spacing: .09em; text-transform: uppercase; }
+.matchups li.is-called .matchup-name { color: #fff; }
 
-/* An actual remote: a dark slab with an infrared eye, a power key and a
-   keypad. It is a button first; the drag is an enhancement on top. */
-.remote { flex: none; width: 40px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 5px 4px; border: 0; border-radius: 10px; background: linear-gradient(#39505f, #1d2b34); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 5px rgba(0,0,0,.45); cursor: grab; touch-action: none; transition: transform .2s ease; }
-.remote:active { cursor: grabbing; }
-.remote:focus-visible { outline: 2px solid #e9ba6f; outline-offset: 2px; }
-.remote-body { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
-.remote-eye { width: 12px; height: 4px; border-radius: 2px; background: #10191f; box-shadow: inset 0 1px 1px rgba(0,0,0,.8); }
-.remote-power { width: 9px; height: 9px; border-radius: 50%; background: #ff5544; box-shadow: 0 0 6px rgba(255,85,68,.7); }
-.remote-pad { display: grid; grid-template-columns: repeat(2, 7px); gap: 3px; }
-.remote-pad i { width: 7px; height: 5px; border-radius: 1.5px; background: #8fa3ae; }
-.remote-count { color: #b3c4cc; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
-/* Pulled out, the remote leans away from the set. */
-.broadcast.is-open .remote { background: linear-gradient(#486b7d, #1d2b34); }
-.broadcast.is-open .remote-power { background: #5fe0a0; box-shadow: 0 0 7px rgba(95,224,160,.75); }
-
-@media (prefers-reduced-motion: reduce) {
-  .broadcast-tally { animation: none; }
-  .broadcast-copy, .remote, .broadcast-screen, .broadcast-still { transition: none; }
-}
-@media (max-width: 760px) {
-  .broadcast { gap: 8px; padding: 4px 0; }
-  .broadcast-still { width: 42px; height: 38px; }
-  .broadcast-line { font-size: 12px; }
-  .broadcast.is-open .broadcast-screen { min-height: 118px; }
-  .broadcast.is-open .broadcast-still { width: 100px; height: 100px; }
-}
+/* Once every race is called the map holds still. */
+.ca-district.is-called, .ca-map.is-settled .ca-district { animation: none; fill-opacity: .82; }

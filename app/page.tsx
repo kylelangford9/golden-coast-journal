@@ -87,10 +87,11 @@ export default async function Home() {
       <div className="ticker">
         <div className="shell">
           <MiniBroadcast
-            items={developing.slice(0, 6).map((signal) => ({
-              title: signal.title,
-              url: signal.url,
-              source: signal.sourceName,
+            items={deckStories.slice(0, 8).map((article) => ({
+              title: article.title,
+              href: `/article/${article.slug}`,
+              section: article.section,
+              imageUrl: article.imageUrl,
             }))}
           />
         </div>

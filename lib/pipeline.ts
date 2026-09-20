@@ -1,9 +1,10 @@
 import { getVercelOidcToken } from '@vercel/oidc';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
-import { getEditorialSettings } from '@/lib/editorial-settings';
+import { getEditorialSettings, getVoiceFromPlaybook } from '@/lib/editorial-settings';
 import {
   JOURNAL_DRAFT_INSTRUCTIONS,
   KYLE_LANGFORD_AUTHOR,
+  KYLE_LANGFORD_NEWSROOM_VOICE,
   normalizeJournalPunctuation,
 } from '@/lib/editorial-voice';
 import { seedDatabase } from '@/lib/repository';
@@ -139,6 +140,7 @@ async function draftCandidate(
   candidate: CandidateRow,
   source: SourceRow,
   gatewayToken: string,
+  voiceOverride: string | null,
 ) {
   const sourceText = await fetchReadablePage(candidate.external_url);
   const response = await fetch('https://ai-gateway.vercel.sh/v1/responses', {
@@ -150,7 +152,14 @@ async function draftCandidate(
     body: JSON.stringify({
       model: process.env.OPENAI_MODEL || 'openai/gpt-5-mini',
       store: false,
-      instructions: JOURNAL_DRAFT_INSTRUCTIONS,
+      // The playbook row is authoritative so the voice can be edited without a
+      // deploy; the bundled constant is the fallback if the table is unreachable.
+      instructions: voiceOverride
+        ? JOURNAL_DRAFT_INSTRUCTIONS.replace(
+            KYLE_LANGFORD_NEWSROOM_VOICE,
+            voiceOverride,
+          )
+        : JOURNAL_DRAFT_INSTRUCTIONS,
       input: `SOURCE NAME: ${source.name}\nSOURCE URL: ${candidate.external_url}\nSOURCE MATERIAL:\n${sourceText}`,
       text: {
         format: {
@@ -243,6 +252,7 @@ export async function runEditorialPipeline() {
   // Imagery, publication thresholds and queue limits all come from the
   // database so the newsroom can be retuned without a redeploy.
   const settings = await getEditorialSettings();
+  const voice = await getVoiceFromPlaybook();
   const runId = crypto.randomUUID();
   const startedAt = new Date().toISOString();
   const staleBefore = new Date(Date.now() - STALE_RUN_AFTER_MS).toISOString();
@@ -413,7 +423,7 @@ export async function runEditorialPipeline() {
             'Unable to claim drafting candidate',
           );
           if (!(claimed || []).length) continue;
-          const draft = await draftCandidate(candidate, source, gatewayToken);
+          const draft = await draftCandidate(candidate, source, gatewayToken, voice);
           const now = new Date().toISOString();
           const publish =
             settings.autoPublish &&

@@ -93,3 +93,35 @@ export async function getEditorialSettings(): Promise<EditorialSettings> {
   cached = { value, loadedAt: Date.now() };
   return value;
 }
+
+const PLAYBOOK_CACHE_MS = 5 * 60_000;
+let playbook: { value: string | null; loadedAt: number } | null = null;
+
+/**
+ * The editorial voice as stored in `gcj_agent_playbook`.
+ *
+ * The rules are duplicated in `lib/editorial-voice.ts` for the case where the
+ * table is unreachable, but the database row is authoritative: Kyle can edit
+ * the voice there without a deploy, and an agent working from the database
+ * alone reads the same text the pipeline does. Without this the two copies
+ * would drift and only the code one would take effect.
+ */
+export async function getVoiceFromPlaybook(): Promise<string | null> {
+  if (playbook && Date.now() - playbook.loadedAt < PLAYBOOK_CACHE_MS)
+    return playbook.value;
+  try {
+    const rows =
+      (unwrap(
+        await getSupabase()
+          .from('gcj_agent_playbook')
+          .select('body')
+          .eq('key', 'voice')
+          .limit(1),
+        'Unable to load the voice playbook',
+      ) as { body: string }[] | null) || [];
+    playbook = { value: rows[0]?.body?.trim() || null, loadedAt: Date.now() };
+  } catch {
+    playbook = { value: null, loadedAt: Date.now() };
+  }
+  return playbook.value;
+}

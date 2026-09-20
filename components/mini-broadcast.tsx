@@ -65,7 +65,7 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
   const item = items[index];
 
   return (
-    <div className={`broadcast${open ? ' is-open' : ''}`}>
+    <div className={`${styles.broadcast}${open ? ' ' + styles.isOpen : ''}`}>
       <div className={styles.broadcastSet}>
         <Link
           href={item.href}
@@ -87,7 +87,7 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
               sizes="(max-width: 760px) 40vw, 200px"
             />
           </span>
-          <span className={`broadcast-copy${cutting ? ' is-cutting' : ''}`}>
+          <span className={`${styles.broadcastCopy}${cutting ? ' ' + styles.isCutting : ''}`}>
             <span className={styles.broadcastSlug}>{item.section}</span>
             <span className={styles.broadcastLine}>{item.title}</span>
           </span>

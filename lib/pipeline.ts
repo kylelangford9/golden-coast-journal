@@ -1,6 +1,7 @@
 import { getVercelOidcToken } from '@vercel/oidc';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
 import { getEditorialSettings, getVoiceFromPlaybook } from '@/lib/editorial-settings';
+import { ingestAssetRequests } from '@/lib/asset-intake';
 import {
   JOURNAL_DRAFT_INSTRUCTIONS,
   KYLE_LANGFORD_AUTHOR,
@@ -253,6 +254,9 @@ export async function runEditorialPipeline() {
   // database so the newsroom can be retuned without a redeploy.
   const settings = await getEditorialSettings();
   const voice = await getVoiceFromPlaybook();
+  // Pictures an agent asked for are fetched and stored here, where the service
+  // key lives, so nothing downstream has to hold a credential to add one.
+  const assetIntake = await ingestAssetRequests();
   const runId = crypto.randomUUID();
   const startedAt = new Date().toISOString();
   const staleBefore = new Date(Date.now() - STALE_RUN_AFTER_MS).toISOString();
@@ -519,6 +523,8 @@ export async function runEditorialPipeline() {
       aiConfigured: Boolean(gatewayToken),
       autoPublish: settings.autoPublish,
       minConfidenceToPublish: settings.minConfidenceToPublish,
+      assetsIngested: assetIntake.ingested,
+      assetRequestsFailed: assetIntake.failed,
       webSubNotifications,
       webSubFailures,
     };

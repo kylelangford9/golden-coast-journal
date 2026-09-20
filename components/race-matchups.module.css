@@ -1,15 +1,16 @@
-/* A race in the space beside the map. Fixed height so a longer name never
-   changes the card, and the two columns cycle together. */
+/* A candidate either side of the map: Democrat left, Republican right.
+   The slot has a fixed height so a longer surname cannot resize the card as
+   the contests cycle. */
 .column { display: flex; align-items: center; justify-content: center; min-width: 0; }
-.slot { display: grid; gap: 4px; justify-items: center; width: 100%; transition: opacity .3s ease; }
+.slot { display: grid; gap: 4px; justify-items: center; align-content: center; width: 100%; height: 86px; transition: opacity .3s ease; }
 .isFaded { opacity: 0; }
-.seat { display: flex; align-items: center; gap: 4px; color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; }
-.called { color: #5fe0a0; font-style: normal; font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }
-.person { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 5px; align-items: center; width: 100%; min-width: 0; }
-.face { position: relative; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #21384a; color: #cfe0e8; font: 700 8px/1 ui-monospace, monospace; }
+.face { position: relative; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #21384a; color: #cfe0e8; font: 700 12px/1 ui-monospace, monospace; }
 .face img { object-fit: cover; object-position: center 22%; }
-.name { font-size: 10px; color: #dbe7ed; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.name { font-size: 11px; color: #dbe7ed; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.flag { color: #9fb4c0; font-size: 7.5px; letter-spacing: .09em; text-transform: uppercase; }
 .isD .face { box-shadow: 0 0 0 2px #7aa8ff; }
 .isR .face { box-shadow: 0 0 0 2px #ff9a9a; }
-.isO .face { box-shadow: 0 0 0 2px #c4b5fd; }
-@media (prefers-reduced-motion: reduce) { .slot { transition: none; } }
+.middle { display: grid; justify-items: center; gap: 5px; }
+.seat { display: flex; align-items: center; gap: 4px; color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; transition: opacity .3s ease; }
+.called { color: #5fe0a0; font-style: normal; font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }
+@media (prefers-reduced-motion: reduce) { .slot, .seat { transition: none; } }

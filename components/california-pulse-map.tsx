@@ -36,7 +36,7 @@ export async function CaliforniaPulseMap() {
   return (
     <figure className={`ca-map${settled ? ' is-settled' : ''}`} aria-label={label}>
       <div className="ca-map-stage">
-      <RaceMatchups races={races} />
+      <RaceMatchups races={races}>
       <svg viewBox={CA_DISTRICT_VIEW_BOX} aria-hidden="true">
         {CA_DISTRICTS.map((district) => {
           const race = byDistrict.get(district.n);
@@ -58,6 +58,7 @@ export async function CaliforniaPulseMap() {
           );
         })}
       </svg>
+      </RaceMatchups>
       </div>
 
       <figcaption>

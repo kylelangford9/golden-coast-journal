@@ -14,6 +14,7 @@ import { ElectionHubLink } from '@/components/election-hub';
 import { HomepageStoryLink } from '@/components/homepage-story-link';
 import { CaliforniaPulseMap } from '@/components/california-pulse-map';
 import { OfficialChip } from '@/components/official-chip';
+import { MiniBroadcast } from '@/components/mini-broadcast';
 import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
@@ -84,21 +85,14 @@ export default async function Home() {
       </a>
       <SiteHeader />
       <div className="ticker">
-        <div className="shell ticker-inner">
-          <strong>Live desk</strong>
-          <span>
-            {developing[0]?.title ||
-              'Read the latest published reporting from the Journal'}
-          </span>
-          {developing[0] ? (
-            <a href={developing[0].url} target="_blank" rel="noreferrer">
-              Official source <ExternalLink size={13} />
-            </a>
-          ) : (
-            <Link href={`/article/${lead.slug}`}>
-              Full report <ArrowRight size={14} />
-            </Link>
-          )}
+        <div className="shell">
+          <MiniBroadcast
+            items={developing.slice(0, 6).map((signal) => ({
+              title: signal.title,
+              url: signal.url,
+              source: signal.sourceName,
+            }))}
+          />
         </div>
       </div>
 

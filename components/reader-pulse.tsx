@@ -156,18 +156,22 @@ export function ReaderPulse({ pollId, compact = false }: ReaderPulseProps) {
       className={`reader-pulse${compact ? ' reader-pulse-compact' : ''}`}
       aria-labelledby={`reader-pulse-${pollId}`}
     >
-      <div className="reader-pulse-visual photo-frame">
-        <Image
-          src="/oroville.jpg"
-          alt="Aerial photograph of Lake Oroville and the surrounding California foothills"
-          fill
-          sizes="(max-width: 760px) 100vw, 640px"
-          loading="lazy"
-        />
-        <span className="photo-caption">
-          Photograph · Florence Low / California Department of Water Resources
-        </span>
-      </div>
+      {/* The picture, its description and its credit all come from the approved
+          asset the poll names, so none of the three can drift apart here. */}
+      {result.hero ? (
+        <div className="reader-pulse-visual photo-frame">
+          <Image
+            src={result.hero.url}
+            alt={result.hero.alt}
+            fill
+            sizes="(max-width: 760px) 100vw, 640px"
+            loading="lazy"
+          />
+          <span className="photo-caption">
+            Photograph · {result.hero.credit}
+          </span>
+        </div>
+      ) : null}
       <div className="reader-pulse-heading">
         <div>
           <p className="eyebrow">Reader pulse</p>

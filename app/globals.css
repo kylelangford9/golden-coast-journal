@@ -22,7 +22,11 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-serif);
 }
-:root { --paper: #f6f1e7; --ink: #161713; --muted: #545148; --line: #c9c1b2; --rust: #952c1e; --navy: #17364a; --live: #22b26a; --popover: #fffdf8; --popover-foreground: #161713; --ui-muted: #ebe5d9; --radius: .25rem; }
+/* --gold is the sun in the masthead mark, sampled from the artwork itself.
+   It is a graphic colour, not a text colour: on paper it measures 1.95:1, so
+   it may rule, fill or mark, but it must never carry type. Dark ink on gold is
+   8.3:1 and safe, which is the only way round it works. */
+:root { --paper: #f6f1e7; --ink: #161713; --muted: #545148; --line: #c9c1b2; --rust: #952c1e; --navy: #17364a; --gold: #d8a82a; --live: #22b26a; --popover: #fffdf8; --popover-foreground: #161713; --ui-muted: #ebe5d9; --radius: .25rem; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { overflow-x: clip; margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-sans), Arial, sans-serif; }
@@ -53,7 +57,8 @@ button { color: inherit; }
 .weather { text-align: right; }
 .wordmark { font-family: var(--font-serif), Georgia, serif; font-weight: 650; font-size: clamp(38px, 4.4vw, 68px); line-height: .9; letter-spacing: -.045em; white-space: nowrap; }
 .wordmark span, .footer-mark span { font-size: .46em; font-style: italic; vertical-align: top; margin-right: .12em; }
-.primary-nav { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+/* The accent rule a paper puts under its masthead, in the mark's own gold. */
+.primary-nav { border-top: 3px solid var(--gold); border-bottom: 1px solid var(--ink); }
 .nav-track { display: flex; align-items: center; justify-content: safe center; gap: clamp(18px, 3vw, 44px); min-height: 42px; overflow-x: auto; scrollbar-width: none; }
 .nav-track a { white-space: nowrap; font-size: 12px; font-weight: 650; letter-spacing: .065em; text-transform: uppercase; }
 .nav-track a:hover { color: var(--rust); }

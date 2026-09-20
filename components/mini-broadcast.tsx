@@ -15,20 +15,21 @@ export type BroadcastItem = {
 
 const DWELL_MS = 6_000;
 const PULL_TRIGGER = 34;
+const PULL_LIMIT = 300;
 const STOW_SCROLL = 320;
 
 /**
  * A small broadcast monitor carrying the Journal's own stories.
  *
- * It never says it is live; it simply runs. The picture cuts on its own, a
- * tally light blinks, and the screen carries scan lines and the glow of
- * something switched on. Tapping the screen opens whatever is showing.
+ * It never says it is live; it simply runs. The picture cuts on its own and a
+ * tally light blinks. Tapping the screen opens whatever is showing.
  *
- * The remote beside it is dragged down to grow the set into the space below,
- * and pushed back up to shrink it. Scrolling past the masthead stows it too,
- * so an enlarged screen never follows the reader down the page. It is a button
- * underneath the gesture, so a keyboard and a screen reader get the same
- * control without needing to drag anything.
+ * It starts stowed. Pulling the remote down grows the set in place from the
+ * compact strip into a square, with the picture across the top and the
+ * headline under it. Pushing the remote back up, or scrolling on, stows it.
+ * Full size the channel keys appear and the reader changes story themselves. The remote is a button underneath the
+ * gesture, so a keyboard and a screen reader get the same control without
+ * needing to drag anything.
  */
 export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
   const [index, setIndex] = useState(0);
@@ -38,21 +39,34 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
   const [powered, setPowered] = useState(true);
   const [drag, setDrag] = useState(0);
   const grab = useRef<number | null>(null);
+  // A touch drag still fires a click on the same element afterwards. Without
+  // this the pull set `open`, the click that followed unset it, and the set
+  // never grew however hard you pulled.
+  const dragged = useRef(false);
 
-  const advance = useCallback(() => {
-    if (items.length < 2) return;
-    setCutting(true);
-    window.setTimeout(() => {
-      setIndex((current) => (current + 1) % items.length);
-      setCutting(false);
-    }, 150);
-  }, [items.length]);
+  const cut = useCallback(
+    (step: 1 | -1) => {
+      if (items.length < 2) return;
+      setCutting(true);
+      window.setTimeout(() => {
+        setIndex(
+          (current) =>
+            (current + (step === 1 ? 1 : items.length - 1)) % items.length,
+        );
+        setCutting(false);
+      }, 150);
+    },
+    [items.length],
+  );
 
+  // Stowed, the set runs itself. Full size it does not: the reader is looking
+  // at one story, and having it cut away mid-headline would be a nuisance.
+  // That is what the channel keys are for.
   useEffect(() => {
-    if (items.length < 2 || !powered) return;
-    const timer = window.setInterval(advance, DWELL_MS);
+    if (items.length < 2 || !powered || open) return;
+    const timer = window.setInterval(() => cut(1), DWELL_MS);
     return () => window.clearInterval(timer);
-  }, [advance, items.length, powered]);
+  }, [cut, items.length, open, powered]);
 
   // Reading the page is the signal that the set has been watched enough.
   useEffect(() => {
@@ -68,12 +82,15 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
   const item = items[index];
 
   return (
+    // The dock holds the space the set leaves behind when it lifts off, so
+    // pulling the remote never shoves the front page around.
+    <div className={styles.dock}>
     <div className={`${styles.broadcast}${open ? ' ' + styles.isOpen : ''}${powered ? '' : ' ' + styles.isOff}`}>
       <div className={styles.broadcastSet}>
         {powered ? (
         <Link
           href={item.href}
-          className={styles.broadcastScreen}
+          className={`${styles.broadcastScreen}${cutting ? ' ' + styles.isCutting : ''}`}
           aria-label={`${item.title}; open this story`}
           // The minifier drops `display` from this rule in the emitted CSS, so
           // the anchor fell back to inline and the screen collapsed to nothing.
@@ -88,7 +105,10 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
               src={item.imageUrl}
               alt=""
               fill
-              sizes="(max-width: 760px) 40vw, 200px"
+              // Sized for the pulled-out screen, not the stowed one. At 40vw
+              // the browser fetched a 150px file and then had to stretch it
+              // across a full-size set, which came out as a dark smear.
+              sizes="(max-width: 760px) 65vw, 1100px"
             />
           </span>
           <span className={`${styles.broadcastCopy}${cutting ? ' ' + styles.isCutting : ''}`}>
@@ -106,9 +126,12 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
 
       {/* A container rather than a button, because the power key lives inside
           it and a button cannot hold another button. */}
-      <div className={styles.remote} style={{ transform: `translateY(${drag}px)` }}>
-        <span className={styles.remoteEye} aria-hidden="true" />
-
+      <div
+        className={styles.remote}
+        // A custom property rather than a transform, so the open state can
+        // centre the handset and still follow the finger.
+        style={{ '--drag': `${drag}px` } as React.CSSProperties}
+      >
         <button
           type="button"
           className={`${styles.remotePower}${powered ? ' ' + styles.isOn : ''}`}
@@ -118,25 +141,78 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
           onClick={() => setPowered((v) => !v)}
         />
 
+
+        {/* The transport keys stay put in every state, including when the set
+            is switched off, where they go disabled rather than disappearing.
+            Keys vanishing resized the whole unit under the reader. */}
+        {items.length > 1 ? (
+          <div className={styles.remoteRow}>
+            <button
+              type="button"
+              className={`${styles.remoteChannel} ${styles.isPrev}`}
+              aria-label="Previous story"
+              disabled={!powered}
+              onClick={() => cut(-1)}
+            >
+              <span className={styles.keyGlyph} aria-hidden="true">
+                &#9668;&#9668;
+              </span>
+              {open ? (
+                <span className={styles.keyLabel} aria-hidden="true">
+                  Prev
+                </span>
+              ) : null}
+            </button>
+            <button
+              type="button"
+              className={`${styles.remoteChannel} ${styles.isNext}`}
+              aria-label="Next story"
+              disabled={!powered}
+              onClick={() => cut(1)}
+            >
+              <span className={styles.keyGlyph} aria-hidden="true">
+                &#9658;&#9658;
+              </span>
+              {open ? (
+                <span className={styles.keyLabel} aria-hidden="true">
+                  Next
+                </span>
+              ) : null}
+            </button>
+          </div>
+        ) : null}
+
         <button
           type="button"
           className={styles.remoteGrip}
           aria-expanded={open}
           aria-label={open ? 'Shrink the screen' : 'Grow the screen'}
-          title={open ? 'Push up to shrink' : 'Drag down to grow'}
-          disabled={!powered}
-          onClick={() => setOpen((v) => !v)}
+          title={open ? 'Return' : 'Drag down to grow'}
+          onClick={() => {
+            if (dragged.current) {
+              dragged.current = false;
+              return;
+            }
+            setOpen((v) => !v);
+          }}
           onPointerDown={(event) => {
-            if (!powered) return;
             event.currentTarget.setPointerCapture?.(event.pointerId);
             grab.current = event.clientY;
+            dragged.current = false;
           }}
           onPointerMove={(event) => {
             if (grab.current === null) return;
             const dy = event.clientY - grab.current;
-            // Down grows the set; up puts it back. The handle follows the
-            // finger only in the direction that would do something.
-            setDrag(open ? Math.min(0, Math.max(-PULL_TRIGGER - 8, dy)) : Math.max(0, Math.min(PULL_TRIGGER + 8, dy)));
+            // Above a sloppy tap's wobble, so tapping still toggles.
+            if (Math.abs(dy) > 10) dragged.current = true;
+            // The handset follows the finger the whole way, in the direction
+            // that would do something. Pulling down carries it off the set
+            // and out into the middle of the screen; pushing up puts it back.
+            setDrag(
+              open
+                ? Math.min(0, Math.max(-PULL_LIMIT, dy))
+                : Math.max(0, Math.min(PULL_LIMIT, dy)),
+            );
           }}
           onPointerUp={() => {
             const moved = Math.abs(drag) >= PULL_TRIGGER;
@@ -151,13 +227,21 @@ export function MiniBroadcast({ items }: { items: BroadcastItem[] }) {
             setDrag(0);
           }}
         >
-          <span aria-hidden="true">{open ? '⌃' : '⌄'}</span>
+          <span className={styles.keyGlyph} aria-hidden="true">
+            {open ? '⌃' : '⌄'}
+          </span>
+          {open ? (
+            <span className={styles.keyLabel} aria-hidden="true">
+              Return
+            </span>
+          ) : null}
         </button>
 
         <span className={styles.remoteCount} aria-hidden="true">
           {powered ? `${index + 1}/${items.length}` : 'off'}
         </span>
       </div>
+    </div>
     </div>
   );
 }

@@ -463,7 +463,9 @@ button { color: inherit; }
   .footer-grid > div { grid-column: 1 / -1; }
   .footer-grid nav:last-child { grid-column: auto; }
   .footer-bottom { flex-direction: column; }
-  .article-header { text-align: left; }
+  /* 62px of empty paper above "Back to latest" is a third of a phone screen
+     spent on nothing before the reader reaches the kicker. */
+  .article-header { text-align: left; padding-top: 16px; padding-bottom: 26px; }
   .article-header h1 { font-size: 58px; }
   .article-meta { justify-content: flex-start; }
   .article-share { justify-content: flex-start; }

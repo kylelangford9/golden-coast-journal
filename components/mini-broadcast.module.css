@@ -5,50 +5,93 @@
    desk is running; the picture does it. */
 .broadcast { display: flex; align-items: stretch; gap: 10px; padding: 5px 0; }
 .broadcastSet { flex: 1; min-width: 0; padding: 4px; border-radius: 10px; background: linear-gradient(#2b3f4c, #1b2a34); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 1px 3px rgba(0,0,0,.4); }
-.broadcastScreen { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 5px 10px 5px 22px; border-radius: 7px; background: radial-gradient(120% 140% at 50% 0%, #10323f 0%, #08181f 70%, #050f14 100%); box-shadow: inset 0 0 22px rgba(90,220,255,.10), inset 0 0 0 1px rgba(255,255,255,.07); transition: min-height .24s ease; }
-.broadcastStill { position: relative; flex: none; width: 46px; height: 42px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.12); transition: width .24s ease, height .24s ease; }
+.broadcastScreen { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; min-height: 96px; padding: 5px 10px 5px 22px; border-radius: 7px; background: radial-gradient(120% 140% at 50% 0%, #10323f 0%, #08181f 70%, #050f14 100%); box-shadow: inset 0 0 22px rgba(90,220,255,.10), inset 0 0 0 1px rgba(255,255,255,.07); transition: filter .12s ease; }
+.broadcastStill { position: relative; flex: none; width: 96px; height: 92px; border-radius: 4px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
 .broadcastStill img { object-fit: cover; }
-.broadcastCopy { display: flex; flex-direction: column; gap: 1px; min-width: 0; transition: opacity .15s ease; }
+.broadcastStill { transition: opacity .12s ease; }
+/* `.ticker a` sets nowrap and outranks this module on the anchor itself, so the
+   reset lives here, where an own declaration beats the inherited one. Without
+   it the headline ran off the side of the screen instead of wrapping. */
+.broadcastCopy { display: flex; flex-direction: column; gap: 1px; min-width: 0; white-space: normal; transition: opacity .15s ease; }
+/* Changing channel: the picture dips, the set dims and a roll bar sweeps down
+   the screen, the way a tube set does between stations. */
 .broadcastCopy.isCutting { opacity: 0; }
+.broadcastScreen.isCutting { filter: brightness(.32) saturate(.5); }
+.broadcastScreen.isCutting .broadcastStill { opacity: .12; }
+.broadcastScreen.isCutting::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; pointer-events: none; background: rgba(210,245,255,.55); box-shadow: 0 0 10px rgba(160,230,255,.7); animation: gcj-roll .16s linear; }
+@keyframes gcj-roll { from { top: -2px; } to { top: 100%; } }
 .broadcastSlug { color: #7fb6c9; font-size: 8.5px; letter-spacing: .13em; text-transform: uppercase; }
-.broadcastLine { color: #e8f6fb; font-size: 12.5px; line-height: 1.22; font-weight: 600; text-shadow: 0 0 9px rgba(120,225,255,.35); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.broadcastLine { color: #e8f6fb; font-size: 12.5px; line-height: 1.22; font-weight: 600; text-shadow: 0 0 9px rgba(120,225,255,.35); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .broadcastTally { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); width: 7px; height: 7px; border-radius: 50%; background: #ff4433; box-shadow: 0 0 7px rgba(255,68,51,.85); animation: gcj-tally 1.6s steps(1, end) infinite; }
 @keyframes gcj-tally { 0%, 64% { opacity: 1; } 65%, 100% { opacity: .28; } }
 .broadcastScan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.045) 0 1px, transparent 1px 3px); }
 
-/* Pulled out, the set grows. Scrolling past the masthead stows it again. */
-.broadcast.isOpen .broadcastScreen { min-height: 132px; }
-.broadcast.isOpen .broadcastStill { width: 118px; height: 118px; }
-.broadcast.isOpen .broadcastLine { font-size: 15px; -webkit-line-clamp: 3; }
+/* Pulled down, the set grows from the compact strip into a square, in place.
+   The picture takes the top of the screen and the headline sits under it, so
+   the extra room goes to the photograph rather than to empty panel. */
+.broadcast.isOpen .broadcastSet { aspect-ratio: 1 / 1; }
+.broadcast.isOpen .broadcastScreen { height: 100%; min-height: 0; flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+.broadcast.isOpen .broadcastStill { flex: 1; width: 100%; height: auto; border-radius: 5px; }
+.broadcast.isOpen .broadcastCopy { flex: none; }
+.broadcast.isOpen .broadcastTally { left: auto; right: 22px; top: 22px; transform: none; }
+.broadcast.isOpen .broadcastSlug { font-size: 9.5px; }
+.broadcast.isOpen .broadcastLine { font-size: 17px; -webkit-line-clamp: 3; }
 
-/* An actual remote: a dark slab with an infrared eye, a power key and a
-   keypad. It is a button first; the drag is an enhancement on top. */
-.remote { flex: none; width: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 6px 4px; border-radius: 10px; background: linear-gradient(#39505f, #1d2b34); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 2px 5px rgba(0,0,0,.45); transition: transform .2s ease; }
+/* The handset, in the Journal's own colours: a dark moulded slab with a rust
+   power key and a pair of transport keys under it. Every key is at least 44x44
+   (WCAG 2.5.5); the labels only appear at full size, where there is room for
+   them. Key faces are picked for contrast on their own fill: white on rust is
+   7.6:1, white on the navy tint 7.2:1, ink on the live green about 9:1. */
+.remote { position: relative; flex: none; width: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 30px 6px 6px; border-radius: 18px; background: linear-gradient(#33454f, #16222a); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 6px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.45); transform: translateY(var(--drag, 0px)); transition: transform .2s ease; }
+.remote button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0; border: 0; cursor: pointer; }
 .remote button:focus-visible { outline: 2px solid #e9ba6f; outline-offset: 2px; }
-.remoteBody { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
-.remoteEye { width: 12px; height: 4px; border-radius: 2px; background: #10191f; box-shadow: inset 0 1px 1px rgba(0,0,0,.8); }
-.remotePower { width: 13px; height: 13px; padding: 0; border: 0; border-radius: 50%; background: #5a6b76; cursor: pointer; }
-.remotePower.isOn { background: #ff5544; box-shadow: 0 0 6px rgba(255,85,68,.7); }
-.remoteGrip { width: 26px; height: 22px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 5px; background: linear-gradient(#e7edf1, #b9c7cf); color: #33454f; cursor: grab; touch-action: none; }
+.remote button:active { transform: translateY(1px); }
+.keyGlyph { font-size: 15px; line-height: 1; letter-spacing: -1px; }
+.keyLabel { font: 700 7.5px/1 var(--font-sans), Arial, sans-serif; letter-spacing: .04em; }
+
+/* A tiny key in the top right corner, the way a real handset carries power.
+   The face is 16px; the target around it is the full 44x44. */
+/* The face sits in the very corner of its 44x44 target rather than the
+   middle of it, so the target can stay full size without the key appearing to
+   touch the one underneath. */
+.remotePower { position: absolute; top: 0; right: 0; width: 44px; height: 44px; justify-content: flex-start; align-items: flex-end; padding: 5px 5px 0 0; border-radius: 50%; background: none; box-shadow: none; }
+.remotePower::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(120% 120% at 32% 26%, #b8503f 0%, #952c1e 62%, #711f14 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.55); }
+.remotePower:not(.isOn)::before { background: radial-gradient(120% 120% at 32% 26%, #6b7880 0%, #4a565e 60%, #333d44 100%); }
+
+/* Slim in the slot so the screen keeps its width, full size in the hand.
+   26px is still above the 24px minimum target of WCAG 2.5.8. */
+.remoteRow { display: flex; gap: 4px; }
+.remoteChannel { width: 26px; height: 44px; border-radius: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.5); }
+.isPrev { background: linear-gradient(#2f6a90, #1f4f6e); color: #fff; }
+.isNext { background: linear-gradient(#54dda0, #22b26a); color: #101a15; }
+
+/* The grip. It is the drag handle and, for a keyboard, the open/close control,
+   so it stays a real button rather than a moulding on the case. */
+.remoteGrip { width: 56px; height: 40px; border-radius: 10px; background: linear-gradient(#e7edf1, #b9c7cf); color: #33454f; cursor: grab; touch-action: none; }
 .remoteGrip:active { cursor: grabbing; }
-.remoteGrip:disabled { opacity: .35; cursor: default; }
-.remoteCount { color: #b3c4cc; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
-/* Pulled out, the remote leans away from the set. */
-.broadcast.isOpen .remote { background: linear-gradient(#486b7d, #1d2b34); }
-.broadcast.isOpen .remotePower { background: #5fe0a0; box-shadow: 0 0 7px rgba(95,224,160,.75); }
+.remote button:disabled { opacity: .38; cursor: default; }
+.remoteCount { color: #ccd9e0; font: 700 8px/1 ui-monospace, monospace; letter-spacing: .06em; }
+
+/* Pulled down, the handset leaves its slot beside the set and sits in the
+   middle of the screen, in the hand. */
+.broadcast.isOpen .remote { position: fixed; left: 50%; bottom: 26px; z-index: 61; width: auto; gap: 8px; padding: 32px 12px 10px; border-radius: 26px; transform: translate(-50%, var(--drag, 0px)); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 10px 26px rgba(0,0,0,.5); }
+/* The return key is the one a reader reaches for most, so it gets the width. */
+.broadcast.isOpen .remoteChannel { width: 52px; height: 46px; }
+.broadcast.isOpen .remoteGrip { width: 110px; height: 46px; border-radius: 12px; }
+
+/* Switched off: a dark panel with nothing on it. */
+.isOff .broadcastScreen { background: #060d11; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.isOff .broadcastSet { filter: saturate(.5); }
 
 @media (prefers-reduced-motion: reduce) {
   .broadcastTally { animation: none; }
   .broadcastCopy, .remote, .broadcastScreen, .broadcastStill { transition: none; }
+  .broadcastScreen.isCutting { filter: none; }
+  .broadcastScreen.isCutting::after { animation: none; display: none; }
 }
 @media (max-width: 760px) {
   .broadcast { gap: 8px; padding: 4px 0; }
-  .broadcastStill { width: 42px; height: 38px; }
+  .broadcastStill { width: 84px; height: 80px; }
   .broadcastLine { font-size: 12px; }
-  .broadcast.isOpen .broadcastScreen { min-height: 118px; }
-  .broadcast.isOpen .broadcastStill { width: 100px; height: 100px; }
+  .broadcast.isOpen .broadcastLine { font-size: 16px; }
 }
-.remoteArrow { color: #cfe0e8; font: 700 13px/1 ui-monospace, monospace; }
-/* Switched off: a dark panel with nothing on it. */
-.isOff .broadcastScreen { background: #060d11; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); min-height: 50px; }
-.isOff .broadcastSet { filter: saturate(.5); }

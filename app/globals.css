@@ -59,7 +59,7 @@ button { color: inherit; }
 .nav-track a:hover { color: var(--rust); }
 .ticker { background: var(--navy); color: white; }
 .ticker-inner { min-height: 46px; display: flex; gap: 20px; align-items: center; font-size: 13px; }
-.ticker strong { background: var(--rust); align-self: stretch; display: grid; place-items: center; padding: 0 18px; margin-left: -18px; text-transform: uppercase; letter-spacing: .11em; font-size: 10px; }
+.ticker strong { background: var(--live); color: #000; align-self: stretch; display: grid; place-items: center; padding: 0 18px; margin-left: -18px; text-transform: uppercase; letter-spacing: .11em; font-size: 10px; }
 .ticker-inner span { flex: 1; }
 .ticker a { display: inline-flex; align-items: center; gap: 6px; font-weight: 650; white-space: nowrap; }
 .lead-grid { display: grid; grid-template-columns: minmax(300px, .64fr) minmax(0, 1.36fr); gap: clamp(30px, 5vw, 82px); padding-top: clamp(44px, 7vw, 94px); padding-bottom: 64px; border-bottom: 1px solid var(--ink); }
@@ -639,9 +639,9 @@ button { color: inherit; }
 .ca-district.is-none { fill-opacity: .35; animation: none; }
 .ca-map figcaption { display: grid; gap: 3px; justify-items: center; text-align: center; }
 .ca-map-tally { display: flex; gap: 9px; font: 700 12px/1 ui-monospace, monospace; }
-.ca-map-tally .is-dem { color: #002eb6; }
-.ca-map-tally .is-rep { color: #890000; }
-.ca-map-note { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: #434138; }
+.ca-map-tally .is-dem { color: #a1c2ff; }
+.ca-map-tally .is-rep { color: #fcadad; }
+.ca-map-note { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: #b3c4cc; }
 @media (prefers-reduced-motion: reduce) { .ca-district { animation: none; fill-opacity: .72; } }
 
 /* Every card is the same height, so dealing one does not resize the section
@@ -689,3 +689,24 @@ button { color: inherit; }
 /* Scoped to the intro column only. Unscoped, this also caught the paragraph
    inside the navy signup card and put dark text on a dark panel at 1.24:1. */
 .live-page-newsletter-inner > div > p:not(.eyebrow) { color: #444138; }
+.newsletter-form .ca-map { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.18); }
+
+/* First mention of an official carries their face, linked to their office. */
+.official-chip { display: inline-flex; align-items: center; gap: 9px; margin: 0 0 12px; }
+.official-chip-portrait { position: relative; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: none; }
+.official-chip-portrait img { object-fit: cover; object-position: center 22%; }
+.official-chip a { display: block; border-radius: 50%; }
+.official-chip a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.official-chip-name { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+
+/* Vertical rhythm on a phone. The sections carried 55-70px of padding top and
+   bottom, which is desktop spacing on a 375px screen and pushed the page to
+   nearly fourteen thousand pixels. Roughly halved below 760px. */
+@media (max-width: 760px) {
+  .top-stories { padding-top: 26px; padding-bottom: 30px; }
+  .newsletter-band { padding-top: 32px; padding-bottom: 32px; }
+  .homepage-reader-pulse { padding-top: 26px; padding-bottom: 30px; }
+  .lead-grid { padding-top: 20px; padding-bottom: 26px; }
+  .live-desk { padding-top: 26px; padding-bottom: 30px; }
+  .proposition-promo { padding-top: 22px; padding-bottom: 22px; }
+}

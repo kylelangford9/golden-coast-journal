@@ -20,8 +20,10 @@ assert.ok(
   newsletterPosition < liveDeskPosition,
   'homepage newsletter must appear immediately after the lead story',
 );
+// The form now takes children (the mini California sits inside the card), so
+// it is no longer self-closing. What matters is still that there is exactly one.
 assert.equal(
-  homepage.match(/<NewsletterForm \/>/g)?.length,
+  homepage.match(/<NewsletterForm[\s>]/g)?.length,
   1,
   'homepage must contain one signup form rather than competing duplicate forms',
 );

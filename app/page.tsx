@@ -13,9 +13,11 @@ import { PropositionGuideLink } from '@/components/proposition-guide-link';
 import { ElectionHubLink } from '@/components/election-hub';
 import { HomepageStoryLink } from '@/components/homepage-story-link';
 import { CaliforniaPulseMap } from '@/components/california-pulse-map';
+import { OfficialChip } from '@/components/official-chip';
 import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
+import { findMentionedOfficials } from '@/lib/people';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 
@@ -43,11 +45,16 @@ export default async function Home() {
       }),
     })),
   );
-  const [lead, ...rest] = articles;
-  const latest = rest.slice(2);
+  const [lead] = articles;
   // A single deck at the top of the page carries the lead and everything
   // behind it, so the reader can thumb the whole front page from one stack.
   const deckStories = articles.slice(0, 12);
+  // The first official each story names, so a face appears at first mention.
+  const deckOfficials = await Promise.all(
+    deckStories.map(async (article) =>
+      (await findMentionedOfficials(`${article.title} ${article.dek}`, 1))[0] || null,
+    ),
+  );
   const leadImage = editorialAssetForArticle(lead);
   const [bandImage, promoImage] = await Promise.all([
     selectEditorialAsset({ section: 'California', rotationKey: 'homepage-newsletter-band' }),
@@ -97,14 +104,10 @@ export default async function Home() {
 
       <section
         className="shell top-stories"
-        aria-labelledby="top-stories-title"
+        aria-label="Across the Golden Coast"
       >
-        <div className="section-heading">
-          <h2 id="top-stories-title">Across the Golden Coast</h2>
-          <p>Reporting that explains what changed and why it matters.</p>
-        </div>
         <StoryDeck label="Across the Golden Coast">
-          {deckStories.map((article) => (
+          {deckStories.map((article, index) => (
             <article className="image-story" key={article.slug}>
               <Link
                 href={`/article/${article.slug}`}
@@ -127,6 +130,7 @@ export default async function Home() {
               <h3>
                 <Link href={`/article/${article.slug}`}>{article.title}</Link>
               </h3>
+              <OfficialChip official={deckOfficials[index]} />
               <p>{article.dek}</p>
               <span>
                 <ArticleTime article={article} separator="after" />
@@ -199,12 +203,6 @@ export default async function Home() {
         <div className="shell newsletter-band-inner">
           <div>
             <p className="eyebrow">Reader briefing</p>
-            <h2>
-              California, with context.
-              <br />
-              A briefing worth opening.
-            </h2>
-            <p style={{ maxWidth: '36rem', lineHeight: 1.7, margin: '14px 0' }}>Useful California reporting, source links and practical guides in one reader briefing. See exactly what it includes before you subscribe.</p>
             <Link className="briefing-preview-link" href="/briefing">
               See a sample briefing <ArrowRight size={14} />
             </Link>
@@ -221,8 +219,9 @@ export default async function Home() {
               {editorialAssetLabel(bandImage)} · {bandImage.credit}
             </figcaption>
           </figure>
-          <NewsletterForm />
-          <CaliforniaPulseMap />
+          <NewsletterForm>
+            <CaliforniaPulseMap />
+          </NewsletterForm>
         </div>
       </section>
 
@@ -319,49 +318,6 @@ export default async function Home() {
       </div>
 
 
-      <section
-        className="shell briefing"
-        id="latest"
-        aria-labelledby="briefing-title"
-      >
-        <div className="section-heading">
-          <h2 id="briefing-title">The Sunday Briefing</h2>
-          <p>Essential reporting, without the noise.</p>
-        </div>
-        <div className="brief-grid">
-          {latest.map((article, index) => (
-            <article className="brief-card" key={article.slug}>
-              <Link
-                href={`/article/${article.slug}`}
-                className="brief-visual photo-frame ratio-card"
-                aria-hidden="true"
-                tabIndex={-1}
-              >
-                <Image
-                  src={article.imageUrl}
-                  alt=""
-                  fill
-                  sizes="(max-width: 760px) 82vw, 33vw"
-                />
-                <span className="photo-caption">
-                  {editorialAssetLabel(editorialAssetForArticle(article))} ·{' '}
-                  {editorialAssetForArticle(article).credit}
-                </span>
-              </Link>
-              <span className="brief-number">0{index + 1}</span>
-              <p className="eyebrow">{article.section}</p>
-              <h3>
-                <Link href={`/article/${article.slug}`}>{article.title}</Link>
-              </h3>
-              <p>{article.dek}</p>
-              <span className="source-note">
-                <ArticleTime article={article} separator="after" />
-                By {article.author} · {article.readingMinutes} min
-              </span>
-            </article>
-          ))}
-        </div>
-      </section>
 
       <SiteFooter />
     </main>

@@ -60,8 +60,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   if (!article) notFound();
   // Officials this story actually names, with the portraits and official links
   // already curated in the California Votes representatives register.
+  // One portrait per article on first mention, not a roster of everyone named.
   const officials = await findMentionedOfficials(
     `${article.title} ${article.dek} ${article.body.join(' ')}`,
+    1,
   );
   const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();

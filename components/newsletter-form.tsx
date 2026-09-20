@@ -13,6 +13,8 @@ import { track } from '@vercel/analytics/react';
 import { trackPortfolioGrowth } from '@/lib/growth-client';
 
 type NewsletterFormProps = {
+  /** Rendered inside the card, below the form controls. */
+  children?: React.ReactNode;
   placement?:
     | 'homepage'
     | 'article'
@@ -28,6 +30,7 @@ type NewsletterFormProps = {
 export function NewsletterForm({
   placement = 'homepage',
   articleSlug,
+  children,
 }: NewsletterFormProps) {
   const [state, setState] = useState<
     'idle' | 'loading' | 'created' | 'existing' | 'error'
@@ -240,6 +243,7 @@ export function NewsletterForm({
           <output aria-live="polite">{shareStatus}</output>
         </div>
       )}
+      {children}
     </form>
   );
 }

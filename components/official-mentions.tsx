@@ -36,7 +36,15 @@ export function OfficialMentions({
                 {official.party ? `; ${official.party}` : ''}
               </small>
               {official.url ? (
-                <a href={official.url} target="_blank" rel="noreferrer">
+                // Several people can appear here, so the link needs to say
+                // whose site it is. Without the label a screen reader hears
+                // "Official site" repeated with nothing to tell them apart.
+                <a
+                  href={official.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${official.name}, ${official.office}; official site`}
+                >
                   Official site <ExternalLink size={11} aria-hidden="true" />
                 </a>
               ) : null}

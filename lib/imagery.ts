@@ -116,7 +116,9 @@ export function editorialAssetForArticle(article: {
   imageAlt?: string | null;
   imageCredit?: string | null;
 }): EditorialAsset {
-  const bundled = article.imageUrl ? assetsByUrl.get(article.imageUrl) : undefined;
+  const bundled = article.imageUrl
+    ? assetsByUrl.get(article.imageUrl)
+    : undefined;
   if (bundled) return bundled;
   if (article.imageUrl && article.imageCredit) {
     return {

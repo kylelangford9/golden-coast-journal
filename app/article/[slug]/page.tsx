@@ -60,16 +60,36 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   if (!article) notFound();
   // Officials this story actually names, with the portraits and official links
   // already curated in the California Votes representatives register.
-  // One portrait per article on first mention, not a roster of everyone named.
+  // Up to four, because a bill story routinely names an author, a co-author and
+  // the governor, and showing only the first implies the others were not there.
+  // Four is the ceiling rather than the target: the matcher returns full-name
+  // matches ahead of surname matches, so the faces a reader sees are the ones
+  // the story is actually about.
   const officials = await findMentionedOfficials(
     `${article.title} ${article.dek} ${article.body.join(' ')}`,
-    1,
+    4,
   );
   const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();
-  const related = articles
-    .filter((item) => item.slug !== article.slug)
-    .slice(0, 3);
+  // Related stories should not hand the reader a photograph they are already
+  // looking at. Prefer candidates whose picture differs from the hero and from
+  // each other, then backfill in the ordinary order if the registry cannot
+  // supply three distinct ones, so the rail is never short.
+  const relatedCandidates = articles.filter(
+    (item) => item.slug !== article.slug,
+  );
+  const usedImages = new Set([article.imageUrl]);
+  const related = [];
+  for (const item of relatedCandidates) {
+    if (related.length === 3) break;
+    if (usedImages.has(item.imageUrl)) continue;
+    usedImages.add(item.imageUrl);
+    related.push(item);
+  }
+  for (const item of relatedCandidates) {
+    if (related.length === 3) break;
+    if (!related.includes(item)) related.push(item);
+  }
   const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
   const isKyleLangford = article.author === KYLE_LANGFORD_AUTHOR.name;
   const articleImageUrl = new URL(article.imageUrl, origin).toString();
@@ -93,7 +113,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       ? {
           '@type': 'Person',
           name: article.author,
+          // `url` stays the Journal's own author page, because that is the
+          // page this byline is canonical on. `sameAs` is the corroboration:
+          // independent records that the byline belongs to a real, identifiable
+          // person rather than a house pseudonym.
           url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
+          sameAs: [
+            'https://www.kylelangford.org',
+            'https://ballotpedia.org/Kyle_Langford',
+          ],
         }
       : { '@type': 'Organization', name: article.author },
     // Point at the newsroom node in the root layout rather than restating a

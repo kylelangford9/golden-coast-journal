@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyEditorialRequest } from '@/lib/editorial-auth';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { notifyWebSubHub } from '@/lib/websub';
+import { articleUrl, submitToIndexNow } from '@/lib/indexnow';
 
 type ActionRouteProps = { params: Promise<{ id: string }> };
 type EditorialAction = 'publish' | 'reject' | 'reopen';
@@ -67,10 +68,28 @@ export async function POST(request: Request, { params }: ActionRouteProps) {
   const result = rows[0];
   if (!result)
     return NextResponse.json({ error: 'Article not found' }, { status: 404 });
-  const discoveryNotification =
-    result.previous_status !== 'published' && result.next_status === 'published'
-      ? await notifyWebSubHub()
-      : null;
+  const becamePublic =
+    result.previous_status !== 'published' && result.next_status === 'published';
+  const discoveryNotification = becamePublic ? await notifyWebSubHub() : null;
+
+  // WebSub moves the feed; IndexNow names the individual URL, which is what a
+  // search engine needs to crawl a story on the day it runs. The slug is not
+  // part of the action result, so read it back rather than reconstruct it.
+  let indexNowNotification: Awaited<ReturnType<typeof submitToIndexNow>> | null =
+    null;
+  if (becamePublic) {
+    const rows = unwrap(
+      await getSupabase()
+        .from('gcj_articles')
+        .select('slug')
+        .eq('id', result.article_id)
+        .limit(1),
+      'Unable to read the published slug',
+    ) as Array<{ slug: string }>;
+    const slug = rows[0]?.slug;
+    if (slug) indexNowNotification = await submitToIndexNow([articleUrl(slug)]);
+  }
+
   return NextResponse.json({
     id: result.article_id,
     previousStatus: result.previous_status,
@@ -78,5 +97,6 @@ export async function POST(request: Request, { params }: ActionRouteProps) {
     action: result.recorded_action,
     updatedAt: result.updated_at,
     discoveryNotification,
+    indexNowNotification,
   });
 }

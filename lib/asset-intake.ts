@@ -44,7 +44,9 @@ export async function ingestAssetRequests(limit = 4) {
     (unwrap(
       await db
         .from('gcj_asset_requests')
-        .select('id,source_url,suggested_id,alt,credit,provenance_url,section,keywords')
+        .select(
+          'id,source_url,suggested_id,alt,credit,provenance_url,section,keywords',
+        )
         .eq('status', 'pending')
         .order('created_at')
         .limit(limit),
@@ -71,7 +73,11 @@ export async function ingestAssetRequests(limit = 4) {
       failed += 1;
       await db
         .from('gcj_asset_requests')
-        .update({ status: 'rejected', error, processed_at: new Date().toISOString() })
+        .update({
+          status: 'rejected',
+          error,
+          processed_at: new Date().toISOString(),
+        })
         .eq('id', row.id);
     };
 
@@ -86,7 +92,9 @@ export async function ingestAssetRequests(limit = 4) {
       }
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.startsWith('image/')) {
-        await fail(`Source is ${contentType || 'an unknown type'}, not an image`);
+        await fail(
+          `Source is ${contentType || 'an unknown type'}, not an image`,
+        );
         continue;
       }
       const bytes = new Uint8Array(await response.arrayBuffer());
@@ -95,11 +103,16 @@ export async function ingestAssetRequests(limit = 4) {
         continue;
       }
       if (bytes.byteLength > MAX_BYTES) {
-        await fail(`Source is ${Math.round(bytes.byteLength / 1024)}KB, over the limit`);
+        await fail(
+          `Source is ${Math.round(bytes.byteLength / 1024)}KB, over the limit`,
+        );
         continue;
       }
 
-      const id = row.suggested_id.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 48);
+      const id = row.suggested_id
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .slice(0, 48);
       const path = `${PREFIX}/${id}.${extensionFor(contentType)}`;
 
       const upload = await fetch(

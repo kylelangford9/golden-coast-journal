@@ -21,8 +21,7 @@ export type Article = {
 };
 
 const pageEnhancementUpdates: Record<string, string> = {
-  'california-2026-general-election-deadlines':
-    '2026-09-14T02:52:00-07:00',
+  'california-2026-general-election-deadlines': '2026-09-14T02:52:00-07:00',
 };
 
 export function effectiveArticleUpdatedAt(article: Article) {
@@ -57,7 +56,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-14T12:00:00-07:00',
-    updatedAt: '2026-09-14T12:00:00-07:00',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 4,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
@@ -88,8 +87,7 @@ export const articles: Article[] = [
     id: 'gcj-011',
     slug: 'california-tax-extension-deadline-2026-october-15',
     section: 'Business',
-    title:
-      'California tax extension deadline 2026; what is due October 15',
+    title: 'California tax extension deadline 2026; what is due October 15',
     dek: 'Most individual extension filers have until October 15 to submit their 2025 state and federal returns. The filing extension did not move the April payment deadline, and the California and federal rules are not identical.',
     body: [
       'October 15 is the 2026 filing deadline for most individuals using an extension on a 2025 California or federal income-tax return. It is a filing date, not a new payment date; the state and federal paths into the extension work differently.',
@@ -107,7 +105,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-14T04:05:00-07:00',
-    updatedAt: '2026-09-14T04:05:00-07:00',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 3,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
@@ -165,7 +163,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-14T02:15:00-07:00',
-    updatedAt: '2026-09-14T02:15:00-07:00',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 3,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
@@ -219,7 +217,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-14T00:39:54-07:00',
-    updatedAt: '2026-09-14T00:39:54-07:00',
+    updatedAt: '2026-09-19T23:22:46.902Z',
     readingMinutes: 3,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/worker-construction.jpg',
@@ -266,7 +264,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-13T23:41:47-07:00',
-    updatedAt: '2026-09-13T23:41:47-07:00',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 3,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-power-lines.jpg',
@@ -313,7 +311,7 @@ export const articles: Article[] = [
     ],
     author: 'Kyle Langford',
     publishedAt: '2026-09-13T22:14:00-07:00',
-    updatedAt: '2026-09-14T02:52:00-07:00',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 3,
     imageUrl:
       'https://eoifovdmuuqdcospamru.supabase.co/storage/v1/object/public/photos/editorial/ca-state-capitol.jpg',
@@ -355,7 +353,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Desk',
     publishedAt: '2026-09-13T15:28:00.000Z',
-    updatedAt: '2026-09-13T16:28:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 5,
     imageUrl: '/california-coast.jpg',
     imageAlt:
@@ -389,7 +387,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Climate Desk',
     publishedAt: '2026-09-12T17:10:00.000Z',
-    updatedAt: '2026-09-12T17:10:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 6,
     imageUrl: '/oroville.jpg',
     imageAlt:
@@ -423,7 +421,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Technology Desk',
     publishedAt: '2026-09-11T19:45:00.000Z',
-    updatedAt: '2026-09-11T21:02:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 4,
     imageUrl: '/ai-safeguards.png',
     imageAlt:
@@ -456,7 +454,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Data Desk',
     publishedAt: '2026-09-10T15:30:00.000Z',
-    updatedAt: '2026-09-10T15:30:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 5,
     imageUrl: '/california-coast.jpg',
     imageAlt: 'Aerial view of a developed California coastline',
@@ -489,7 +487,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Economy Desk',
     publishedAt: '2026-09-09T16:00:00.000Z',
-    updatedAt: '2026-09-09T16:00:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 3,
     imageUrl: '/california-coast.jpg',
     imageAlt: 'Businesses and homes along the California coast',
@@ -521,7 +519,7 @@ export const articles: Article[] = [
     ],
     author: 'Golden Coast Journal Desk',
     publishedAt: '2026-09-08T14:12:00.000Z',
-    updatedAt: '2026-09-08T14:12:00.000Z',
+    updatedAt: '2026-09-22T14:58:21.219Z',
     readingMinutes: 4,
     imageUrl: '/oroville.jpg',
     imageAlt: 'Lake Oroville and the surrounding foothills',

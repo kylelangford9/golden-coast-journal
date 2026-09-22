@@ -30,6 +30,8 @@
     "test:candidates": "node scripts/california-candidates.test.mjs",
     "test:election-hub": "node scripts/california-election-hub.test.mjs",
     "test:contact": "node scripts/editorial-contact.test.mjs",
+    "test:mentions": "node scripts/official-mentions.test.mjs",
+    "test:namesakes": "node scripts/namesake-portraits.test.mjs",
     "test:pipeline": "node scripts/editorial-pipeline-resilience.test.mjs",
     "test:discovery": "node scripts/websub-discovery.test.mjs",
     "typecheck": "tsc --noEmit"

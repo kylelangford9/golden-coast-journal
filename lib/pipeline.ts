@@ -12,6 +12,7 @@ import { seedDatabase } from '@/lib/repository';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { decodeHtmlEntities } from '@/lib/text';
 import { notifyWebSubHub } from '@/lib/websub';
+import { articleUrl, submitToIndexNow } from '@/lib/indexnow';
 
 type FeedEntry = {
   title: string;
@@ -440,13 +441,17 @@ export async function runEditorialPipeline() {
             rotationKey: candidate.external_url,
           });
           const articleId = crypto.randomUUID();
+          // Held in a variable rather than built inline, because a published
+          // draft has to be named to IndexNow by the same slug it was stored
+          // under; recomputing it there would be a second chance to disagree.
+          const articleSlug = `${slugify(draft.title)}-${(await stableId(candidate.external_url)).slice(0, 6)}`;
           const inserted = unwrap(
             await db
               .from('gcj_articles')
               .upsert(
                 {
                   id: articleId,
-                  slug: `${slugify(draft.title)}-${(await stableId(candidate.external_url)).slice(0, 6)}`,
+                  slug: articleSlug,
                   section: draft.section,
                   title: draft.title,
                   dek: draft.dek,
@@ -488,6 +493,10 @@ export async function runEditorialPipeline() {
               const notification = await notifyWebSubHub();
               if (notification.ok) webSubNotifications++;
               else webSubFailures++;
+              // Best effort, and deliberately not counted as a run failure:
+              // a search engine declining a ping is not a reason to mark the
+              // newsroom run unhealthy.
+              await submitToIndexNow([articleUrl(articleSlug)]);
             }
           }
           unwrap(

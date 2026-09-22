@@ -34,7 +34,8 @@ const ASSET_CACHE_MS = 5 * 60_000;
 let cached: { rows: EditorialAssetRow[]; loadedAt: number } | null = null;
 
 async function loadAssets(): Promise<EditorialAssetRow[]> {
-  if (cached && Date.now() - cached.loadedAt < ASSET_CACHE_MS) return cached.rows;
+  if (cached && Date.now() - cached.loadedAt < ASSET_CACHE_MS)
+    return cached.rows;
 
   const rows =
     (unwrap(
@@ -58,7 +59,11 @@ export function clearEditorialAssetCache() {
   cached = null;
 }
 
-function scoreAsset(asset: EditorialAssetRow, section: string, haystack: string) {
+function scoreAsset(
+  asset: EditorialAssetRow,
+  section: string,
+  haystack: string,
+) {
   let score = 0;
   if (asset.section && asset.section.toLowerCase() === section.toLowerCase()) {
     score += 50;
@@ -111,8 +116,18 @@ function stableHash(value: string) {
   return hash >>> 0;
 }
 
-/** Candidates this close to the best score are treated as equally good fits. */
-const ROTATION_BAND = 12;
+/**
+ * Candidates this close to the best score are treated as equally good fits.
+ *
+ * It must stay below the 12 a keyword match is worth, or the comment below
+ * ("a keyword match still wins outright") is not true: at 12 the band exactly
+ * cancelled one keyword hit, so a story about a comet on the Culture desk drew
+ * the desk's default photograph as often as the observatory that matched it.
+ * Six still covers the 5-point nudge a section default gets, which is the tie
+ * this is actually for: siblings on a desk that nothing in the story picks
+ * between.
+ */
+const ROTATION_BAND = 6;
 
 export async function selectEditorialAsset(input: {
   section: string;

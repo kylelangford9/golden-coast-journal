@@ -5,7 +5,11 @@ import { AuthorProfileTracker } from '@/components/author-profile-tracker';
 import { SiteFooter } from '@/components/site-footer';
 import { editorialAssets, editorialAssetLabel } from '@/lib/imagery';
 import { SiteHeader } from '@/components/site-header';
-import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
+import {
+  KYLE_LANGFORD_AUTHOR,
+  KYLE_LANGFORD_PROFILES,
+  kyleLangfordPersonId,
+} from '@/lib/editorial-voice';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
 
@@ -18,16 +22,29 @@ export const metadata: Metadata = {
 
 export default function KyleLangfordAuthorPage() {
   const portrait = editorialAssets.kyleLangfordPortrait;
+  // A ProfilePage wrapping the Person is the shape a search engine expects an
+  // author page to take: the page is about the person, rather than being the
+  // person. The Person carries a stable @id so an article can name this exact
+  // node instead of describing a second, slightly different Kyle Langford.
   const personJson = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: KYLE_LANGFORD_AUTHOR.name,
+    '@type': 'ProfilePage',
+    '@id': `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
     url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
-    image: `${origin}${editorialAssets.kyleLangfordPortrait.url}`,
-    worksFor: {
-      '@type': 'NewsMediaOrganization',
-      '@id': `${origin}/#organization`,
-      name: 'The Golden Coast Journal',
+    mainEntity: {
+      '@type': 'Person',
+      '@id': kyleLangfordPersonId(origin),
+      name: KYLE_LANGFORD_AUTHOR.name,
+      url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
+      image: `${origin}${editorialAssets.kyleLangfordPortrait.url}`,
+      description:
+        'Kyle Langford is the creator and publisher of The Golden Coast Journal.',
+      sameAs: [...KYLE_LANGFORD_PROFILES],
+      worksFor: {
+        '@type': 'NewsMediaOrganization',
+        '@id': `${origin}/#organization`,
+        name: 'The Golden Coast Journal',
+      },
     },
   }).replace(/</g, '\\u003c');
 

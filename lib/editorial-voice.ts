@@ -3,6 +3,26 @@ export const KYLE_LANGFORD_AUTHOR = {
   path: '/authors/kyle-langford',
 } as const;
 
+/**
+ * Records that corroborate the byline belongs to an identifiable person rather
+ * than a house pseudonym. Declared once because the author page and every
+ * article repeat the same claim, and a claim that disagrees with itself across
+ * two pages is worse than not making it: a search engine reconciling the two
+ * has no way to tell which one to believe.
+ *
+ * kylelangford.org asserts the matching list back. The reciprocal pair is the
+ * point; a one-sided claim is only a site talking about itself.
+ */
+export const KYLE_LANGFORD_PROFILES = [
+  'https://www.kylelangford.org',
+  'https://ballotpedia.org/Kyle_Langford',
+] as const;
+
+/** Stable node id, so the byline is one entity the graph can point at. */
+export function kyleLangfordPersonId(origin: string) {
+  return `${origin}${KYLE_LANGFORD_AUTHOR.path}#person`;
+}
+
 const voiceRules = [
   'Use the current public Kyle Langford Simulator repository as an authorized voice reference: practical, candid, constructive and concise, with measurable outcomes and a clear distinction between verified facts and uncertainty.',
   'Use semicolons instead of em dashes. Never use an em dash.',

@@ -20,7 +20,11 @@ import {
 } from '@/lib/content';
 import { findPublishedBySlug, listPublished } from '@/lib/repository';
 import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
-import { KYLE_LANGFORD_AUTHOR } from '@/lib/editorial-voice';
+import {
+  KYLE_LANGFORD_AUTHOR,
+  KYLE_LANGFORD_PROFILES,
+  kyleLangfordPersonId,
+} from '@/lib/editorial-voice';
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
 
@@ -112,16 +116,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     author: isKyleLangford
       ? {
           '@type': 'Person',
+          // The same @id the author page defines, so every article names one
+          // node rather than describing a fresh person each time. `url` stays
+          // the author page because that is where this byline is canonical,
+          // and `sameAs` is the corroboration: records maintained elsewhere
+          // that the byline belongs to an identifiable person.
+          '@id': kyleLangfordPersonId(origin),
           name: article.author,
-          // `url` stays the Journal's own author page, because that is the
-          // page this byline is canonical on. `sameAs` is the corroboration:
-          // independent records that the byline belongs to a real, identifiable
-          // person rather than a house pseudonym.
           url: `${origin}${KYLE_LANGFORD_AUTHOR.path}`,
-          sameAs: [
-            'https://www.kylelangford.org',
-            'https://ballotpedia.org/Kyle_Langford',
-          ],
+          sameAs: [...KYLE_LANGFORD_PROFILES],
         }
       : { '@type': 'Organization', name: article.author },
     // Point at the newsroom node in the root layout rather than restating a

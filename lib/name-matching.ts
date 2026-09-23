@@ -25,10 +25,30 @@ export function normalizePunctuation(value: string) {
     .replace(/[   ]/g, ' ');
 }
 
+/**
+ * Take the accents off, again character for character so offsets are
+ * unchanged.
+ *
+ * The register spells a name the way its owner does, "Recep Tayyip Erdoğan",
+ * "Volker Türk", "Pedro Sánchez"; wire copy and press releases often do not.
+ * Both sides of every comparison are folded, so either spelling finds the
+ * other. A letter with no plain form ("ß", "ø") stays as it is.
+ */
+export function foldAccents(value: string) {
+  return value.replace(/[\u0080-￿]/g, (ch) => {
+    const base = ch.normalize('NFD');
+    return base.length > 1 && /^\p{M}+$/u.test(base.slice(1)) ? base[0] : ch;
+  });
+}
+
+/** A register spelling as it is compared: composed first, then folded. */
+const needle = (name: string) => foldAccents(name.normalize('NFC'));
+
 const isInitial = (part: string) => /^[A-Za-z]\.?$/.test(part);
 
-/** A token reduced to what identifies it: lowercase, no periods or commas. */
-const tokenKey = (token: string) => token.toLowerCase().replace(/[.,]/g, '');
+/** A token reduced to what identifies it: lowercase, no accents, periods or commas. */
+const tokenKey = (token: string) =>
+  foldAccents(token.toLowerCase()).replace(/[.,]/g, '');
 
 /**
  * Words the register writes around a name that no story prints as part of it.
@@ -108,6 +128,29 @@ export function nameForms(name: string) {
   return [...forms];
 }
 
+const aliasWords = (alias: string) =>
+  normalizePunctuation(alias).trim().split(/\s+/).filter(Boolean);
+
+/** Every spelling that names this person outright, aliases included. */
+function fullForms(candidate: NameCandidate) {
+  const forms = new Set(nameForms(candidate.name));
+  for (const alias of candidate.aliases || []) {
+    const words = aliasWords(alias);
+    if (words.length > 1) forms.add(words.join(' ').toLowerCase());
+  }
+  return [...forms];
+}
+
+/** The single words that can stand for this person: surname and one-word aliases. */
+function surnamesOf(candidate: NameCandidate) {
+  const words = new Set([foldAccents(surnameOf(candidate.name))]);
+  for (const alias of candidate.aliases || []) {
+    const parts = aliasWords(alias);
+    if (parts.length === 1) words.add(foldAccents(parts[0].toLowerCase()));
+  }
+  return [...words];
+}
+
 const isWordChar = (ch: string) => /[\p{L}\p{N}]/u.test(ch);
 
 /**
@@ -116,19 +159,21 @@ const isWordChar = (ch: string) => /[\p{L}\p{N}]/u.test(ch);
  * invites an escaping bug for no gain. The boundary check is what matters: it
  * keeps "Bass" from firing inside "bassist".
  */
-export function mentions(haystack: string, needle: string) {
-  return firstMention(haystack, needle) !== -1;
+export function mentions(haystack: string, name: string) {
+  return firstMention(haystack, name) !== -1;
 }
 
-/** Where a whole-word `needle` first appears in `haystack`, or -1. */
-export function firstMention(haystack: string, needle: string) {
-  if (!needle) return -1;
+/** Where `name` first appears as whole words in `text`, accents aside, or -1. */
+export function firstMention(text: string, name: string) {
+  if (!name) return -1;
+  const haystack = foldAccents(text);
+  const word = needle(name);
   let from = 0;
   for (;;) {
-    const at = haystack.indexOf(needle, from);
+    const at = haystack.indexOf(word, from);
     if (at === -1) return -1;
     const before = at === 0 ? '' : haystack[at - 1];
-    const after = haystack[at + needle.length] || '';
+    const after = haystack[at + word.length] || '';
     if (!isWordChar(before) && !isWordChar(after)) return at;
     from = at + 1;
   }
@@ -205,6 +250,41 @@ function tokenAfter(text: string, at: number) {
   return text.slice(start, end);
 }
 
+/**
+ * The joining words inside a name: "Al" in "Tamim bin Hamad Al Thani", "da" in
+ * "Lula da Silva". Whose surname it is gets decided by the word on the far side
+ * of them. "Mohammed bin Abdulrahman Al Thani" is Qatar's prime minister, not
+ * its emir, and the "Al" against "Thani" is in both men's names.
+ */
+const PARTICLES = new Set([
+  'al',
+  'el',
+  'bin',
+  'bint',
+  'ibn',
+  'da',
+  'de',
+  'del',
+  'della',
+  'di',
+  'dos',
+  'du',
+  'van',
+  'von',
+  'der',
+  'den',
+]);
+
+function neighbourBefore(text: string, at: number) {
+  let end = at;
+  let token = tokenBefore(text, end);
+  while (token && PARTICLES.has(tokenKey(token))) {
+    end -= token.length + 1;
+    token = tokenBefore(text, end);
+  }
+  return token;
+}
+
 const startsCapital = (token: string) => /^\p{Lu}/u.test(token);
 
 /**
@@ -232,9 +312,12 @@ export function surnameBelongsToSomeoneElse(
   ownName: string,
 ) {
   const isOutsider = outsiderTest(ownName);
-  for (const at of wholeWordOffsets(lower, surname)) {
+  for (const at of wholeWordOffsets(foldAccents(lower), surname)) {
     const end = at + surname.length;
-    if (isOutsider(tokenBefore(text, at)) || isOutsider(tokenAfter(text, end)))
+    if (
+      isOutsider(neighbourBefore(text, at)) ||
+      isOutsider(tokenAfter(text, end))
+    )
       return true;
   }
   return false;
@@ -242,14 +325,18 @@ export function surnameBelongsToSomeoneElse(
 
 /**
  * Whether a token beside a surname is another person's name: capitalised, and
- * neither an honorific nor a part of this person's own name. Periods are
- * ignored on both sides, so "J.D. Vance" is Vance's own name and "U.S." is the
- * honorific "us".
+ * neither an honorific nor a part of this person's own name or the other names
+ * the register knows them by. Periods are ignored on both sides, so "J.D.
+ * Vance" is Vance's own name and "U.S." is the honorific "us".
  */
-function outsiderTest(ownName: string) {
+function outsiderTest(ownName: string, aliases: readonly string[] = []) {
   const { parts, nickname } = nameParts(ownName);
   const own = new Set(
-    [...parts, ...(nickname ? [nickname] : [])].map(tokenKey),
+    [
+      ...parts,
+      ...(nickname ? [nickname] : []),
+      ...aliases.flatMap((alias) => nameParts(alias).parts),
+    ].map(tokenKey),
   );
   return (token: string) => {
     if (!token || !startsCapital(token)) return false;
@@ -262,7 +349,9 @@ function outsiderTest(ownName: string) {
   };
 }
 
-function* wholeWordOffsets(lower: string, word: string) {
+/** `lower` must already be folded (see foldAccents); `word` is folded here. */
+function* wholeWordOffsets(lower: string, name: string) {
+  const word = needle(name);
   let from = 0;
   for (;;) {
     const at = lower.indexOf(word, from);
@@ -280,6 +369,15 @@ function* wholeWordOffsets(lower: string, word: string) {
  */
 export type NameCandidate = {
   name: string;
+  /**
+   * Other names stories use for this person, curated in the register: "Lula"
+   * for Luiz Inácio Lula da Silva, "Zelensky" for Volodymyr Zelenskyy, "Tedros"
+   * for Tedros Adhanom Ghebreyesus. A name of two or more words counts as
+   * naming them in full; a single word is treated exactly as a surname, with
+   * every guard a surname gets. Names only: "the emir of Qatar" is an office,
+   * and an office changes hands without the register being told.
+   */
+  aliases?: readonly string[] | null;
   office?: string | null;
   level?: string | null;
   district?: string | null;
@@ -357,7 +455,7 @@ const OFFICE_SYNONYMS: { held: string; written: string[] }[] = [
  * Democrats, and a party name beside a surname is weak evidence in any case.
  */
 export function candidateEvidence(candidate: NameCandidate) {
-  const terms = new Set<string>(nameForms(candidate.name));
+  const terms = new Set<string>(fullForms(candidate));
   const add = (value: string | null | undefined) => {
     const term = normalizePunctuation(value || '')
       .trim()
@@ -473,6 +571,9 @@ const TITLES = new Map<string, string[]>([
   ['speaker', ['speaker']],
   ['ceo', ['chief executive']],
   ['minister', ['minister']],
+  ['premier', ['premier', 'prime minister']],
+  ['emir', ['emir']],
+  ['director-general', ['director-general']],
   ['ambassador', ['ambassador']],
 ]);
 
@@ -609,16 +710,17 @@ export function matchPeople<T extends NameCandidate>(
   rows: T[],
 ): Mention<T>[] {
   const original = normalizePunctuation(` ${text} `);
-  const lower = original.toLowerCase();
+  const lower = foldAccents(original.toLowerCase());
   const bills = billAuthorSpans(original);
 
+  // One mention per person, however many of their names the story uses.
   const hits: Mention<T>[] = [];
-  const named = new Map<T, Mention<T>>();
+  const found = new Map<T, Mention<T>>();
   for (const row of rows) {
-    const spans = nameForms(row.name).flatMap((form) =>
+    const spans = fullForms(row).flatMap((form) =>
       [...wholeWordOffsets(lower, form)].map((at) => ({
         start: at,
-        end: at + form.length,
+        end: at + needle(form).length,
       })),
     );
     if (!spans.length) continue;
@@ -629,23 +731,25 @@ export function matchPeople<T extends NameCandidate>(
       spans,
     };
     hits.push(hit);
-    named.set(row, hit);
+    found.set(row, hit);
   }
 
   const carriers = new Map<string, T[]>();
-  for (const row of rows) {
-    const surname = surnameOf(row.name);
-    const group = carriers.get(surname);
-    if (group) group.push(row);
-    else carriers.set(surname, [row]);
-  }
+  for (const row of rows)
+    for (const surname of surnamesOf(row)) {
+      const group = carriers.get(surname);
+      if (group) group.push(row);
+      else carriers.set(surname, [row]);
+    }
 
   for (const [surname, group] of carriers) {
     if (surname.length <= 3) continue;
     const offsets = [...wholeWordOffsets(lower, surname)];
     if (!offsets.length) continue;
     const usedAsWord = offsets.some((at) => !startsCapital(original.slice(at)));
-    const outsiders = group.map((row) => outsiderTest(row.name));
+    const outsiders = group.map((row) =>
+      outsiderTest(row.name, row.aliases || []),
+    );
     const titled = new Map<T, number[]>();
     const against = new Set<T>();
     const plain: number[] = [];
@@ -663,7 +767,7 @@ export function matchPeople<T extends NameCandidate>(
           titled.set(fits[0], [...(titled.get(fits[0]) || []), at]);
         continue;
       }
-      const before = tokenBefore(original, at);
+      const before = neighbourBefore(original, at);
       const after = tokenAfter(original, at + surname.length);
       let flanked = false;
       group.forEach((row, index) => {
@@ -677,24 +781,40 @@ export function matchPeople<T extends NameCandidate>(
     }
 
     const toSpans = (starts: number[]) =>
-      starts.map((at) => ({ start: at, end: at + surname.length }));
+      starts.map((at) => ({ start: at, end: at + needle(surname).length }));
+    const credit = (row: T, score: number, at: number, spans: Span[]) => {
+      const earlier = found.get(row);
+      if (!earlier) {
+        const hit = { row, score, at, spans };
+        hits.push(hit);
+        found.set(row, hit);
+        return;
+      }
+      earlier.score = Math.max(earlier.score, score);
+      earlier.at = Math.min(earlier.at, at);
+      earlier.spans.push(...spans);
+    };
     for (const row of group) {
       const titledAt = titled.get(row) || [];
       // A bare surname can only ever be linked to the one person who carries it.
       const plainAt = group.length === 1 ? plain : [];
-      const existing = named.get(row);
-      if (existing) {
+      const existing = found.get(row);
+      if (existing?.score === 100) {
         // Named in full already: the later "Newsom said" is theirs too.
         existing.spans.push(...toSpans([...titledAt, ...plainAt]));
       } else if (titledAt.length)
-        hits.push({
-          row,
-          score: 75,
-          at: titledAt[0],
-          spans: toSpans([...titledAt, ...plainAt]),
-        });
-      else if (plainAt.length && !against.has(row))
-        hits.push({ row, score: 50, at: plainAt[0], spans: toSpans(plainAt) });
+        credit(row, 75, titledAt[0], toSpans([...titledAt, ...plainAt]));
+      else if (
+        plainAt.length &&
+        !against.has(row) &&
+        (existing ||
+          // Wire copy names a foreign leader in full, or by title, before it
+          // shortens the name, and a foreign surname alone is too often
+          // something else in American copy: "Nielsen ratings", or the other Al
+          // Thani in Qatar's government.
+          row.level !== 'International')
+      )
+        credit(row, 50, plainAt[0], toSpans(plainAt));
     }
   }
 

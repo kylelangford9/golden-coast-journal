@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
+  foldAccents,
   matchPeople,
   mentions,
   nameForms,
@@ -299,6 +300,126 @@ assert.deepEqual(chatbots.slice(0, 4), [
   'Buffy Wicks',
 ]);
 assert.ok(chatbots.includes('Susan Rubio') && chatbots.includes('Steve Padilla'));
+
+// --- Beyond California: accents, other names, foreign surnames -----------
+
+// Folding keeps every offset, so a card still lands on the words it names.
+assert.equal(foldAccents('Erdoğan, Türk, Sánchez'), 'Erdogan, Turk, Sanchez');
+assert.equal(foldAccents('Erdoğan').length, 'Erdoğan'.length);
+
+const WORLD = [
+  ...REGISTER,
+  {
+    name: 'Recep Tayyip Erdoğan',
+    office: 'President of Türkiye',
+    level: 'International',
+  },
+  {
+    name: 'Luiz Inácio Lula da Silva',
+    office: 'President of Brazil',
+    level: 'International',
+    aliases: ['Lula', 'Lula da Silva'],
+  },
+  {
+    name: 'Volodymyr Zelenskyy',
+    office: 'President of Ukraine',
+    level: 'International',
+    aliases: ['Zelensky', 'Volodymyr Zelensky'],
+  },
+  {
+    name: 'Xi Jinping',
+    office: "President of the People's Republic of China",
+    level: 'International',
+    aliases: ['President Xi'],
+  },
+  {
+    name: 'Sheikh Tamim bin Hamad Al Thani',
+    office: 'Emir of Qatar',
+    level: 'International',
+    aliases: ['Sheikh Tamim', 'Tamim bin Hamad Al Thani'],
+  },
+  {
+    name: 'Jens-Frederik Nielsen',
+    office: 'Prime Minister of Greenland',
+    level: 'International',
+  },
+  {
+    name: 'Pedro Sánchez',
+    office: 'Prime Minister of Spain',
+    level: 'International',
+  },
+  {
+    name: 'Tedros Adhanom Ghebreyesus',
+    office: 'Director-General of the World Health Organization',
+    level: 'International',
+    aliases: ['Tedros'],
+  },
+];
+const worldNamed = (text) =>
+  matchPeople(text, WORLD).map((hit) => hit.row.name);
+const worldSpans = (text, name) =>
+  matchPeople(text, WORLD)
+    .find((hit) => hit.row.name === name)
+    ?.spans.map(({ start, end }) => text.slice(start, end));
+
+// Wire copy drops the accents the register keeps, and the reverse.
+const erdogan =
+  'Turkish President Recep Tayyip Erdogan spoke first. Erdogan called for talks.';
+assert.deepEqual(worldNamed(erdogan), ['Recep Tayyip Erdoğan']);
+assert.deepEqual(worldSpans(erdogan, 'Recep Tayyip Erdoğan'), [
+  'Recep Tayyip Erdogan',
+  'Erdogan',
+]);
+assert.deepEqual(
+  worldNamed('Prime Minister Sanchez of Spain and Rep. Sánchez of California.'),
+  ['Pedro Sánchez', 'Linda T. Sánchez'],
+  'a title settles an accented surname either way it is spelled',
+);
+
+// The names a story uses instead of the register's.
+const lula =
+  'President Luiz Inacio Lula da Silva opened the debate. Lula said the fund would double.';
+assert.deepEqual(worldNamed(lula), ['Luiz Inácio Lula da Silva']);
+assert.deepEqual(worldSpans(lula, 'Luiz Inácio Lula da Silva'), [
+  'Luiz Inacio Lula da Silva',
+  'Lula',
+]);
+assert.deepEqual(worldNamed('President Lula said the fund would double.'), [
+  'Luiz Inácio Lula da Silva',
+]);
+assert.deepEqual(
+  worldNamed(
+    'Ukrainian President Volodymyr Zelensky asked for air defenses; Zelensky met Zelenskyy aides.',
+  ),
+  ['Volodymyr Zelenskyy'],
+  'one person, however many of their names a story uses',
+);
+assert.deepEqual(worldNamed('President Xi did not attend.'), ['Xi Jinping']);
+assert.deepEqual(
+  worldNamed('Director-General Tedros said the outbreak was contained.'),
+  ['Tedros Adhanom Ghebreyesus'],
+);
+
+// A foreign surname alone is not enough: it is too often something else.
+assert.deepEqual(worldNamed('Viewership fell, according to Nielsen data.'), []);
+assert.deepEqual(worldNamed('Nielsen said the audience grew 4 percent.'), []);
+assert.deepEqual(worldNamed("Brazil's Lula was not at the meeting."), []);
+assert.deepEqual(worldNamed('Greenland Premier Nielsen flew to Copenhagen.'), [
+  'Jens-Frederik Nielsen',
+]);
+
+// Qatar's prime minister is an Al Thani too, and he is not the emir.
+assert.deepEqual(
+  worldNamed(
+    "Qatar's prime minister, Sheikh Mohammed bin Abdulrahman Al Thani, said talks would resume.",
+  ),
+  [],
+);
+const qatar =
+  'Emir Sheikh Tamim bin Hamad Al Thani received Prime Minister Mohammed bin Abdulrahman Al Thani.';
+assert.deepEqual(worldSpans(qatar, 'Sheikh Tamim bin Hamad Al Thani'), [
+  'Sheikh Tamim bin Hamad Al Thani',
+]);
 
 // --- Where each person is named, which is where their card opens --------
 

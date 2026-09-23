@@ -64,6 +64,8 @@ type RegisterRow = {
   office: string;
   /** Only the Journal's own register has these; see displayOffice. */
   organization?: string | null;
+  /** Other names stories use for them; see NameCandidate in name-matching. */
+  aliases?: string[] | null;
   id?: string;
   credit?: string | null;
   license?: string | null;
@@ -117,7 +119,9 @@ async function loadNewsmakers() {
     (unwrap(
       await getSupabase()
         .from('gcj_newsmakers')
-        .select(`${COLUMNS},id,organization,credit,license,provenance_url`)
+        .select(
+          `${COLUMNS},id,organization,aliases,credit,license,provenance_url`,
+        )
         .neq('is_active', false),
       'Unable to load newsmakers',
     ) as RegisterRow[] | null) || []

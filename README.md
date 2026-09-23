@@ -36,8 +36,8 @@ update public.gcj_editorial_settings set value = 'false'::jsonb where key = 'aut
 update public.gcj_editorial_settings set value = '92'::jsonb where key = 'min_confidence_to_publish';
 -- withdraw a single source
 update public.gcj_sources set auto_publish = false where id = 'whitehouse';
--- stop polling a source altogether (the local sources are managed here, not seeded from code)
-update public.gcj_sources set active = false where id = 'sbcounty';
+-- stop polling a source altogether (code seeds a source only when its row is missing, so this holds for every source)
+update public.gcj_sources set active = false where id = 'noaa';
 -- let a desk lead less often
 update public.gcj_sources set priority = 0 where id = 'ladwp';
 ```

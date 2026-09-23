@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const [pipeline, settings, assets, metrics, readme] = await Promise.all([
+const [pipeline, settings, assets, metrics, readme, repository] = await Promise.all([
   readFile('lib/pipeline.ts', 'utf8'),
   readFile('lib/editorial-settings.ts', 'utf8'),
   readFile('lib/editorial-assets.ts', 'utf8'),
   readFile('app/api/editorial/metrics/route.ts', 'utf8'),
   readFile('README.md', 'utf8'),
+  readFile('lib/repository.ts', 'utf8'),
 ]);
 
 assert.match(pipeline, /const FEED_TIMEOUT_MS = 8_000/);
@@ -55,6 +56,12 @@ assert.match(pipeline, /settings\.maxCandidateAgeHours/);
 assert.match(pipeline, /Date\.now\(\) - Date\.parse\(startedAt\) > DRAFTING_BUDGET_MS/);
 assert.doesNotMatch(pipeline, /Unable to load candidate source/);
 assert.match(settings, /maxCandidateAgeHours: 72,/);
+// The seed runs on every page and run; it must never undo a source switched
+// off in the database.
+assert.match(
+  repository,
+  /from\('gcj_sources'\)\.upsert\(publicationSources, \{\s*onConflict: 'id',\s*ignoreDuplicates: true,/,
+);
 assert.match(metrics, /automation: \{/);
 assert.match(metrics, /staleRunning/);
 assert.match(metrics, /last24Hours/);

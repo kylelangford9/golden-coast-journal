@@ -159,10 +159,15 @@ export async function seedDatabase() {
       }),
     'Unable to seed Journal articles',
   );
+  // A source is seeded only if it is missing. Once its row exists the
+  // database is what counts: this runs on every page and every newsroom run,
+  // and overwriting the row switched NOAA back on minutes after it was
+  // switched off.
   unwrap(
-    await db
-      .from('gcj_sources')
-      .upsert(publicationSources, { onConflict: 'id' }),
+    await db.from('gcj_sources').upsert(publicationSources, {
+      onConflict: 'id',
+      ignoreDuplicates: true,
+    }),
     'Unable to seed Journal sources',
   );
 }

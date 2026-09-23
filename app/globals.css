@@ -4233,6 +4233,7 @@ a.official-chip:focus-visible {
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 0;
   margin: 0;
   background: var(--popover);

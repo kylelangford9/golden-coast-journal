@@ -1,0 +1,1318 @@
+[
+ {
+  "id": "ca-ai-safeguards",
+  "section": "Technology",
+  "keywords": [
+   "artificial intelligence",
+   "ai model",
+   "ai rules",
+   "ai system",
+   "chatbot",
+   "algorithm",
+   "automated decision",
+   "deepfake",
+   "privacy"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-aqueduct",
+  "section": "Climate",
+  "keywords": [
+   "aqueduct",
+   "water supply",
+   "delta",
+   "irrigation",
+   "canal",
+   "allocation"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-avila-adobe",
+  "section": "California",
+  "keywords": [
+   "latino heritage",
+   "hispanic heritage",
+   "heritage month",
+   "latino",
+   "latina",
+   "mexican american",
+   "olvera street",
+   "el pueblo",
+   "californio"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-ballot-drop-box",
+  "section": "California",
+  "keywords": [
+   "mail ballot",
+   "ballot drop box",
+   "voter",
+   "voter guide",
+   "state guide",
+   "election calendar",
+   "ballot tracking",
+   "polling place",
+   "track your"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-cal-fire-engine",
+  "section": "California",
+  "keywords": [
+   "cal fire",
+   "firefighting assets",
+   "red flag warning",
+   "fire engine",
+   "company officers",
+   "eight counties"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-capitol-rotunda",
+  "section": "California",
+  "keywords": [
+   "rotunda"
+  ],
+  "priority": 85,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-central-valley-satellite",
+  "section": "Climate",
+  "keywords": [
+   "san joaquin valley",
+   "tehachapi",
+   "mojave desert",
+   "kern county",
+   "farmland",
+   "land use",
+   "central valley farmland"
+  ],
+  "priority": 88,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-coast",
+  "section": "California",
+  "keywords": [
+   "coast",
+   "ocean",
+   "pacific",
+   "shoreline",
+   "beach"
+  ],
+  "priority": 10,
+  "is_section_default": false,
+  "is_global_default": true
+ },
+ {
+  "id": "ca-data-center",
+  "section": "California",
+  "keywords": [
+   "data center",
+   "data centre",
+   "center reporting",
+   "server room",
+   "askca",
+   "ai assistant",
+   "upgrade costs"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-emergency-operations-center",
+  "section": "California",
+  "keywords": [
+   "preparedness",
+   "emergency operations",
+   "readiness",
+   "cal oes",
+   "disaster response",
+   "emergency management",
+   "preparedness month"
+  ],
+  "priority": 5,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-ev-chargers-la",
+  "section": "California",
+  "keywords": [
+   "ev charger",
+   "charger",
+   "charging station",
+   "ev charging",
+   "electric vehicle",
+   "electric car",
+   "zero-emission vehicle",
+   "clean cars",
+   "charging infrastructure"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-flooded-orchard",
+  "section": "California",
+  "keywords": [
+   "el niño",
+   "el nino",
+   "atmospheric river",
+   "flood",
+   "flooding",
+   "floodwater",
+   "winter storm",
+   "storm",
+   "heavy rain",
+   "levee",
+   "rainfall",
+   "flood watch",
+   "mudslide",
+   "debris flow"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-gas-smartmeter",
+  "section": "California",
+  "keywords": [
+   "utility bill",
+   "gas bill",
+   "natural gas",
+   "gas rates",
+   "ratepayers",
+   "pg&e",
+   "smartmeter",
+   "climate credit",
+   "utility customers",
+   "energy bills"
+  ],
+  "priority": 91,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-i-voted-sticker",
+  "section": "California",
+  "keywords": [
+   "election",
+   "elections",
+   "election officials",
+   "vote center",
+   "voting",
+   "voter",
+   "ballots",
+   "election security",
+   "election results",
+   "certification",
+   "turnout",
+   "registrar"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-i405-traffic",
+  "section": "California",
+  "keywords": [
+   "greenhouse gas",
+   "emissions",
+   "air quality",
+   "cap-and-invest",
+   "cap-and-trade",
+   "low carbon fuel",
+   "tailpipe",
+   "smog",
+   "freeway",
+   "traffic",
+   "commute",
+   "gasoline",
+   "gas prices"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-la-coliseum",
+  "section": "California",
+  "keywords": [
+   "los angeles 2028",
+   "exposition park",
+   "olympic",
+   "paralympic",
+   "coliseum",
+   "2028 games"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-power-lines",
+  "section": null,
+  "keywords": [
+   "energy",
+   "power",
+   "grid",
+   "electricity",
+   "utility",
+   "blackout",
+   "solar",
+   "emissions",
+   "electric customers",
+   "electric bill",
+   "electric rates",
+   "electric utility",
+   "power grid",
+   "grid reliability",
+   "climate credit"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-school-exterior",
+  "section": "California",
+  "keywords": [
+   "child safety",
+   "child-safety",
+   "social media",
+   "chatbots",
+   "minors",
+   "school district",
+   "students"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-state-capitol",
+  "section": "California",
+  "keywords": [
+   "capitol",
+   "legislature",
+   "sacramento",
+   "lawmakers",
+   "senate",
+   "assembly"
+  ],
+  "priority": 80,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-state-library",
+  "section": "Ideas",
+  "keywords": [
+   "essay",
+   "opinion",
+   "analysis",
+   "library",
+   "education",
+   "research",
+   "history",
+   "school"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-supreme-court-sf",
+  "section": "California",
+  "keywords": [
+   "court of appeal",
+   "courts of appeal",
+   "appellate",
+   "superior court",
+   "judicial appointments",
+   "judicial",
+   "judge",
+   "judgeship",
+   "california supreme court",
+   "state supreme court",
+   "justices"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-warner-bros-water-tower",
+  "section": "California",
+  "keywords": [
+   "film tax credit",
+   "film and television",
+   "tax credit program",
+   "post-production",
+   "soundstage",
+   "film production",
+   "filming",
+   "studio",
+   "entertainment industry",
+   "hollywood"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-wildfire-crew",
+  "section": "California",
+  "keywords": [
+   "wildfire recovery",
+   "smoke remediation",
+   "mortgage forbearance",
+   "fire season",
+   "hand crew",
+   "containment"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "ca-wildfire-helicopter",
+  "section": "California",
+  "keywords": [
+   "national guard",
+   "water drop",
+   "air support",
+   "helicopter",
+   "air tanker"
+  ],
+  "priority": 91,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "central-valley-farm",
+  "section": "California",
+  "keywords": [
+   "farm",
+   "agriculture",
+   "crops",
+   "water rights",
+   "harvest",
+   "central valley"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "climate-cracked-ground",
+  "section": "Climate",
+  "keywords": [
+   "sites reservoir",
+   "draft permit",
+   "river flows",
+   "senior rights",
+   "water quality",
+   "parched",
+   "cracked",
+   "groundwater",
+   "dry spell",
+   "off-stream"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "climate-temperature-anomaly",
+  "section": "Climate",
+  "keywords": [
+   "hottest august",
+   "hottest month",
+   "on record",
+   "global temperature",
+   "climate chief",
+   "political division",
+   "simon stiell",
+   "cop31",
+   "heat record",
+   "warming",
+   "temperature anomaly",
+   "temperature anomalies"
+  ],
+  "priority": 95,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "climate-wildfire-from-orbit",
+  "section": "Climate",
+  "keywords": [
+   "smoke plume",
+   "wildfire smoke",
+   "acres burned",
+   "satellite image",
+   "fire perimeter",
+   "scorch"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "doj-building",
+  "section": "Nation",
+  "keywords": [
+   "justice department",
+   "attorney general",
+   "prosecution",
+   "indictment",
+   "federal law",
+   "enforcement"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "federal-reserve",
+  "section": "Business",
+  "keywords": [
+   "federal reserve",
+   "interest rate",
+   "inflation",
+   "monetary",
+   "fomc",
+   "bank",
+   "economy",
+   "prices"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "golden-gate-bridge",
+  "section": "California",
+  "keywords": [
+   "san francisco",
+   "bay area",
+   "bridge",
+   "public transit",
+   "rail",
+   "caltrain",
+   "highway",
+   "infrastructure",
+   "commute"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "goldstone-antenna",
+  "section": "Technology",
+  "keywords": [
+   "deep space network",
+   "antenna",
+   "spacecraft",
+   "telemetry",
+   "radio telescope",
+   "goldstone",
+   "mojave",
+   "jet propulsion laboratory",
+   "ground station"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "greenland-glacier",
+  "section": "World",
+  "keywords": [
+   "greenland",
+   "glacier",
+   "ice sheet",
+   "arctic",
+   "melt",
+   "sea level"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "griffith-observatory",
+  "section": "Culture",
+  "keywords": [
+   "observatory",
+   "planetarium",
+   "stargazing",
+   "night sky",
+   "comet",
+   "meteor",
+   "eclipse",
+   "griffith park",
+   "museum"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "hollywood-sign",
+  "section": "Culture",
+  "keywords": [
+   "film",
+   "hollywood",
+   "entertainment",
+   "music",
+   "studio",
+   "festival",
+   "art museum",
+   "gallery",
+   "exhibition",
+   "box office",
+   "streaming"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "hubble-in-orbit",
+  "section": "Technology",
+  "keywords": [
+   "hubble",
+   "galaxy",
+   "galaxies",
+   "nebula",
+   "star cluster",
+   "space telescope",
+   "astronomy picture",
+   "apod",
+   "chandra",
+   "webb",
+   "supernova",
+   "black hole",
+   "astronomer",
+   "astronomy"
+  ],
+  "priority": 94,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "iss-in-orbit",
+  "section": "Technology",
+  "keywords": [
+   "international space station",
+   "space station",
+   "crew dragon",
+   "spacex",
+   "spacewalk",
+   "expedition",
+   "iss",
+   "crew-12",
+   "soyuz"
+  ],
+  "priority": 94,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "la-city-hall",
+  "section": "California",
+  "keywords": [
+   "los angeles",
+   "city council",
+   "municipal",
+   "mayor",
+   "southern california"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "lake-oroville",
+  "section": "Climate",
+  "keywords": [
+   "lake oroville",
+   "drought",
+   "reservoir",
+   "snowpack",
+   "rainfall",
+   "water supply",
+   "runoff",
+   "flood"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "lincoln-memorial",
+  "section": "Nation",
+  "keywords": [
+   "national",
+   "memorial",
+   "holiday",
+   "anniversary",
+   "civil rights",
+   "patriot day",
+   "veterans"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "mono-lake-from-orbit",
+  "section": "California",
+  "keywords": [
+   "mono lake",
+   "sierra nevada",
+   "drought",
+   "eastern sierra",
+   "snowpack"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nasa-astronaut-training",
+  "section": "Technology",
+  "keywords": [
+   "astronaut",
+   "astronaut candidate",
+   "spaceflight training",
+   "crew training",
+   "space academy"
+  ],
+  "priority": 100,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-enrolled-bill",
+  "section": "Nation",
+  "keywords": [
+   "signs four bills",
+   "bill signing",
+   "signed into law",
+   "spending transparency",
+   "disaster tax relief",
+   "enrolled bill",
+   "signs s."
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-flag-half-staff",
+  "section": "Nation",
+  "keywords": [
+   "flags at half",
+   "directs flags",
+   "half-staff",
+   "half‑staff",
+   "september 11 attacks",
+   "2,977",
+   "day of remembrance",
+   "national mourning"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-health-services-hq",
+  "section": "Nation",
+  "keywords": [
+   "obamacare",
+   "obamacare refunds",
+   "refunds",
+   "exchange fees",
+   "enrollees",
+   "affordable care act",
+   "medicaid",
+   "drug prices",
+   "most-favored-nation",
+   "rebates",
+   "health insurance",
+   "medicare",
+   "health and human services",
+   "prescription"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-medal-of-honor",
+  "section": "Nation",
+  "keywords": [
+   "medal of honor",
+   "commemorative work",
+   "national mall",
+   "valor"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-rosh-hashanah",
+  "section": "Nation",
+  "keywords": [
+   "rosh hashanah",
+   "jewish new year",
+   "high holy days",
+   "shofar",
+   "yom kippur"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-senate-chamber",
+  "section": "Nation",
+  "keywords": [
+   "withdrawals of nominations",
+   "nominations to the senate",
+   "posts withdrawals",
+   "it has withdrawn",
+   "senate chamber",
+   "senate floor",
+   "advice and consent"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-sport-fishing",
+  "section": "Nation",
+  "keywords": [
+   "saltwater angling",
+   "angling access",
+   "hunting and",
+   "angling",
+   "outdoor recreation",
+   "sport fishing",
+   "recreational fishing",
+   "anglers"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "nation-treasury-building",
+  "section": "Nation",
+  "keywords": [
+   "trump dividend",
+   "dividend",
+   "every adult",
+   "$5,000",
+   "treasury",
+   "tariff revenue"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "oak-fire-smoke",
+  "section": "Climate",
+  "keywords": [
+   "wildfire",
+   "fire season",
+   "smoke",
+   "containment",
+   "evacuation",
+   "blaze",
+   "red flag warning",
+   "air quality",
+   "burn scar"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "palais-des-nations",
+  "section": "World",
+  "keywords": [
+   "geneva",
+   "refugee",
+   "displaced",
+   "humanitarian",
+   "relief",
+   "human rights",
+   "asylum",
+   "famine"
+  ],
+  "priority": 95,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "palomar-observatory",
+  "section": "Ideas",
+  "keywords": [
+   "telescope",
+   "astronomy",
+   "astrophysics",
+   "cosmology",
+   "galaxy",
+   "nebula",
+   "supernova",
+   "palomar",
+   "astronomy picture"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "port-of-long-beach",
+  "section": "Business",
+  "keywords": [
+   "port of long beach",
+   "seaport",
+   "container",
+   "shipping",
+   "supply chain",
+   "tariff",
+   "imports",
+   "exports",
+   "cargo",
+   "longshore",
+   "freight"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "sacramento-riverfront",
+  "section": "California",
+  "keywords": [
+   "sacramento",
+   "state agency",
+   "budget",
+   "department",
+   "administration"
+  ],
+  "priority": 92,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "sd-skyline",
+  "section": "California",
+  "keywords": [
+   "san diego",
+   "border",
+   "navy",
+   "harbor",
+   "naval base",
+   "downtown",
+   "tijuana"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "sf-financial-district",
+  "section": "Business",
+  "keywords": [
+   "financial district",
+   "san francisco",
+   "commercial real estate",
+   "office tower",
+   "venture capital",
+   "startup",
+   "earnings",
+   "corporate headquarters",
+   "downtown vacancy"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "stanford-quad",
+  "section": "Ideas",
+  "keywords": [
+   "university",
+   "campus",
+   "higher education",
+   "college",
+   "tuition",
+   "scholarship",
+   "academic",
+   "faculty",
+   "undergraduate"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "tech-artemis-launch-pad",
+  "section": "Technology",
+  "keywords": [
+   "artemis accords",
+   "artemis partners",
+   "open-data",
+   "launch pad",
+   "signatory",
+   "moon"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "tech-coast-guard-rescue",
+  "section": "Technology",
+  "keywords": [
+   "boat sinking",
+   "search and rescue",
+   "fishermen",
+   "coast guard",
+   "distress beacon",
+   "sarsat",
+   "rescued"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "tech-telescope-mirror",
+  "section": "Technology",
+  "keywords": [
+   "telescope",
+   "observatory",
+   "uc berkeley",
+   "data artifacts",
+   "gamma-ray",
+   "mirror segments"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "un-general-assembly",
+  "section": "World",
+  "keywords": [
+   "united nations",
+   "general assembly",
+   "secretary-general",
+   "member states",
+   "multilateral",
+   "treaty",
+   "summit"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "un-security-council",
+  "section": "World",
+  "keywords": [
+   "security council",
+   "conflict",
+   "ceasefire",
+   "sanctions",
+   "peacekeeping",
+   "warfare",
+   "escalation",
+   "airstrike",
+   "invasion"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "us-capitol",
+  "section": "Nation",
+  "keywords": [
+   "congress",
+   "house of representatives",
+   "capitol hill",
+   "appropriations",
+   "shutdown",
+   "legislation",
+   "lawmakers"
+  ],
+  "priority": 100,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "us-constitution",
+  "section": "Nation",
+  "keywords": [
+   "constitution day",
+   "citizenship day",
+   "u.s. constitution",
+   "constitution",
+   "bill of rights",
+   "constitutional",
+   "naturalization",
+   "founding fathers",
+   "preamble"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "us-supreme-court",
+  "section": "Nation",
+  "keywords": [
+   "court",
+   "supreme court",
+   "ruling",
+   "justice",
+   "lawsuit",
+   "legal",
+   "judicial"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "walt-disney-concert-hall",
+  "section": "Culture",
+  "keywords": [
+   "concert hall",
+   "philharmonic",
+   "orchestra",
+   "symphony",
+   "performing arts",
+   "classical music",
+   "opera",
+   "downtown los angeles",
+   "architecture"
+  ],
+  "priority": 90,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "white-house",
+  "section": "Nation",
+  "keywords": [
+   "white house",
+   "oval office",
+   "west wing",
+   "executive order"
+  ],
+  "priority": 95,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "who-geneva",
+  "section": "World",
+  "keywords": [
+   "world health organization",
+   "disease",
+   "outbreak",
+   "vaccine",
+   "pandemic",
+   "epidemic",
+   "public health emergency"
+  ],
+  "priority": 92,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "worker-construction",
+  "section": "Business",
+  "keywords": [
+   "construction",
+   "worker",
+   "wage",
+   "jobs",
+   "employment",
+   "union",
+   "unemployment",
+   "minimum wage",
+   "hiring",
+   "housing"
+  ],
+  "priority": 90,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-chornobyl-confinement",
+  "section": "World",
+  "keywords": [
+   "chornobyl",
+   "chernobyl",
+   "protective structure",
+   "new safe confinement",
+   "nuclear power plant",
+   "drone strike"
+  ],
+  "priority": 96,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-displacement-camp",
+  "section": "World",
+  "keywords": [
+   "displaces",
+   "displaces at least",
+   "displaced more than",
+   "children displaced",
+   "forced tens of thousands",
+   "displacement",
+   "idp camp",
+   "internally displaced",
+   "renewed fighting"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-food-aid",
+  "section": "World",
+  "keywords": [
+   "emergency aid",
+   "food aid",
+   "unicef",
+   "aid delivery",
+   "food rations",
+   "aid convoy",
+   "malnutrition",
+   "cut off by fighting"
+  ],
+  "priority": 95,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-juba-south-sudan",
+  "section": "World",
+  "keywords": [
+   "south sudan",
+   "juba",
+   "jonglei",
+   "planned transition",
+   "rights investigators"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-red-sea-security",
+  "section": "World",
+  "keywords": [
+   "red sea",
+   "houthi",
+   "shipping lane",
+   "destroyer",
+   "maritime security",
+   "naval"
+  ],
+  "priority": 5,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-september-11-memorial",
+  "section": "World",
+  "keywords": [
+   "9/11",
+   "terrorist",
+   "terrorism",
+   "propaganda",
+   "september 11",
+   "militants",
+   "extremism",
+   "extremist"
+  ],
+  "priority": 93,
+  "is_section_default": false,
+  "is_global_default": false
+ },
+ {
+  "id": "world-un-headquarters",
+  "section": "World",
+  "keywords": [
+   "war institutions",
+   "brics",
+   "level week",
+   "world leaders converge",
+   "converge on new york",
+   "general debate",
+   "81st",
+   "power shifts",
+   "overhaul of post"
+  ],
+  "priority": 92,
+  "is_section_default": true,
+  "is_global_default": false
+ },
+ {
+  "id": "world-yemen-shibam",
+  "section": "World",
+  "keywords": [
+   "yemen",
+   "houthi",
+   "child brides",
+   "maternal care",
+   "hodeidah",
+   "red sea"
+  ],
+  "priority": 94,
+  "is_section_default": false,
+  "is_global_default": false
+ }
+]

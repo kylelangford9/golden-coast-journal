@@ -83,7 +83,12 @@ export async function ingestAssetRequests(limit = 4) {
 
     try {
       const response = await fetch(row.source_url, {
-        headers: { 'User-Agent': 'GoldenCoastJournal-asset-intake/1.0' },
+        // Wikimedia throttles clients that do not say who they are; four of the
+        // first eleven requests came back 429 with the bare product name.
+        headers: {
+          'User-Agent':
+            'GoldenCoastJournal-asset-intake/1.0 (https://www.goldencoastjournal.com/contact)',
+        },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
       if (!response.ok) {

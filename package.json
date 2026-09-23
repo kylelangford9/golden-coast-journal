@@ -32,6 +32,7 @@
     "test:contact": "node scripts/editorial-contact.test.mjs",
     "test:mentions": "node scripts/official-mentions.test.mjs",
     "test:namesakes": "node scripts/namesake-portraits.test.mjs",
+    "test:imagery": "node scripts/editorial-asset-selection.test.mjs",
     "test:pipeline": "node scripts/editorial-pipeline-resilience.test.mjs",
     "test:discovery": "node scripts/websub-discovery.test.mjs",
     "typecheck": "tsc --noEmit"

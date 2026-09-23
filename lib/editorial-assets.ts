@@ -1,3 +1,4 @@
+import { pickEditorialAsset } from '@/lib/asset-matching';
 import { getApprovedEditorialAsset, type EditorialAsset } from '@/lib/imagery';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 
@@ -59,31 +60,6 @@ export function clearEditorialAssetCache() {
   cached = null;
 }
 
-function scoreAsset(
-  asset: EditorialAssetRow,
-  section: string,
-  haystack: string,
-) {
-  let score = 0;
-  if (asset.section && asset.section.toLowerCase() === section.toLowerCase()) {
-    score += 50;
-    // A nudge, not a veto: this must stay inside ROTATION_BAND or the desk's
-    // default photograph would outscore its siblings on every story and the
-    // rotation below would never have more than one candidate to choose from.
-    if (asset.is_section_default) score += 5;
-  } else if (asset.section) {
-    // An asset tied to a different desk is a poor fit; only the global
-    // fallback should rescue a story with no sectional match.
-    score -= 40;
-  }
-  for (const keyword of asset.keywords) {
-    const term = keyword.trim().toLowerCase();
-    if (term && haystack.includes(term)) score += 12;
-  }
-  if (asset.is_global_default) score += 1;
-  return score;
-}
-
 function toAsset(row: EditorialAssetRow): EditorialAsset {
   return {
     url: row.url,
@@ -96,39 +72,12 @@ function toAsset(row: EditorialAssetRow): EditorialAsset {
 }
 
 /**
- * Pick the best approved image for a story from the database, matching the
- * desk first and then the headline and dek against each asset's keywords.
- * Falls back to the registry's global default, and finally to the bundled
- * coast photograph if the table is unreachable, so drafting never fails for
- * want of a picture.
+ * Pick the best approved image for a story from the database: a picture whose
+ * keywords the headline and dek name, preferring the story's own desk, and
+ * otherwise one of the desk's generic pictures. The rules are in
+ * lib/asset-matching.ts. Falls back to the bundled coast photograph if the
+ * table is unreachable, so drafting never fails for want of a picture.
  */
-/**
- * A small stable hash, so a given story keeps the same photograph on every
- * render and across machines. Math.random would reshuffle the page on each
- * request and make the paper look unstable.
- */
-function stableHash(value: string) {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-/**
- * Candidates this close to the best score are treated as equally good fits.
- *
- * It must stay below the 12 a keyword match is worth, or the comment below
- * ("a keyword match still wins outright") is not true: at 12 the band exactly
- * cancelled one keyword hit, so a story about a comet on the Culture desk drew
- * the desk's default photograph as often as the observatory that matched it.
- * Six still covers the 5-point nudge a section default gets, which is the tie
- * this is actually for: siblings on a desk that nothing in the story picks
- * between.
- */
-const ROTATION_BAND = 6;
-
 export async function selectEditorialAsset(input: {
   section: string;
   title?: string;
@@ -146,32 +95,6 @@ export async function selectEditorialAsset(input: {
   } catch {
     return getApprovedEditorialAsset(null);
   }
-  if (!rows.length) return getApprovedEditorialAsset(null);
-
-  const haystack = `${input.title || ''} ${input.dek || ''}`.toLowerCase();
-  const scored = rows
-    .map((row) => ({ row, score: scoreAsset(row, input.section, haystack) }))
-    .sort((a, b) => b.score - a.score || b.row.priority - a.row.priority);
-
-  if (!scored.length) return getApprovedEditorialAsset(null);
-
-  const bestScore = scored[0].score;
-  if (bestScore <= 0) {
-    const fallback = rows.find((row) => row.is_global_default);
-    if (fallback) return toAsset(fallback);
-    return toAsset(scored[0].row);
-  }
-
-  // Rotate among the assets that fit this story equally well. A keyword match
-  // still wins outright; this only breaks the ties that would otherwise put
-  // one photograph on every story of a desk.
-  const contenders = scored.filter(
-    (entry) => entry.score >= bestScore - ROTATION_BAND,
-  );
-  const key = input.rotationKey || input.title || '';
-  const picked =
-    contenders.length > 1 && key
-      ? contenders[stableHash(key) % contenders.length]
-      : contenders[0];
-  return toAsset(picked.row);
+  const picked = pickEditorialAsset(rows, input);
+  return picked ? toAsset(picked) : getApprovedEditorialAsset(null);
 }

@@ -107,6 +107,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
               person={person}
               size={168}
               className="person-hero-portrait"
+              eager
             />
             {person.portrait ? (
               <figcaption>

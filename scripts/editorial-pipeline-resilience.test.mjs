@@ -17,7 +17,7 @@ assert.match(pipeline, /const AI_DRAFT_TIMEOUT_MS = 75_000/);
 // redeploy. Guard against a constant creeping back in.
 assert.match(pipeline, /const settings = await getEditorialSettings\(\)/);
 assert.match(pipeline, /reviewBacklog >= settings\.reviewQueueLimit/);
-assert.match(pipeline, /\.limit\(settings\.draftsPerRun\)/);
+assert.match(pipeline, /if \(drafted >= settings\.draftsPerRun\) break;/);
 assert.match(pipeline, /draft\.confidence >= settings\.minConfidenceToPublish/);
 assert.doesNotMatch(pipeline, /const REVIEW_QUEUE_LIMIT/);
 assert.doesNotMatch(pipeline, /const DRAFTS_PER_RUN/);
@@ -45,7 +45,16 @@ assert.match(pipeline, /webSubNotifications/);
 assert.match(pipeline, /webSubFailures/);
 assert.match(pipeline, /Unable to close stale pipeline runs/);
 assert.match(pipeline, /\.update\(\{ status: 'selected' \}\)/);
-assert.match(pipeline, /\.update\(\{ status: 'new' \}\)/);
+// A failed draft goes back in the queue only if the failure may clear; a page
+// that refused the Journal is retired so it cannot hold the top slot forever.
+assert.match(pipeline, /status: isPermanentFailure\(message\) \? 'rejected' : 'new'/);
+// The queue is ranked at drafting time, stale items retired, a failed slot
+// refilled within the run's time budget, and no source looked up per item.
+assert.match(pipeline, /rankCandidates\(\s*waiting,\s*activeSources,/);
+assert.match(pipeline, /settings\.maxCandidateAgeHours/);
+assert.match(pipeline, /Date\.now\(\) - Date\.parse\(startedAt\) > DRAFTING_BUDGET_MS/);
+assert.doesNotMatch(pipeline, /Unable to load candidate source/);
+assert.match(settings, /maxCandidateAgeHours: 72,/);
 assert.match(metrics, /automation: \{/);
 assert.match(metrics, /staleRunning/);
 assert.match(metrics, /last24Hours/);

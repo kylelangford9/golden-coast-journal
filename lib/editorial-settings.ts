@@ -17,6 +17,11 @@ export type EditorialSettings = {
    * Week", holiday closures). Case-insensitive; an invalid pattern is ignored.
    */
   skipTitlePatterns: RegExp[];
+  /**
+   * How old a feed item can be and still be drafted. Older items are retired
+   * rather than published days late as if they were news.
+   */
+  maxCandidateAgeHours: number;
 };
 
 export const EDITORIAL_SETTING_DEFAULTS: EditorialSettings = {
@@ -25,6 +30,7 @@ export const EDITORIAL_SETTING_DEFAULTS: EditorialSettings = {
   reviewQueueLimit: 12,
   draftsPerRun: 1,
   skipTitlePatterns: [],
+  maxCandidateAgeHours: 72,
 };
 
 const SETTINGS_CACHE_MS = 60_000;
@@ -108,6 +114,12 @@ export async function getEditorialSettings(): Promise<EditorialSettings> {
       10,
     ),
     skipTitlePatterns: asPatterns(byKey.get('skip_title_patterns')),
+    maxCandidateAgeHours: asBoundedInteger(
+      byKey.get('max_candidate_age_hours'),
+      EDITORIAL_SETTING_DEFAULTS.maxCandidateAgeHours,
+      6,
+      720,
+    ),
   };
 
   cached = { value, loadedAt: Date.now() };

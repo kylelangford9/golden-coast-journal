@@ -13,6 +13,7 @@ import { getSupabase, unwrap } from '@/lib/supabase-server';
 import { decodeHtmlEntities } from '@/lib/text';
 import { notifyWebSubHub } from '@/lib/websub';
 import { articleUrl, submitToIndexNow } from '@/lib/indexnow';
+import { isPermanentFailure, rankCandidates } from '@/lib/candidate-selection';
 
 type FeedEntry = {
   title: string;
@@ -52,6 +53,14 @@ const FEED_TIMEOUT_MS = 8_000;
 const SOURCE_PAGE_TIMEOUT_MS = 12_000;
 const AI_DRAFT_TIMEOUT_MS = 75_000;
 const STALE_RUN_AFTER_MS = 15 * 60_000;
+/**
+ * No new draft is started after this much of the run has passed, so the one
+ * in progress (a page fetch and a model call, at most 87 seconds) still ends
+ * inside the route's 300-second limit.
+ */
+const DRAFTING_BUDGET_MS = 180_000;
+/** A few failed drafts may be replaced by the next candidate in the same run. */
+const EXTRA_DRAFT_ATTEMPTS = 2;
 
 function textFromTag(block: string, tag: string) {
   const match = block.match(
@@ -409,26 +418,46 @@ export async function runEditorialPipeline() {
     else if (!gatewayToken) draftingSkipped = 'ai_unavailable';
 
     if (gatewayToken && !draftingSkipped) {
-      const candidates = unwrap(
+      const waiting = unwrap(
         await db
           .from('gcj_story_candidates')
           .select('*')
           .eq('status', 'new')
-          .order('score', { ascending: false })
-          .limit(settings.draftsPerRun),
+          .order('discovered_at', { ascending: false })
+          .limit(400),
         'Unable to load drafting candidates',
       ) as CandidateRow[];
-      for (const candidate of candidates) {
-        const source = unwrap(
+      // Ranked by how fresh each item is now, with each source's current
+      // priority; items from switched-off sources are left out entirely.
+      const { ranked, stale } = rankCandidates(
+        waiting,
+        activeSources,
+        Date.now(),
+        settings.maxCandidateAgeHours,
+      );
+      if (stale.length)
+        unwrap(
           await db
-            .from('gcj_sources')
-            .select('*')
-            .eq('id', candidate.source_id)
-            .eq('active', true)
-            .maybeSingle(),
-          'Unable to load candidate source',
-        ) as SourceRow | null;
+            .from('gcj_story_candidates')
+            .update({ status: 'rejected' })
+            .in(
+              'id',
+              stale.map((candidate) => candidate.id),
+            )
+            .eq('status', 'new'),
+          'Unable to retire stale candidates',
+        );
+      const sourcesById = new Map(
+        activeSources.map((source) => [source.id, source]),
+      );
+      let attempts = 0;
+      for (const candidate of ranked) {
+        if (drafted >= settings.draftsPerRun) break;
+        if (attempts >= settings.draftsPerRun + EXTRA_DRAFT_ATTEMPTS) break;
+        if (Date.now() - Date.parse(startedAt) > DRAFTING_BUDGET_MS) break;
+        const source = sourcesById.get(candidate.source_id);
         if (!source) continue;
+        attempts++;
         try {
           const claimed = unwrap(
             await db
@@ -519,14 +548,19 @@ export async function runEditorialPipeline() {
             'Unable to mark candidate processed',
           );
         } catch (error) {
+          const message =
+            error instanceof Error ? error.message : 'draft failed';
+          // A page that refused the Journal will refuse it next hour too; it
+          // is retired so it stops taking a drafting slot. Anything that may
+          // clear goes back in the queue, where it ages like everything else.
           await db
             .from('gcj_story_candidates')
-            .update({ status: 'new' })
+            .update({
+              status: isPermanentFailure(message) ? 'rejected' : 'new',
+            })
             .eq('id', candidate.id)
             .eq('status', 'selected');
-          failures.push(
-            `${candidate.title}: ${error instanceof Error ? error.message : 'draft failed'}`,
-          );
+          failures.push(`${candidate.title}: ${message}`);
         }
       }
     }

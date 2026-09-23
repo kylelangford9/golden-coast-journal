@@ -35,6 +35,7 @@
     "test:imagery": "node scripts/editorial-asset-selection.test.mjs",
     "test:people": "node scripts/people-experience.test.mjs",
     "test:pipeline": "node scripts/editorial-pipeline-resilience.test.mjs",
+    "test:candidates-queue": "node scripts/candidate-selection.test.mjs",
     "test:discovery": "node scripts/websub-discovery.test.mjs",
     "typecheck": "tsc --noEmit"
   },

@@ -57,7 +57,37 @@ assert.deepEqual(places(heat), ['Contra Costa County']);
 // in a California story the Californian one.
 assert.deepEqual(
   places(story('jpl', 'Technology', 'JPL', "NASA's Jet Propulsion Laboratory in Pasadena, California, built it.")),
-  ['Pasadena'],
+  ['JPL, Pasadena', 'Pasadena'],
+  'a named laboratory is a place, more exact than its town',
+);
+
+// As exact as the copy allows: neighbourhoods and small towns of California,
+// landmarks, and counties named in a list.
+assert.deepEqual(
+  places(story('palisades', 'California', 'Rebuilding', 'Permits resumed in Pacific Palisades and Boyle Heights.')),
+  ['Pacific Palisades', 'Boyle Heights'],
+);
+assert.deepEqual(
+  places(story('cal-oes', 'California', 'Crews', 'Deployments to Plumas, Tehama, Sierra and Lake counties begin Saturday.')),
+  ['Plumas County', 'Tehama County', 'Sierra County', 'Lake County'],
+);
+assert.deepEqual(
+  places(story('crew', 'Technology', 'Crew', 'NASA will brief reporters from Johnson Space Center.')),
+  ['Johnson Space Center, Houston'],
+);
+assert.ok(
+  storyGeo(g, story('crew2', 'Technology', 'Crew', 'Briefing at Johnson Space Center.')).regions.has('US.TX'),
+  'a landmark carries its state',
+);
+assert.deepEqual(
+  places(story('weed', 'California', 'Weed', 'Weed abatement notices went out. Needles were collected.')),
+  [],
+  'a small town whose name is a word is not read as the town',
+);
+assert.deepEqual(
+  places(story('monterrey', 'Technology', 'Monterrey', 'Monterrey framed by the Sierra Madre Oriental, in Mexico.')),
+  ['Monterrey'],
+  'a small California town counts only in a story about California',
 );
 assert.equal(
   storyGeo(g, story('jpl2', 'Technology', 'JPL', 'Built in Pasadena, California.')).places[0].lat > 34,

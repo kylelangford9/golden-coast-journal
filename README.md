@@ -75,15 +75,25 @@ The homepage's News near Me button asks the browser for the reader's position on
 it is tapped. The browser rounds it to two decimal places (about a kilometer) and POSTs
 it to `/api/near-me`, which names the nearest town from `lib/places-data.json`, picks
 the stories with `lib/near-me.ts`, and stores and logs nothing; no geocoding service is
-called. A story's places come from its county-newsroom source and from the towns,
-counties, regions, states and countries its copy names. Stories set within 50 miles come
-first, then those about the reader's state (or country, abroad), then the closest
-coverage with its distance, so a reader outside California still gets an answer.
+called. A story's places come from its county-newsroom source and from what its copy
+names, as exactly as it allows: California's towns and neighbourhoods, landmarks (JPL,
+Vandenberg, the ports, Lake Oroville), counties, including lists such as "Plumas,
+Tehama and Lake counties", regions, states and countries. Each story is pinned at its
+most exact place near the reader.
 
-The gazetteer is GeoNames' `cities15000` (CC BY 4.0, credited in the panel), the Census
-Bureau's county gazetteer and its outlines of California's counties; rebuild it with
-`npm run places:build`. Measurement records `News Near Me` with the outcome only, never
-the place, and `News Near Me Story Selected`.
+The stories appear on a map as mini front pages, which the reader can drag, pinch and
+zoom like a map app; every story the Journal can place is on it. The map is drawn by the
+Journal (`lib/near-me-map.ts`) from Natural Earth and the Census Bureau, not by a tile
+service that would learn where the reader is; as it moves, the browser POSTs the area on
+screen to `/api/near-me/map` for the detail that area needs. Pages, bubbles and town
+names are laid out in the browser (`lib/paper-layout.ts`).
+
+The gazetteer is GeoNames' `cities15000` and California's places from `cities1000`
+(CC BY 4.0, credited in the panel), the Census Bureau's county gazetteer and its outlines
+of California's counties; `lib/map-data.json` is Natural Earth's 1:50m land and states.
+Rebuild both with `npm run places:build`. Measurement records `News Near Me` with the
+outcome only, never the place, `News Near Me Page Selected` and `News Near Me Story
+Selected`.
 
 ## Local development
 

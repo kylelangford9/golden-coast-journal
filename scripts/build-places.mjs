@@ -26,12 +26,22 @@ import { join } from 'node:path';
 const CACHE = join(tmpdir(), 'gcj-places');
 const SOURCES = {
   cities: 'https://download.geonames.org/export/dump/cities15000.zip',
+  // Every place of 1,000 people or more, of which only California's are
+  // kept: its small towns and the neighbourhoods its stories name (Pacific
+  // Palisades, Boyle Heights, Mira Mesa), so a story is pinned where it is.
+  localCities: 'https://download.geonames.org/export/dump/cities1000.zip',
   admin1: 'https://download.geonames.org/export/dump/admin1CodesASCII.txt',
-  countries: 'https://download.geonames.org/export/dump/countryInfo.txt',
+  countryInfo: 'https://download.geonames.org/export/dump/countryInfo.txt',
   counties:
     'https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2024_Gazetteer/2024_Gaz_counties_national.zip',
   countyShapes:
     'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json',
+  // Natural Earth, public domain: the land and the U.S. states the News near
+  // Me map is drawn on, at 1:50,000,000.
+  countries:
+    'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson',
+  states:
+    'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson',
 };
 
 // Sections of a city (PPLX), and places that are historical, abandoned or
@@ -67,13 +77,25 @@ const rows = (text) =>
 
 const round = (value) => Math.round(Number(value) * 1e4) / 1e4;
 
-const [citiesText, admin1Text, countriesText, countiesText, shapesText] =
+const [
+  citiesText,
+  admin1Text,
+  countriesText,
+  countiesText,
+  shapesText,
+  landText,
+  statesText,
+  localText,
+] =
   await Promise.all([
     cached(SOURCES.cities),
     cached(SOURCES.admin1),
-    cached(SOURCES.countries),
+    cached(SOURCES.countryInfo),
     cached(SOURCES.counties),
     cached(SOURCES.countyShapes),
+    cached(SOURCES.countries),
+    cached(SOURCES.states),
+    cached(SOURCES.localCities),
   ]);
 
 const countries = {};
@@ -97,6 +119,27 @@ for (const row of rows(citiesText)) {
   usedRegions.add(`${cc}.${admin1}`);
 }
 cities.sort((a, b) => b[7] - a[7]);
+
+// California's towns under 15,000 and its named neighbourhoods. They are for
+// reading where a story is set, never for naming where a reader is: a reader
+// in Echo Park is shown stories near Los Angeles.
+const larger = new Set(rows(citiesText).map((row) => row[0]));
+const localPlaces = [];
+for (const row of rows(localText)) {
+  const [id, name, asciiName, , lat, lon, , feature, cc, , admin1, admin2, , , population] = row;
+  if (cc !== 'US' || admin1 !== 'CA') continue;
+  if (feature !== 'PPLX' && (SKIPPED_FEATURES.has(feature) || larger.has(id))) continue;
+  localPlaces.push([
+    name,
+    asciiName === name ? 0 : asciiName,
+    round(lat),
+    round(lon),
+    cc,
+    admin1,
+    admin2,
+    Number(population) || 0,
+  ]);
+}
 
 const regions = {};
 for (const [code, name] of rows(admin1Text)) {
@@ -136,12 +179,47 @@ const data = {
   countyShapes,
   // [name, ASCII name or 0 when the same, lat, lon, country, region, county FIPS (U.S. only), population]
   cities,
+  // The same, for California's small towns and neighbourhoods.
+  localPlaces,
 };
 
 const out = new URL('../lib/places-data.json', import.meta.url);
 writeFileSync(out, JSON.stringify(data));
 console.log(
-  `lib/places-data.json: ${cities.length} towns, ${counties.length} counties ` +
+  `lib/places-data.json: ${cities.length} towns, ${localPlaces.length} California places, ${counties.length} counties ` +
     `(${Object.keys(countyShapes).length} outlined), ${Object.keys(regions).length} regions, ` +
     `${Object.keys(countries).length} countries`,
+);
+
+// The base map, every ring flattened to whole hundredths of a degree
+// [lon, lat, lon, lat, ...]: about a kilometre, finer than the 1:50m source.
+const flatRings = (features) =>
+  features.flatMap(({ geometry }) => {
+    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    return polygons.flatMap((polygon) =>
+      polygon.map((ring) => {
+        const flat = [];
+        for (const [lon, lat] of ring) {
+          const x = Math.round(lon * 100);
+          const y = Math.round(lat * 100);
+          if (flat.length && flat[flat.length - 2] === x && flat[flat.length - 1] === y) continue;
+          flat.push(x, y);
+        }
+        return flat;
+      }),
+    );
+  }).filter((flat) => flat.length >= 8);
+
+const land = flatRings(JSON.parse(landText).features);
+const states = flatRings(
+  JSON.parse(statesText).features.filter((feature) => feature.properties.iso_a2 === 'US'),
+);
+const mapOut = new URL('../lib/map-data.json', import.meta.url);
+writeFileSync(
+  mapOut,
+  JSON.stringify({ credit: 'Map: Natural Earth and the U.S. Census Bureau.', land, states }),
+);
+console.log(
+  `lib/map-data.json: ${land.length} land rings, ${states.length} U.S. state rings, ` +
+    `${(land.flat().length + states.flat().length) / 2} points`,
 );

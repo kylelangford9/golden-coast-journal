@@ -37,7 +37,7 @@
     "test:pipeline": "node scripts/editorial-pipeline-resilience.test.mjs",
     "test:candidates-queue": "node scripts/candidate-selection.test.mjs",
     "test:discovery": "node scripts/websub-discovery.test.mjs",
-    "test:near-me": "node scripts/near-me.test.mjs",
+    "test:near-me": "node scripts/near-me.test.mjs && node scripts/near-me-map.test.mjs",
     "places:build": "node scripts/build-places.mjs",
     "typecheck": "tsc --noEmit"
   },

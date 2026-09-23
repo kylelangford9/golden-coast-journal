@@ -38,8 +38,10 @@ export default function PrivacyPage() {
               News near Me asks your browser for your location only when you
               tap it. Your device rounds it to about a kilometer before sending
               it to the Journal, which uses it once to name the nearest town and
-              choose the stories, then discards it. It is not stored, logged or
-              shared with a mapping service.
+              choose the stories, then discards it. The map is drawn by the
+              Journal rather than a mapping service; moving it sends the Journal
+              only the area on your screen, to draw that part. Neither is
+              stored, logged or shared with anyone.
             </p>
           </section>
           <section>

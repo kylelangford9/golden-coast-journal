@@ -906,6 +906,39 @@ button {
   font-family: var(--font-serif), Georgia, serif;
   font-size: 25px;
 }
+/* A correction sits on the story it corrects, above the sources, on the same
+   ground as the sources box and in the colours already measured against it. */
+.article-corrections {
+  margin-top: 45px;
+  padding: 22px 26px;
+  background: #ebe4d7;
+  border-top: 4px solid var(--rust);
+}
+.article-corrections h2 {
+  margin: 0 0 10px;
+  color: var(--rust);
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.article-body .article-corrections p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.article-body .article-corrections p + p {
+  margin-top: 12px;
+}
+.article-corrections time {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 12px;
+}
 .source-box p {
   color: var(--muted);
   font-size: 12px;
@@ -1254,6 +1287,38 @@ button {
   padding: 34px;
   background: #ebe4d7;
   border-top: 4px solid var(--ink);
+}
+.corrections-list {
+  max-width: 900px;
+  margin-bottom: 40px;
+  border-top: 4px solid var(--ink);
+}
+.corrections-list article {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.corrections-list time {
+  color: var(--muted);
+  font-size: 12px;
+}
+.corrections-list h2 {
+  margin: 6px 0 10px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 25px;
+  line-height: 1.15;
+}
+.corrections-list h2 a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.corrections-list p {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 18px;
+  line-height: 1.52;
 }
 .corrections-empty > span {
   color: var(--rust);

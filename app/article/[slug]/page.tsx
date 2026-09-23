@@ -18,7 +18,11 @@ import {
   effectiveArticleUpdatedAt,
   formatArticleDateTime,
 } from '@/lib/content';
-import { findPublishedBySlug, listPublished } from '@/lib/repository';
+import {
+  findPublishedBySlug,
+  listCorrections,
+  listPublished,
+} from '@/lib/repository';
 import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 import {
   KYLE_LANGFORD_AUTHOR,
@@ -69,10 +73,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   // Four is the ceiling rather than the target: the matcher returns full-name
   // matches ahead of surname matches, so the faces a reader sees are the ones
   // the story is actually about.
-  const officials = await findMentionedOfficials(
-    `${article.title} ${article.dek} ${article.body.join(' ')}`,
-    4,
-  );
+  const [officials, corrections] = await Promise.all([
+    findMentionedOfficials(
+      `${article.title} ${article.dek} ${article.body.join(' ')}`,
+      4,
+    ),
+    listCorrections(article.id),
+  ]);
   const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();
   // Related stories should not hand the reader a photograph they are already
@@ -132,6 +139,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     // matter most to a news index were the ones describing their publisher
     // without one; every other page already references this id.
     publisher: { '@id': `${origin}/#organization` },
+    ...(corrections.length
+      ? {
+          correction: corrections.map((correction) => ({
+            '@type': 'CorrectionComment',
+            text: correction.note,
+            datePublished: correction.correctedAt,
+          })),
+        }
+      : {}),
     isAccessibleForFree: true,
     articleSection: article.section,
   }).replace(/</g, '\\u003c');
@@ -249,6 +265,26 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 />
               </>
             )}
+            {corrections.length ? (
+              // The standards page promises the date and substance of every
+              // material correction on the story itself, not a silent rewrite.
+              <section
+                className="article-corrections"
+                aria-labelledby="corrections-heading"
+              >
+                <h2 id="corrections-heading">
+                  {corrections.length > 1 ? 'Corrections' : 'Correction'}
+                </h2>
+                {corrections.map((correction) => (
+                  <p key={correction.id}>
+                    <time dateTime={correction.correctedAt}>
+                      {formatArticleDateTime(correction.correctedAt)}
+                    </time>{' '}
+                    {correction.note}
+                  </p>
+                ))}
+              </section>
+            ) : null}
             <section className="source-box" aria-labelledby="sources-heading">
               <h2 id="sources-heading">Sources & methodology</h2>
               <p>

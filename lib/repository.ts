@@ -269,4 +269,59 @@ export async function findPublishedBySlug(
   }
 }
 
+export type Correction = {
+  id: string;
+  note: string;
+  correctedAt: string;
+  article: { slug: string; title: string };
+};
+
+type CorrectionRow = {
+  id: string;
+  note: string;
+  corrected_at: string;
+  gcj_articles: { slug: string; title: string; status: string } | null;
+};
+
+/**
+ * Corrections on published stories, newest first; all of them, or one
+ * story's. The standards page promises that a material correction is attached
+ * to the article with its date and substance, so a failure to load them is
+ * reported rather than hidden, but it does not take the story down with it.
+ */
+export async function listCorrections(
+  articleId?: string,
+): Promise<Correction[]> {
+  try {
+    let query = getSupabase()
+      .from('gcj_corrections')
+      .select('id,note,corrected_at,gcj_articles!inner(slug,title,status)')
+      .eq('gcj_articles.status', 'published')
+      .order('corrected_at', { ascending: false });
+    if (articleId) query = query.eq('article_id', articleId);
+    const rows = unwrap(
+      await query,
+      'Unable to load corrections',
+    ) as unknown as CorrectionRow[];
+    return rows.flatMap((row) =>
+      row.gcj_articles
+        ? [
+            {
+              id: row.id,
+              note: row.note,
+              correctedAt: row.corrected_at,
+              article: {
+                slug: row.gcj_articles.slug,
+                title: row.gcj_articles.title,
+              },
+            },
+          ]
+        : [],
+    );
+  } catch (error) {
+    console.error('[gcj] listCorrections failed:', error);
+    return [];
+  }
+}
+
 export type { ArticleRow };

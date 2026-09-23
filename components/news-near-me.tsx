@@ -42,15 +42,37 @@ type NearCard = {
 
 type Rect = { x: number; y: number; w: number; h: number };
 
+type LayerName =
+  | 'land'
+  | 'urban'
+  | 'forests'
+  | 'parks'
+  | 'airports'
+  | 'water'
+  | 'rivers'
+  | 'borders'
+  | 'states'
+  | 'counties'
+  | 'arterials'
+  | 'highways'
+  | 'motorways';
+
 type Geometry = {
   bounds: Rect;
   tolerance: number;
-  land: string;
-  states: string;
-  counties: string;
+  layers: Record<LayerName, string>;
   highlight: string;
-  labels: [string, number, number, number][];
+  /** [name, x, y, rank, kind], in the order to place them. */
+  labels: [string, number, number, number, number][];
+  /** Shaded relief tiles: [key, x, y, w, h]. */
+  relief: [string, number, number, number, number][];
+  /** The relief images this answer carries: those the browser did not have. */
+  images: Record<string, string>;
 };
+
+// What each kind of name is called in the stylesheet, as lib/near-me-map.ts
+// numbers them.
+const NAME_CLASS = ['town', 'ocean', 'water', 'park', 'state', 'country'];
 
 type MapStory = {
   x: number;
@@ -260,6 +282,8 @@ export function NewsNearMe() {
 const MAX_PAGES = 7;
 // The zoom buttons' corner, which pages, names and the reader's dot keep out of.
 const CONTROLS = { w: 58, h: 180 };
+// The scale bar's corner, bottom left.
+const SCALE = { w: 132, h: 30 };
 const MIN_WIDTH = 30; // world units across at the closest zoom: about two miles
 const TAP_SLOP = 6;
 
@@ -297,6 +321,8 @@ function NearMap({ result }: { result: NearResult }) {
   const viewNow = useRef<Rect>(result.view);
   const [geometry, setGeometry] = useState<Geometry>(result.geometry);
   const geometryNow = useRef<Geometry>(result.geometry);
+  // Relief images by tile, kept as the map moves, so each is sent only once.
+  const [reliefImages] = useState(() => new Map(Object.entries(result.geometry.images || {})));
   const [layout, setLayout] = useState<{ groups: Group[]; pages: Map<string, Offset> }>({
     groups: [],
     pages: new Map(),
@@ -394,6 +420,7 @@ function NearMap({ result }: { result: NearResult }) {
       [
         { x: you.x - 16, y: you.y - 16, w: 32, h: 32 },
         { x: w - CONTROLS.w, y: 0, w: CONTROLS.w, h: CONTROLS.h },
+        { x: 0, y: h - SCALE.h, w: SCALE.w, h: SCALE.h },
       ],
       w,
       h,
@@ -421,17 +448,27 @@ function NearMap({ result }: { result: NearResult }) {
         bounds: { x: v.x - v.w / 2, y: v.y - v.h / 2, w: v.w * 2, h: v.h * 2 },
         tolerance,
         highlight: result.highlight,
+        have: [...reliefImages.keys()],
       }),
     })
       .then((response) => (response.ok ? response.json() : null))
       .then((next: Geometry | null) => {
         if (next && fetching.current === controller) {
+          for (const [key, image] of Object.entries(next.images || {})) reliefImages.set(key, image);
+          // A few hundred tiles at most: the oldest out of view go first.
+          if (reliefImages.size > 400) {
+            const inUse = new Set(next.relief.map(([key]) => key));
+            for (const key of reliefImages.keys()) {
+              if (reliefImages.size <= 300) break;
+              if (!inUse.has(key)) reliefImages.delete(key);
+            }
+          }
           geometryNow.current = next;
           setGeometry(next);
         }
       })
       .catch(() => {});
-  }, [page, result, setView, slugsOf]);
+  }, [page, reliefImages, result, setView, slugsOf]);
 
   useEffect(() => {
     const el = box.current;
@@ -700,7 +737,12 @@ function NearMap({ result }: { result: NearResult }) {
 
   // Town names go where they clear everything else drawn over the map.
   const obstacles: Box[] = [{ x: you.x - 18, y: you.y - 18, w: 36, h: 36 }];
-  if (size) obstacles.push({ x: size.w - CONTROLS.w, y: 0, w: CONTROLS.w, h: CONTROLS.h });
+  if (size) {
+    obstacles.push(
+      { x: size.w - CONTROLS.w, y: 0, w: CONTROLS.w, h: CONTROLS.h },
+      { x: 0, y: size.h - SCALE.h, w: SCALE.w, h: SCALE.h },
+    );
+  }
   for (const group of layout.groups) {
     const leader = result.stories[group.members[0]];
     const at = toScreen(leader.x, leader.y);
@@ -711,19 +753,27 @@ function NearMap({ result }: { result: NearResult }) {
         : { x: at.x - 14, y: at.y - 14, w: 28, h: 28 },
     );
   }
+  // A map names more places the more room it has: about one to every
+  // hundred pixels square.
   const labels = size
     ? chooseLabels(
-        geometry.labels.map(([name, x, y, population]) => ({
+        geometry.labels.map(([name, x, y, population, kind]) => ({
           name,
           population,
+          kind,
           ...toScreen(x, y),
         })),
         obstacles,
         size.w,
         size.h,
-        16,
+        Math.round(Math.min(28, Math.max(8, (size.w * size.h) / 9000))),
       )
     : [];
+  const unitsPerPixel = size ? view.w / size.w : 1;
+  const zoom =
+    unitsPerPixel > 20 ? 'far' : unitsPerPixel > 5 ? 'region' : unitsPerPixel > 1.2 ? 'metro' : 'city';
+  const scaleBar = size ? scaleFor(unitsPerPixel, result.radius.endsWith('kilometers')) : null;
+  const layers = geometry.layers;
 
   const choose = (group: Group, e: { timeStamp: number }) => {
     if (recentlyDragged(e)) return;
@@ -751,8 +801,13 @@ function NearMap({ result }: { result: NearResult }) {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
+        {/* Drawn as a printed map is, bottom to top: the sea, the land and
+            what covers it, the relief's shadows, water, borders, then roads,
+            each cased so it reads over everything under it. Every shape
+            carries its own fill, so the map is still a map without its
+            stylesheet. */}
         <svg
-          className="near-me-drawing"
+          className={`near-me-drawing is-${zoom}`}
           viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
           preserveAspectRatio="none"
           width="100%"
@@ -761,22 +816,68 @@ function NearMap({ result }: { result: NearResult }) {
         >
           <rect
             className="near-me-water"
-            fill="#dfe7e6"
+            fill="#cfe0e8"
             x={view.x - view.w}
             y={view.y - view.h}
             width={view.w * 3}
             height={view.h * 3}
           />
-          <path className="near-me-land" d={geometry.land} fill="#f1eadc" />
+          {layers.land ? <path className="near-me-coast" d={layers.land} fill="none" /> : null}
+          <path className="near-me-land" d={layers.land} fill="#f5f0e6" />
+          {layers.urban ? <path className="near-me-urban" d={layers.urban} fill="#ece5d7" /> : null}
+          {layers.forests ? (
+            <path className="near-me-forests" d={layers.forests} fill="#e4ecd7" />
+          ) : null}
+          {layers.parks ? <path className="near-me-parks" d={layers.parks} fill="#d9e7c8" /> : null}
+          {layers.airports ? (
+            <path className="near-me-airports" d={layers.airports} fill="#e5e1d9" />
+          ) : null}
+          <g className="near-me-relief">
+            {geometry.relief.map(([key, x, y, w, h]) => {
+              const href = reliefImages.get(key);
+              return href ? (
+                <image
+                  key={key}
+                  href={href}
+                  x={x}
+                  y={y}
+                  width={w}
+                  height={h}
+                  preserveAspectRatio="none"
+                />
+              ) : null;
+            })}
+          </g>
+          {layers.water ? <path className="near-me-lakes" d={layers.water} fill="#cfe0e8" /> : null}
+          {layers.rivers ? <path className="near-me-rivers" d={layers.rivers} fill="none" /> : null}
           {geometry.highlight ? (
             <path className="near-me-highlight" d={geometry.highlight} fill="none" />
           ) : null}
-          {geometry.counties ? (
-            <path className="near-me-counties" d={geometry.counties} fill="none" />
+          {layers.counties ? (
+            <path className="near-me-counties" d={layers.counties} fill="none" />
           ) : null}
-          {geometry.states ? (
-            <path className="near-me-states" d={geometry.states} fill="none" />
+          {layers.states ? <path className="near-me-states" d={layers.states} fill="none" /> : null}
+          {layers.borders ? (
+            <>
+              <path className="near-me-borders-halo" d={layers.borders} fill="none" />
+              <path className="near-me-borders" d={layers.borders} fill="none" />
+            </>
           ) : null}
+          {ROADS.map((road) =>
+            layers[road] ? (
+              <path
+                key={`${road}-casing`}
+                className={`near-me-road-casing is-${road}`}
+                d={layers[road]}
+                fill="none"
+              />
+            ) : null,
+          )}
+          {ROADS.map((road) =>
+            layers[road] ? (
+              <path key={road} className={`near-me-road is-${road}`} d={layers[road]} fill="none" />
+            ) : null,
+          )}
           <circle
             className="near-me-ring"
             cx={result.you.x}
@@ -807,16 +908,41 @@ function NearMap({ result }: { result: NearResult }) {
           </svg>
         ) : null}
 
-        {labels.map((label) => (
-          <span
-            key={`${label.name}|${Math.round(label.x)}`}
-            className={`near-me-label${label.population >= 1_000_000 ? ' is-major' : ''}`}
-            style={{ transform: `translate(${label.box.x}px, ${label.box.y}px)`, width: label.box.w }}
-            aria-hidden="true"
-          >
-            {label.name}
-          </span>
-        ))}
+        {labels.map((label) => {
+          const kind = NAME_CLASS[label.kind ?? 0] ?? 'town';
+          const major = kind === 'town' && label.population >= 1_000_000;
+          return (
+            <span key={`${label.name}|${Math.round(label.x)}|${Math.round(label.y)}`}>
+              {kind === 'town' ? (
+                <span
+                  className={`near-me-town${major ? ' is-major' : ''}`}
+                  style={{ transform: `translate(${label.x}px, ${label.y}px)` }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <span
+                className={`near-me-label is-${kind}${major ? ' is-major' : ''}`}
+                style={{
+                  transform: `translate(${label.box.x}px, ${label.box.y}px)`,
+                  width: label.box.w,
+                  textAlign: label.align,
+                }}
+                aria-hidden="true"
+              >
+                {label.lines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </span>
+            </span>
+          );
+        })}
+
+        {scaleBar ? (
+          <div className="near-me-scale" aria-hidden="true">
+            <span className="near-me-scale-bar" style={{ width: scaleBar.width }} />
+            <span className="near-me-scale-label">{scaleBar.label}</span>
+          </div>
+        ) : null}
 
         <span
           className="near-me-you"
@@ -952,6 +1078,23 @@ function NearMap({ result }: { result: NearResult }) {
       </div>
     </div>
   );
+}
+
+const ROADS = ['arterials', 'highways', 'motorways'] as const;
+
+/**
+ * The scale bar for a map at `unitsPerPixel` world units (a thousandth of a
+ * degree of latitude) a pixel: the longest round distance (1, 2 or 5 of a
+ * power of ten) that fits in a hundred pixels, in miles, or kilometres for a
+ * reader where distances are.
+ */
+function scaleFor(unitsPerPixel: number, metric: boolean) {
+  const perPixel = (unitsPerPixel / 1000) * (metric ? 111.13 : 69.05);
+  const target = perPixel * 100;
+  const magnitude = 10 ** Math.floor(Math.log10(target));
+  const step = [5, 2, 1].map((m) => m * magnitude).find((value) => value <= target) ?? magnitude;
+  const amount = Number(step.toPrecision(2)).toLocaleString('en-US');
+  return { width: step / perPixel, label: `${amount} ${metric ? 'km' : 'mi'}` };
 }
 
 /** "Los Angeles · Hollywood · USC and 2 more": the places a stack holds. */

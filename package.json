@@ -39,6 +39,7 @@
     "test:candidates-queue": "node scripts/candidate-selection.test.mjs",
     "test:discovery": "node scripts/websub-discovery.test.mjs",
     "test:near-me": "node scripts/near-me.test.mjs && node scripts/near-me-map.test.mjs",
+    "map:build": "node scripts/build-map.mjs",
     "places:build": "node scripts/build-places.mjs",
     "districts:build": "node scripts/build-ca-districts.mjs",
     "typecheck": "tsc --noEmit"

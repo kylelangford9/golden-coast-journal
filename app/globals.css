@@ -4184,7 +4184,7 @@ a.official-chip:focus-visible {
   aspect-ratio: 16 / 9;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #dfe7e6;
+  background: #cfe0e8;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -4255,33 +4255,84 @@ a.official-chip:focus-visible {
   height: 100%;
   pointer-events: none;
 }
+/* The map's palette: a printed atlas's, warm paper land and a cool sea, the
+   greens and greys quiet enough for the front pages to stand out on it. */
 .near-me-water {
-  fill: #dfe7e6;
+  fill: #cfe0e8;
+}
+/* The coast: the land's outline drawn wide in a deeper blue under the land,
+   so only its outer half shows, as a soft edge in the water. */
+.near-me-coast {
+  stroke: #a9c6d4;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 .near-me-land {
-  fill: #f1eadc;
-  stroke: #b3a68d;
-  stroke-width: 0.8;
-  vector-effect: non-scaling-stroke;
+  fill: #f5f0e6;
 }
-.near-me-highlight {
-  fill: rgba(216, 168, 42, 0.2);
-  stroke: var(--gold);
-  stroke-width: 1.2;
-  vector-effect: non-scaling-stroke;
+.near-me-urban {
+  fill: #ece5d7;
 }
-.near-me-counties {
-  fill: none;
-  stroke: #cfc3ad;
+.near-me-forests {
+  fill: #e4ecd7;
+}
+.near-me-parks {
+  fill: #d9e7c8;
+}
+.near-me-airports {
+  fill: #e5e1d9;
+}
+.near-me-relief image {
+  opacity: 0.42;
+}
+.near-me-lakes {
+  fill: #cfe0e8;
+  stroke: #b7d0dc;
   stroke-width: 0.6;
   vector-effect: non-scaling-stroke;
 }
-.near-me-states {
-  fill: none;
-  stroke: #a3957a;
-  stroke-width: 1;
+.near-me-rivers {
+  stroke: #a9c6d4;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+.near-me-drawing.is-far .near-me-rivers {
+  stroke-width: 0.6;
+}
+.near-me-highlight {
+  fill: rgba(216, 168, 42, 0.12);
+  stroke: #c9962a;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+.near-me-counties {
+  stroke: #c9bda6;
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+}
+.near-me-states {
+  stroke: #9d8f78;
+  stroke-width: 1;
+  stroke-dasharray: 6 2 1.5 2;
+  vector-effect: non-scaling-stroke;
+}
+/* A country's border: a solid line with a light band either side, so it
+   reads across relief, parks and towns alike. */
+.near-me-borders-halo {
+  stroke: rgba(245, 240, 230, 0.8);
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+.near-me-borders {
+  stroke: #8d7f69;
+  stroke-width: 1.3;
+  vector-effect: non-scaling-stroke;
+}
+
 .near-me-ring {
   fill: rgba(37, 99, 235, 0.05);
   stroke: #2563eb;
@@ -4300,30 +4351,193 @@ a.official-chip:focus-visible {
   stroke-width: 2;
 }
 
-/* Town names, in the quiet type a map uses, with a halo so they read over
-   land and water alike. */
+/* Roads, a line in a darker casing, as wide as the scale allows: freeways
+   gold, highways and main roads white, as a road atlas draws them. */
+.near-me-road-casing,
+.near-me-road {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.near-me-road-casing.is-motorways {
+  stroke: #c89a4c;
+  stroke-width: 3.4;
+}
+.near-me-road.is-motorways {
+  stroke: #f6d792;
+  stroke-width: 2;
+}
+.near-me-road-casing.is-highways {
+  stroke: #d2c5ad;
+  stroke-width: 2.8;
+}
+.near-me-road.is-highways {
+  stroke: #fffdf7;
+  stroke-width: 1.5;
+}
+.near-me-road-casing.is-arterials {
+  stroke: #ddd2bd;
+  stroke-width: 2.2;
+}
+.near-me-road.is-arterials {
+  stroke: #fffdf7;
+  stroke-width: 1.1;
+}
+.near-me-drawing.is-city .near-me-road-casing.is-motorways {
+  stroke-width: 5;
+}
+.near-me-drawing.is-city .near-me-road.is-motorways {
+  stroke-width: 3.2;
+}
+.near-me-drawing.is-city .near-me-road-casing.is-highways {
+  stroke-width: 4;
+}
+.near-me-drawing.is-city .near-me-road.is-highways {
+  stroke-width: 2.4;
+}
+.near-me-drawing.is-city .near-me-road-casing.is-arterials {
+  stroke-width: 3;
+}
+.near-me-drawing.is-city .near-me-road.is-arterials {
+  stroke-width: 1.7;
+}
+.near-me-drawing.is-region .near-me-road-casing.is-motorways {
+  stroke-width: 2.2;
+}
+.near-me-drawing.is-region .near-me-road.is-motorways {
+  stroke-width: 1.1;
+}
+.near-me-drawing.is-region .near-me-road-casing.is-highways {
+  stroke: none;
+}
+.near-me-drawing.is-region .near-me-road.is-highways {
+  stroke: #e2d5bc;
+  stroke-width: 0.8;
+}
+.near-me-drawing.is-far .near-me-road-casing {
+  stroke: none;
+}
+.near-me-drawing.is-far .near-me-road.is-motorways {
+  stroke: #d9b36c;
+  stroke-width: 0.7;
+}
+
+/* Names, in the quiet type a map uses, each with a halo of the paper so it
+   reads over land, relief and water alike. Towns are upright beside their
+   dots; water is blue italic, parks green italic, states and countries
+   spaced capitals. */
 .near-me-label {
   position: absolute;
   top: 0;
   left: 0;
-  overflow: hidden;
-  color: #5d5647;
+  color: #4f4838;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: 16px;
-  text-align: center;
+  letter-spacing: 0.01em;
+  line-height: 15px;
   text-shadow:
-    0 0 2px #f6f1e7,
-    0 0 3px #f6f1e7,
-    0 0 4px #f6f1e7;
+    0 0 2px #f7f3ea,
+    0 0 3px #f7f3ea,
+    0 0 4px #f7f3ea;
   white-space: nowrap;
   pointer-events: none;
 }
+.near-me-label > span {
+  display: block;
+}
 .near-me-label.is-major {
-  color: #3f3a30;
+  color: #2f2a21;
   font-size: 12px;
   font-weight: 700;
+}
+.near-me-label.is-ocean,
+.near-me-label.is-water {
+  color: #3f6f86;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  text-shadow:
+    0 0 2px #d8e7ee,
+    0 0 3px #d8e7ee;
+}
+.near-me-label.is-ocean {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+.near-me-label.is-water {
+  font-size: 11px;
+  line-height: 14px;
+}
+.near-me-label.is-park {
+  color: #4f6b3c;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 10.5px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 13px;
+}
+.near-me-label.is-state,
+.near-me-label.is-country {
+  color: #8a7d67;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+.near-me-label.is-country {
+  color: #7a6d58;
+  font-size: 10.5px;
+  line-height: 15px;
+}
+/* A town's dot: an open ring, and a solid one for a city of a million. */
+.near-me-town {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border: 1.5px solid #5b5342;
+  border-radius: 50%;
+  background: #fffdf8;
+  pointer-events: none;
+}
+.near-me-town.is-major {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-color: #fffdf8;
+  background: #2f2a21;
+  box-shadow: 0 0 0 1px #2f2a21;
+}
+
+/* The scale bar, bottom left, as a map's is. */
+.near-me-scale {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+.near-me-scale-bar {
+  display: block;
+  height: 6px;
+  border: 1.5px solid #4f4838;
+  border-top: 0;
+  box-shadow: 0 1px 0 rgba(255, 253, 248, 0.9);
+}
+.near-me-scale-label {
+  color: #4f4838;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow:
+    0 0 2px #f7f3ea,
+    0 0 3px #f7f3ea;
 }
 
 /* The reader: a blue dot with a slow pulse, as a phone's map shows it. */

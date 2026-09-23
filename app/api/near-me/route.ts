@@ -9,7 +9,7 @@ import {
   storiesNear,
   type NearHit,
 } from '@/lib/near-me';
-import { NO_STORE, baseMap, countyShapes, gazetteer, labelTowns } from '@/lib/near-me-data';
+import { NO_STORE, baseMap, gazetteer, labelTowns, relief } from '@/lib/near-me-data';
 import {
   drawRegion,
   frameView,
@@ -128,12 +128,12 @@ export async function POST(request: Request) {
   ];
   const geometry = drawRegion(
     baseMap,
-    countyShapes,
     projection,
     widen(view, AHEAD),
     Math.max(0.5, (view.w / width) * 0.8),
     highlight,
     labelTowns,
+    relief(),
   );
 
   const stories = onMap.map((hit) => {

@@ -83,15 +83,22 @@ most exact place near the reader.
 
 The stories appear on a map as mini front pages, which the reader can drag, pinch and
 zoom like a map app; every story the Journal can place is on it. The map is drawn by the
-Journal (`lib/near-me-map.ts`) from Natural Earth and the Census Bureau, not by a tile
-service that would learn where the reader is; as it moves, the browser POSTs the area on
-screen to `/api/near-me/map` for the detail that area needs. Pages, bubbles and town
-names are laid out in the browser (`lib/paper-layout.ts`).
+Journal (`lib/near-me-map.ts`), not by a tile service that would learn where the reader
+is; as it moves, the browser POSTs the area on screen to `/api/near-me/map` for the
+detail that area needs, and the relief tiles it does not already hold. It is drawn as an
+atlas is: the land (the Census Bureau's 1:500,000 shoreline in the United States,
+Natural Earth elsewhere), shaded relief, built-up areas, parks and forests, lakes and
+rivers, state and county lines, freeways, highways and main roads, and the names of
+towns, water, parks, states and countries, each layer only at the scales it reads at.
+Pages, bubbles and names are laid out in the browser (`lib/paper-layout.ts`).
 
 The gazetteer is GeoNames' `cities15000` and California's places from `cities1000`
 (CC BY 4.0, credited in the panel), the Census Bureau's county gazetteer and its outlines
-of California's counties; `lib/map-data.json` is Natural Earth's 1:50m land and states.
-Rebuild both with `npm run places:build`. Measurement records `News Near Me` with the
+of California's counties; rebuild it with `npm run places:build`. `npm run map:build`
+rebuilds `lib/map-data.json` (Natural Earth, the Census Bureau's cartographic boundaries
+and urban areas, and TIGER/Line roads, parks, airports and water) and `lib/relief.bin`
+(shaded relief from the Terrain Tiles on AWS, SRTM, USGS, GMTED2010 and ETOPO1); the
+script names each source. Measurement records `News Near Me` with the
 outcome only, never the place, `News Near Me Page Selected` and `News Near Me Story
 Selected`.
 

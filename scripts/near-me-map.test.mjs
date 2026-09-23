@@ -6,6 +6,7 @@ import {
   drawRegion,
   frameView,
   projectionFor,
+  readRelief,
   toWorld,
   widen,
   worldMiles,
@@ -17,10 +18,11 @@ import { chooseLabels, groupStories, placePages } from '../lib/paper-layout.ts';
  * world in view, and laid out in the browser so every front page can be read.
  */
 
-const [base, places] = await Promise.all([
+const [base, reliefFile] = await Promise.all([
   readFile('lib/map-data.json', 'utf8').then(JSON.parse),
-  readFile('lib/places-data.json', 'utf8').then(JSON.parse),
+  readFile('lib/relief.bin'),
 ]);
+const relief = readRelief(reliefFile);
 
 // The projection is centred on the reader, so a view from Tokyo to California
 // runs east across the Pacific rather than west across Asia and Europe.
@@ -43,25 +45,47 @@ for (const point of [reader, ...points]) {
 assert.ok(Math.abs(view.w / view.h - 1) < 1e-9, 'square on a phone');
 assert.ok(view.w >= 2 * worldMiles(10), 'at least ten miles round the reader');
 
-// The drawing for a view: whole world units, steps after the first point, and
-// county lines only close in.
-const close = drawRegion(base, places.countyShapes, la, widen(view, 0.5), 2, ['CA.037']);
-assert.match(close.land, /^M-?\d+ -?\d+l/);
-assert.doesNotMatch(close.land + close.states + close.counties, /NaN|Infinity/);
-assert.ok(close.counties.length > 0, 'county lines close in');
+// The drawing for a view: whole world units, steps after the first point;
+// county lines, freeways and built-up areas close in, with the finest relief.
+const close = drawRegion(base, la, widen(view, 0.5), 2, ['CA.037'], [], relief);
+assert.match(close.layers.land, /^M-?\d+ -?\d+l/);
+assert.doesNotMatch(Object.values(close.layers).join('') + close.highlight, /NaN|Infinity/);
+for (const layer of ['counties', 'urban', 'parks', 'forests', 'water', 'motorways', 'highways']) {
+  assert.ok(close.layers[layer].length > 0, `${layer} close in`);
+}
+assert.doesNotMatch(close.layers.motorways, /z/, 'roads are lines, not rings');
 assert.ok(close.highlight.length > 0, 'the reader’s county is drawn when asked for');
-const far = drawRegion(base, places.countyShapes, la, widen(view, 20), 200, []);
-assert.equal(far.counties, '', 'no county lines at the scale of a continent');
-assert.equal(far.states, '', 'no state lines at the scale of the world');
-assert.ok(far.land.length < 200_000, 'a world view stays small enough to send');
+assert.ok(close.relief.length > 0 && close.relief.length <= 36, 'relief, a screenful of tiles');
+assert.ok(close.relief.every(([key]) => key.startsWith('4/')), 'the finest relief over Los Angeles');
+assert.equal(Object.keys(close.images).length, close.relief.length, 'every tile’s image, the first time');
+assert.match(Object.values(close.images)[0], /^data:image\/webp;base64,/);
+const again = drawRegion(base, la, widen(view, 0.5), 2, [], [], relief, new Set(close.relief.map(([key]) => key)));
+assert.equal(Object.keys(again.images).length, 0, 'an image the browser has is not sent again');
+assert.ok(JSON.stringify(close).length < 1_500_000, 'a first view stays small enough to send');
 
-// Towns to name come largest first and only from inside the view.
-const named = drawRegion(base, places.countyShapes, la, view, 2, [], [
+const far = drawRegion(base, la, widen(view, 20), 200, [], [], relief);
+assert.equal(far.layers.counties, '', 'no county lines at the scale of a continent');
+assert.equal(far.layers.states, '', 'no state lines at the scale of the world');
+assert.equal(far.layers.motorways, '', 'no roads at the scale of the world');
+assert.ok(far.layers.land.length < 200_000, 'a world view stays small enough to send');
+assert.ok(far.relief.length > 0 && far.relief.length <= 36, 'coarse relief for the world');
+
+// Towns to name come largest first and only from inside the view, after the
+// water's names and before the parks'.
+const labelled = drawRegion(base, la, view, 2, [], [
   ['Los Angeles', 34.05, -118.24, 3_800_000],
   ['El Monte', 34.07, -118.03, 110_000],
   ['San Diego', 32.72, -117.16, 1_400_000],
-]).labels.map(([name]) => name);
-assert.deepEqual(named, ['Los Angeles', 'El Monte']);
+]).labels;
+assert.deepEqual(
+  labelled.filter(([, , , , kind]) => kind === 0).map(([name]) => name),
+  ['Los Angeles', 'El Monte'],
+);
+const bay = projectionFor({ lat: 37.8, lon: -122.3 });
+const bayView = frameView(bay, { lat: 37.8, lon: -122.3 }, [], 25, 1.5, 0);
+const bayNames = drawRegion(base, bay, bayView, 3, []).labels.map(([name]) => name);
+assert.ok(bayNames.includes('San Francisco Bay'), `the bay is named (${bayNames.join(', ')})`);
+assert.ok(bayNames.indexOf('San Francisco Bay') < bayNames.indexOf('Mount Diablo State Park') || !bayNames.includes('Mount Diablo State Park'));
 
 // Front pages: stories closer than a page's width are one stack; each stack
 // gets a page where one fits, and becomes a bubble where none does.
@@ -106,6 +130,19 @@ const labels = chooseLabels(
   10,
 ).map((label) => label.name);
 assert.deepEqual(labels, ['Los Angeles'], 'a smaller name under a larger, or under a page, is left out');
+const [town, bayName] = chooseLabels(
+  [
+    { name: 'Oakland', x: 200, y: 200, population: 440_000 },
+    { name: 'San Francisco Bay', x: 100, y: 300, population: 0, kind: 2 },
+  ],
+  [],
+  400,
+  400,
+  10,
+);
+assert.ok(town.box.x > 200 && town.align === 'left', 'a town’s name sits beside its dot');
+assert.deepEqual(bayName.lines, ['San Francisco', 'Bay'], 'a long name over two lines');
+assert.equal(bayName.box.x + bayName.box.w / 2, 100, 'water’s name centred on it');
 
 assert.equal(WORLD, 1000);
 console.log('PASS the News near Me map draws the view in world units and lays out every page');

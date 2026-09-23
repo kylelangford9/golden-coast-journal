@@ -13,7 +13,8 @@
  * the rest of the country, whose counties the Journal rarely names, is
  * measured from each county's centre. Nothing
  * here is fetched at request time: a reader's location is matched against
- * this file on the Journal's own server and goes nowhere else.
+ * this file on the Journal's own server and goes nowhere else. The map the
+ * stories are shown on is built by scripts/build-map.mjs.
  *
  * Downloads are cached in the system temp directory, so a rebuild after the
  * first is offline.
@@ -36,12 +37,6 @@ const SOURCES = {
     'https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2024_Gazetteer/2024_Gaz_counties_national.zip',
   countyShapes:
     'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json',
-  // Natural Earth, public domain: the land and the U.S. states the News near
-  // Me map is drawn on, at 1:50,000,000.
-  countries:
-    'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson',
-  states:
-    'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson',
 };
 
 // Sections of a city (PPLX), and places that are historical, abandoned or
@@ -83,8 +78,6 @@ const [
   countriesText,
   countiesText,
   shapesText,
-  landText,
-  statesText,
   localText,
 ] =
   await Promise.all([
@@ -93,8 +86,6 @@ const [
     cached(SOURCES.countryInfo),
     cached(SOURCES.counties),
     cached(SOURCES.countyShapes),
-    cached(SOURCES.countries),
-    cached(SOURCES.states),
     cached(SOURCES.localCities),
   ]);
 
@@ -189,37 +180,4 @@ console.log(
   `lib/places-data.json: ${cities.length} towns, ${localPlaces.length} California places, ${counties.length} counties ` +
     `(${Object.keys(countyShapes).length} outlined), ${Object.keys(regions).length} regions, ` +
     `${Object.keys(countries).length} countries`,
-);
-
-// The base map, every ring flattened to whole hundredths of a degree
-// [lon, lat, lon, lat, ...]: about a kilometre, finer than the 1:50m source.
-const flatRings = (features) =>
-  features.flatMap(({ geometry }) => {
-    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
-    return polygons.flatMap((polygon) =>
-      polygon.map((ring) => {
-        const flat = [];
-        for (const [lon, lat] of ring) {
-          const x = Math.round(lon * 100);
-          const y = Math.round(lat * 100);
-          if (flat.length && flat[flat.length - 2] === x && flat[flat.length - 1] === y) continue;
-          flat.push(x, y);
-        }
-        return flat;
-      }),
-    );
-  }).filter((flat) => flat.length >= 8);
-
-const land = flatRings(JSON.parse(landText).features);
-const states = flatRings(
-  JSON.parse(statesText).features.filter((feature) => feature.properties.iso_a2 === 'US'),
-);
-const mapOut = new URL('../lib/map-data.json', import.meta.url);
-writeFileSync(
-  mapOut,
-  JSON.stringify({ credit: 'Map: Natural Earth and the U.S. Census Bureau.', land, states }),
-);
-console.log(
-  `lib/map-data.json: ${land.length} land rings, ${states.length} U.S. state rings, ` +
-    `${(land.flat().length + states.flat().length) / 2} points`,
 );

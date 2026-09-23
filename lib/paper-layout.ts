@@ -142,12 +142,50 @@ export function placePages(
   return out;
 }
 
-export type Label = { name: string; x: number; y: number; population: number };
+/**
+ * A name for the map. `kind` is what it names, as lib/near-me-map.ts numbers
+ * them: a town (0, the default), an ocean, a bay or lake, a park, a state or
+ * a country. `population` ranks towns; for the rest it is only carried.
+ */
+export type Label = { name: string; x: number; y: number; population: number; kind?: number };
+
+export type PlacedLabel = Label & {
+  box: Box;
+  lines: string[];
+  /** Where the name sits against its point: beside a town's dot, or over the place. */
+  align: 'left' | 'right' | 'center';
+};
+
+// The type each kind is set in, as the stylesheet sets it: the average width
+// of a letter and the height of a line, in pixels.
+const TYPE: Record<number, { letter: number; line: number }> = {
+  0: { letter: 6.2, line: 15 },
+  1: { letter: 7.4, line: 15 },
+  2: { letter: 5.9, line: 14 },
+  3: { letter: 5.6, line: 13 },
+  4: { letter: 9.4, line: 14 },
+  5: { letter: 9.9, line: 15 },
+};
+const DOT = 3;
+const GAP = 4;
+
+/** A long name over two lines, split at the space nearest its middle. */
+function wrap(name: string) {
+  if (name.length <= 14 || !name.includes(' ')) return [name];
+  let best = -1;
+  for (let i = name.indexOf(' '); i >= 0; i = name.indexOf(' ', i + 1)) {
+    if (best < 0 || Math.abs(i - name.length / 2) < Math.abs(best - name.length / 2)) best = i;
+  }
+  return [name.slice(0, best), name.slice(best + 1)];
+}
 
 /**
- * Which towns to name on screen: the largest first, each only where its name
- * clears the pages, the bubbles, the reader's dot and the names already
- * down, as a map app names fewer places the farther out it is.
+ * Which names to set on screen, in the order given (the server sends water
+ * first, then towns largest first, then states, countries and parks), each
+ * only where it clears the pages, the bubbles, the reader's dot and the names
+ * already down, as a map app names fewer places the farther out it is. A
+ * town's name goes beside its dot (to the right, else the left, above or
+ * below); any other name is centred on its place.
  */
 export function chooseLabels(
   labels: Label[],
@@ -155,17 +193,46 @@ export function chooseLabels(
   width: number,
   height: number,
   max: number,
-): (Label & { box: Box })[] {
-  const chosen: (Label & { box: Box })[] = [];
+): PlacedLabel[] {
+  const chosen: PlacedLabel[] = [];
+  const taken: Box[] = [];
+  const fits = (box: Box) => {
+    if (box.x < 2 || box.y < 2 || box.x + box.w > width - 2 || box.y + box.h > height - 2) {
+      return false;
+    }
+    const padded = { x: box.x - 4, y: box.y - 3, w: box.w + 8, h: box.h + 6 };
+    return (
+      !obstacles.some((other) => overlap(padded, other) > 0) &&
+      !taken.some((other) => overlap(padded, other) > 0)
+    );
+  };
   for (const label of labels) {
     if (chosen.length >= max) break;
-    const w = label.name.length * (label.population >= 1_000_000 ? 7 : 6.2) + 8;
-    const box = { x: label.x - w / 2, y: label.y - 8, w, h: 16 };
-    if (box.x < 2 || box.y < 2 || box.x + box.w > width - 2 || box.y + box.h > height - 2) continue;
-    const padded = { x: box.x - 4, y: box.y - 3, w: box.w + 8, h: box.h + 6 };
-    if (obstacles.some((other) => overlap(padded, other) > 0)) continue;
-    if (chosen.some((other) => overlap(padded, other.box) > 0)) continue;
-    chosen.push({ ...label, box });
+    const kind = label.kind ?? 0;
+    const type = TYPE[kind] ?? TYPE[0];
+    const lines = kind === 0 ? [label.name] : wrap(label.name);
+    const letter = kind === 0 && label.population >= 1_000_000 ? 7 : type.letter;
+    const w = Math.max(...lines.map((line) => line.length)) * letter + 4;
+    const h = lines.length * type.line;
+    if (kind !== 0) {
+      const box = { x: label.x - w / 2, y: label.y - h / 2, w, h };
+      if (!fits(box)) continue;
+      taken.push(box);
+      chosen.push({ ...label, box, lines, align: 'center' });
+      continue;
+    }
+    const dot = { x: label.x - DOT, y: label.y - DOT, w: DOT * 2, h: DOT * 2 };
+    if (!fits(dot)) continue;
+    const spots: [Box, PlacedLabel['align']][] = [
+      [{ x: label.x + DOT + GAP, y: label.y - h / 2, w, h }, 'left'],
+      [{ x: label.x - DOT - GAP - w, y: label.y - h / 2, w, h }, 'right'],
+      [{ x: label.x - w / 2, y: label.y - DOT - GAP / 2 - h, w, h }, 'center'],
+      [{ x: label.x - w / 2, y: label.y + DOT + GAP / 2, w, h }, 'center'],
+    ];
+    const spot = spots.find(([box]) => fits(box));
+    if (!spot) continue;
+    taken.push(dot, spot[0]);
+    chosen.push({ ...label, box: spot[0], lines, align: spot[1] });
   }
   return chosen;
 }

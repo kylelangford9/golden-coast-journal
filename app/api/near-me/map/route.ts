@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { NO_STORE, baseMap, countyShapes, labelTowns } from '@/lib/near-me-data';
+import { NO_STORE, baseMap, labelTowns, relief } from '@/lib/near-me-data';
 import { drawRegion, WORLD, type Rect } from '@/lib/near-me-map';
 
 const finite = (value: unknown): value is number =>
@@ -13,7 +13,8 @@ const finite = (value: unknown): value is number =>
  *
  * The request is bounded: no wider than the world, and no finer than about
  * four thousand points across, so one call cannot ask for more drawing than
- * a screen can show.
+ * a screen can show. `have` lists the relief tiles the browser already
+ * holds, whose images are not sent again.
  */
 export async function POST(request: Request) {
   let body: unknown;
@@ -22,13 +23,14 @@ export async function POST(request: Request) {
   } catch {
     return invalid();
   }
-  const { projection, bounds, tolerance, highlight } = (
+  const { projection, bounds, tolerance, highlight, have } = (
     body && typeof body === 'object' ? body : {}
   ) as {
     projection?: { lon0?: unknown; cos?: unknown };
     bounds?: Partial<Record<keyof Rect, unknown>>;
     tolerance?: unknown;
     highlight?: unknown;
+    have?: unknown;
   };
   const lon0 = projection?.lon0;
   const cos = projection?.cos;
@@ -50,8 +52,14 @@ export async function POST(request: Request) {
     ? highlight.filter((key): key is string => typeof key === 'string' && /^CA\.\d{3}$/.test(key)).slice(0, 58)
     : [];
 
+  const cached = new Set(
+    Array.isArray(have)
+      ? have.filter((key): key is string => typeof key === 'string' && /^\d\/\d+\/\d+$/.test(key)).slice(0, 500)
+      : [],
+  );
+
   return NextResponse.json(
-    drawRegion(baseMap, countyShapes, { lon0, cos }, area, detail, counties, labelTowns),
+    drawRegion(baseMap, { lon0, cos }, area, detail, counties, labelTowns, relief(), cached),
     { headers: NO_STORE },
   );
 }

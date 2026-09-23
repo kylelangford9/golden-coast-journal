@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
     // production build compiles from scratch until that is fixed upstream.
     turbopackFileSystemCacheForBuild: false,
   },
+  // The News near Me map's shaded relief is binary, read from disk by the two
+  // routes that draw the map, so their traces are told it is there.
+  outputFileTracingIncludes: {
+    '/api/near-me': ['./lib/relief.bin'],
+    '/api/near-me/map': ['./lib/relief.bin'],
+  },
   images: {
     remotePatterns: [
       // Editorial imagery is copied into our own storage, so the Journal's

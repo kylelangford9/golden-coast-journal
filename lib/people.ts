@@ -1,11 +1,4 @@
-import {
-  disambiguateSameName,
-  mentions,
-  nameForms,
-  normalizePunctuation,
-  surnameBelongsToSomeoneElse,
-  surnameOf,
-} from '@/lib/name-matching';
+import { matchPeople } from '@/lib/name-matching';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 
 /**
@@ -21,9 +14,12 @@ import { getSupabase, unwrap } from '@/lib/supabase-server';
  * `gcj_newsmakers` is the Journal's own, and holds the Californians who make
  * news without holding an elected seat: mayors, agency directors, cabinet
  * secretaries, justices, sheriffs and district attorneys, chancellors, and the
- * utility chief executives who appear in every wildfire and rate story. Every
- * row there carries the licence and provenance of its portrait, and the same
- * check constraint as the editorial assets keeps AI imagery out of it.
+ * utility chief executives who appear in every wildfire and rate story. It
+ * also holds the national and international figures the Nation and World desks
+ * name, from the President and Vice President (official White House portraits)
+ * to the UN Secretary-General. Every row there carries the licence and
+ * provenance of its portrait, and the same check constraint as the editorial
+ * assets keeps AI imagery out of it.
  *
  * Neither register supplies a new picture at read time; this only reads ones
  * already approved.
@@ -40,6 +36,8 @@ export type Official = {
 type RegisterRow = {
   name: string;
   office: string;
+  /** Only the Journal's own register has one; see displayOffice. */
+  organization?: string | null;
   party: string | null;
   level: string | null;
   photo_url: string | null;
@@ -87,7 +85,7 @@ async function loadNewsmakers() {
     (unwrap(
       await getSupabase()
         .from('gcj_newsmakers')
-        .select(COLUMNS)
+        .select(`${COLUMNS},organization`)
         .neq('is_active', false),
       'Unable to load newsmakers',
     ) as RegisterRow[] | null) || []
@@ -116,19 +114,24 @@ async function loadRegister(): Promise<RegisterRow[]> {
 }
 
 /**
- * Find the people a story actually names. A full-name match always counts. A
- * surname on its own counts only when exactly one person in the register
- * carries it, so "Padilla" never silently picks between a U.S. senator and a
- * state senator of the same name, and only when nothing in the story shows
- * the surname belongs to a different person entirely.
- *
- * A full name can be ambiguous too. California has two Robert Garcias, a U.S.
- * representative from Long Beach and a state assembly member from San
- * Bernardino County, and the same three words name either of them. When
- * several people share the name a story prints, the story's own words have to
- * settle it; if they do not, nobody's face is shown. That includes a story
- * genuinely about both, where these surfaces would have to pick one to lead
- * with and any pick would be arbitrary.
+ * What the rail prints under a name. The Journal's register files many people
+ * under a bare title ("Chair", "Secretary", "Chief Executive Officer") with the
+ * body in `organization`; printed alone, "Chair" tells a reader nothing. An
+ * office that already says where ("Mayor of Oakland", "Secretary for Natural
+ * Resources") is left as it is.
+ */
+function displayOffice({ office, organization }: RegisterRow) {
+  if (!organization || / (of|for) /i.test(office)) return office;
+  return `${office}, ${organization}`;
+}
+
+/**
+ * Find the people a story actually names, most prominent first. The rules,
+ * which are pure string work, live in lib/name-matching.ts: a full name always
+ * counts; a surname counts when a title or bill number points at exactly one
+ * person who carries it, or when only one person in the register carries it
+ * and nothing in the story shows it belongs to someone else; and namesakes are
+ * settled by the story's own words or not at all.
  */
 export async function findMentionedOfficials(
   text: string,
@@ -140,70 +143,16 @@ export async function findMentionedOfficials(
   } catch {
     return [];
   }
-  // Two views of the same string at the same offsets: the lowercased one for
-  // matching, the original for reading the capitalisation of neighbouring words.
-  // Normalised character for character, so an offset found in `haystack`
-  // still reads the original capitalisation at the same index in `original`.
-  const original = normalizePunctuation(` ${text} `);
-  const haystack = original.toLowerCase();
-
-  const surnameCounts = new Map<string, number>();
-  for (const row of rows) {
-    const surname = surnameOf(row.name);
-    surnameCounts.set(surname, (surnameCounts.get(surname) || 0) + 1);
-  }
-
-  const hits: { row: RegisterRow; score: number }[] = [];
-  for (const row of rows) {
-    const surname = surnameOf(row.name);
-    let score = 0;
-    if (nameForms(row.name).some((form) => mentions(haystack, form)))
-      score = 100;
-    else if (
-      surname.length > 3 &&
-      surnameCounts.get(surname) === 1 &&
-      mentions(haystack, surname) &&
-      !surnameBelongsToSomeoneElse(original, haystack, surname, row.name)
-    )
-      score = 50;
-    if (score) hits.push({ row, score });
-  }
-
-  // Namesakes are grouped by the spelling a story would use for either of
-  // them, the one without middle initials, which is the form they both
-  // matched on.
-  const byName = new Map<string, typeof hits>();
-  for (const hit of hits) {
-    const forms = nameForms(hit.row.name);
-    const key = forms[forms.length - 1];
-    const group = byName.get(key);
-    if (group) group.push(hit);
-    else byName.set(key, [hit]);
-  }
-
-  const resolved: typeof hits = [];
-  for (const group of byName.values()) {
-    if (group.length === 1) {
-      resolved.push(group[0]);
-      continue;
-    }
-    const pick = disambiguateSameName(
-      haystack,
-      group.map((hit) => hit.row),
-    );
-    if (pick >= 0) resolved.push(group[pick]);
-  }
 
   // Only now are the faceless rows dropped. Doing it earlier would let a
   // namesake with a portrait win by default over one without, which is exactly
   // the coin flip this function exists to refuse.
-  return resolved
+  return matchPeople(text, rows)
     .filter(({ row }) => row.photo_url)
-    .sort((a, b) => b.score - a.score || a.row.name.localeCompare(b.row.name))
     .slice(0, limit)
     .map(({ row }) => ({
       name: row.name,
-      office: row.office,
+      office: displayOffice(row),
       party: row.party,
       level: row.level,
       photoUrl: row.photo_url as string,

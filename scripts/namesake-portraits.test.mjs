@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import {
   candidateEvidence,
   disambiguateSameName,
+  matchPeople,
   normalizePunctuation,
 } from '../lib/name-matching.ts';
 
@@ -171,23 +172,30 @@ assert.equal(
 
 // --- The matcher has to actually use it ----------------------------------
 
-const people = readFileSync('lib/people.ts', 'utf8');
-assert.match(
-  people,
-  /disambiguateSameName\(/,
-  'lib/people.ts must resolve namesakes rather than sort them',
+const garcias = (text) =>
+  matchPeople(text, [...GARCIAS, { name: 'Gavin Newsom', office: 'Governor' }])
+    .filter((hit) => hit.row.name === 'Robert Garcia')
+    .map((hit) => hit.row.office);
+assert.deepEqual(
+  garcias(
+    'Rep. Robert Garcia pressed the agency for records on the deployment.',
+  ),
+  ['U.S. Representative'],
+  'matchPeople must resolve namesakes rather than sort them',
 );
-assert.ok(
-  !/\.sort\(\(a, b\) => b\.score - a\.score \|\| a\.row\.name\.localeCompare\(b\.row\.name\)\)[\s\S]*hits\b/.test(
-    people.slice(people.indexOf('const hits')),
-  ) || people.includes('const resolved'),
-  'the ordering must run over resolved people, not raw hits',
+assert.deepEqual(
+  garcias(
+    'Assemblymember Robert Garcia carried the measure, which Newsom signed.',
+  ),
+  ['State Assembly Member'],
 );
-assert.match(
-  people,
-  /if \(pick >= 0\) resolved\.push\(group\[pick\]\);/,
+assert.deepEqual(
+  garcias('Robert Garcia said the measure was overdue.'),
+  [],
   'an unresolved namesake group must be dropped, not defaulted',
 );
+
+const people = readFileSync('lib/people.ts', 'utf8');
 assert.match(
   people,
   /gcj_newsmakers/,
@@ -210,13 +218,8 @@ assert.ok(
 );
 assert.match(
   people,
-  /resolved\s*\.filter\(\(\{ row \}\) => row\.photo_url\)/,
-  'and dropped at the end, after namesake resolution, not before it',
-);
-assert.ok(
-  people.indexOf('disambiguateSameName(') <
-    people.indexOf('.filter(({ row }) => row.photo_url)'),
-  'a namesake with a portrait must not win by default over one without',
+  /matchPeople\(text, rows\)\s*\.filter\(\(\{ row \}\) => row\.photo_url\)/,
+  'and dropped at the end, after namesake resolution, not before it, so a namesake with a portrait never wins by default over one without',
 );
 
 console.log('PASS namesakes resolve to one face, or to none');

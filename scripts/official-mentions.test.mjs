@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
+  matchPeople,
   mentions,
   nameForms,
   normalizePunctuation,
@@ -182,23 +183,130 @@ assert.equal(surnameOf('Rebecca Bauer‑Kahan'), 'bauer-kahan');
 assert.equal(normalizePunctuation('a‑b').length, 3, 'normalising must not move offsets');
 assert.equal(normalizePunctuation('it’s').length, 4);
 
-// --- The guard only ever narrows surname matching ------------------------
+// --- Register spellings no story prints ----------------------------------
+
+assert.equal(surnameOf('José Luis Solache Jr.'), 'solache', 'a suffix is not a surname');
+assert.equal(surnameOf('Gilbert Ray Cisneros, Jr.'), 'cisneros');
+assert.equal(surnameOf('Steven "Steve" Choi'), 'choi');
+assert.ok(nameForms('Dr. Joaquin Arambula').includes('joaquin arambula'));
+assert.ok(nameForms('José Luis Solache Jr.').includes('josé luis solache'));
+assert.ok(nameForms('Gilbert Ray Cisneros, Jr.').includes('gilbert cisneros'));
+assert.ok(nameForms('Steven "Steve" Choi').includes('steve choi'));
+assert.ok(nameForms('Rick Chavez Zbur').includes('rick zbur'));
+
+// --- The whole matcher, over a register shaped like the real one ---------
+
+const REGISTER = [
+  { name: 'Gavin Newsom', office: 'Governor' },
+  { name: 'Pamela Price', office: 'Former District Attorney of Alameda County' },
+  { name: 'Eric Grant', office: 'U.S. Attorney, Eastern District of California' },
+  { name: 'Alex Padilla', office: 'U.S. Senator' },
+  { name: 'Steve Padilla', office: 'State Senator' },
+  { name: 'Jerry McNerney', office: 'State Senator' },
+  { name: 'Susan Rubio', office: 'State Senator' },
+  { name: 'Blanca E. Rubio', office: 'State Assembly Member' },
+  { name: 'Marco Rubio', office: 'Secretary of State' },
+  { name: 'Donald J. Trump', office: 'President of the United States' },
+  { name: 'JD Vance', office: 'Vice President of the United States' },
+  { name: 'Rebecca Bauer-Kahan', office: 'State Assembly Member' },
+  { name: 'Josh Lowenthal', office: 'State Assembly Member' },
+  { name: 'Buffy Wicks', office: 'State Assembly Member' },
+  { name: 'Dawn Addis', office: 'State Assembly Member' },
+  { name: 'Jacqui Irwin', office: 'State Assembly Member' },
+  { name: 'Henry Stern', office: 'State Senator' },
+  { name: 'Sara Jacobs', office: 'U.S. Representative' },
+  { name: 'Caroline Thomas Jacobs', office: 'Director' },
+  { name: 'Dr. Joaquin Arambula', office: 'State Assembly Member' },
+  { name: 'Linda T. Sánchez', office: 'U.S. Representative' },
+  { name: 'Natasha Johnson', office: 'State Assembly Member' },
+  { name: 'Lateefah Simon', office: 'U.S. Representative' },
+  { name: 'Simon Stiell', office: 'Executive Secretary' },
+];
+const named = (text) => matchPeople(text, REGISTER).map((hit) => hit.row.name);
+
+// A surname that is also a word is only a name when it is written as one.
+// Both sentences are from published stories, and both drew Pamela Price.
+assert.deepEqual(
+  named('It cited the Working Families Tax Cuts Act, executive orders on price transparency (February 2025) and drug pricing (May 2025).'),
+  [],
+  'lower-case "price" is a word, not the former Alameda County district attorney',
+);
+assert.deepEqual(
+  named('Newsom demanded answers before military action on Iran, citing steep fuel-price impacts.'),
+  ['Gavin Newsom'],
+);
+assert.deepEqual(
+  named('Price caps take effect in January, and the price of insulin falls.'),
+  [],
+  'a capitalised word opening a sentence is still the word when the story uses it in lower case',
+);
+assert.deepEqual(named('District Attorney Price said charges would follow.'), ['Pamela Price']);
+assert.deepEqual(named('The state will award a federal grant to counties.'), []);
+assert.deepEqual(named('U.S. Attorney Grant announced the indictment.'), ['Eric Grant']);
+
+// A bill number says which chamber its author sits in.
+assert.deepEqual(
+  named('The bills signed are SB 886 (Padilla and McNerney), SB 887 (Padilla), and SB 1168 (McNerney), according to the governor’s office.'),
+  ['Steve Padilla', 'Jerry McNerney'],
+  'a Senate bill author is the state senator, never the U.S. senator of the same surname',
+);
+assert.deepEqual(named('Sen. Padilla said the bill would pass.'), [], 'both Padillas are senators; nobody');
+
+// A title is evidence for the person who holds it, and against everyone else.
+assert.deepEqual(
+  named('Secretary Rubio called it a "historic deal."'),
+  ['Marco Rubio'],
+  'the Secretary of State, not either California legislator named Rubio',
+);
+assert.deepEqual(
+  named('President Trump Proclaims Patriot Day 2026, Directs Flags at Half‑Staff'),
+  ['Donald J. Trump'],
+  'a title-case headline verb beside a titled surname is not another person',
+);
+assert.deepEqual(
+  named('First Lady Melania Trump toured the East Wing.'),
+  [],
+  'the First Lady is not the President',
+);
+assert.deepEqual(
+  named('President Donald J. Trump and First Lady Melania Trump extended greetings to Jewish communities observing Rosh Hashanah.'),
+  ['Donald J. Trump'],
+);
+assert.deepEqual(named('J.D. Vance told reporters the order stands.'), ['JD Vance']);
+assert.deepEqual(named('Prime Minister Pedro Sánchez signed for Spain.'), []);
+assert.deepEqual(
+  named('Cal OES Director Caroline Thomas Jacobs said crews were in place. Jacobs added that more would follow.'),
+  ['Caroline Thomas Jacobs'],
+);
+assert.deepEqual(named('Simon Stiell told European lawmakers the costs were rising.'), ['Simon Stiell']);
+assert.deepEqual(named('Crews trained at Johnson Space Center in Houston.'), []);
+assert.deepEqual(
+  named('The measure was carried by Assemblymember Joaquin Arambula of Fresno.'),
+  ['Dr. Joaquin Arambula'],
+  'the register’s "Dr." is not part of the name the copy prints',
+);
+
+// Most prominent first. The published story names eight legislators and the
+// rail shows four; alphabetical order used to cut the lead author.
+const chatbots = named(
+  'Newsom signs package of laws tightening child-safety rules for chatbots and social media. ' +
+    'Those at the signing named in the release include Hillary Rodham Clinton, Assemblymembers Rebecca Bauer-Kahan, Josh Lowenthal, Buffy Wicks, Dawn Addis and Jacqui Irwin; Senators Steve Padilla, Susan Rubio and Henry Stern.',
+);
+assert.deepEqual(chatbots.slice(0, 4), [
+  'Gavin Newsom',
+  'Rebecca Bauer-Kahan',
+  'Josh Lowenthal',
+  'Buffy Wicks',
+]);
+assert.ok(chatbots.includes('Susan Rubio') && chatbots.includes('Steve Padilla'));
+
+// --- The surface keeps the matcher's order and drops faceless rows last --
 
 const people = readFileSync('lib/people.ts', 'utf8');
 assert.match(
   people,
-  /nameForms\(row\.name\)\.some\(\(form\) => mentions\(haystack, form\)\)\s*\)\s*score = 100;/,
-  'a full-name match must still count outright, ungated by the guard',
-);
-assert.match(
-  people,
-  /surnameCounts\.get\(surname\) === 1 &&[\s\S]*?surnameBelongsToSomeoneElse\(/,
-  'the guard belongs on the surname-only branch',
-);
-assert.ok(
-  people.includes('const original = normalizePunctuation(` ${text} `);') &&
-    people.includes('const haystack = original.toLowerCase();'),
-  'the guard needs the original casing at the same offsets as the haystack',
+  /matchPeople\(text, rows\)\s*\.filter\(\(\{ row \}\) => row\.photo_url\)\s*\.slice\(0, limit\)/,
+  'faceless rows are dropped only after matching, and nothing re-sorts the result',
 );
 
 // --- The surfaces must degrade to nothing, not to a broken frame ---------

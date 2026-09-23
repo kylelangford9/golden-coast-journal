@@ -27,34 +27,88 @@ export function normalizePunctuation(value: string) {
 
 const isInitial = (part: string) => /^[A-Za-z]\.?$/.test(part);
 
-export function surnameOf(name: string) {
-  const parts = normalizePunctuation(name)
+/** A token reduced to what identifies it: lowercase, no periods or commas. */
+const tokenKey = (token: string) => token.toLowerCase().replace(/[.,]/g, '');
+
+/**
+ * Words the register writes around a name that no story prints as part of it.
+ * `representatives` holds "Dr. Joaquin Arambula", "José Luis Solache Jr." and
+ * "Gilbert Ray Cisneros, Jr."; the copy says "Assemblymember Joaquin
+ * Arambula", and the surname of the second man is Solache, not "jr.".
+ */
+const NAME_PREFIXES = new Set(['dr', 'hon', 'mr', 'mrs', 'ms', 'rev']);
+const NAME_SUFFIXES = new Set(['jr', 'sr', 'ii', 'iii', 'iv']);
+
+/**
+ * A register name split into the parts a story could print, with any quoted
+ * nickname ('Steven "Steve" Choi') lifted out on its own.
+ */
+function nameParts(name: string) {
+  const plain = normalizePunctuation(name);
+  const nickname = plain.match(/["“”]([^"“”]+)["“”]/)?.[1]?.trim() || null;
+  const parts = plain
+    .replace(/["“”][^"“”]*["“”]/g, ' ')
+    .replace(/,/g, ' ')
     .trim()
     .split(/\s+/)
-    .filter((p) => !isInitial(p));
+    .filter(Boolean);
+  while (parts.length > 2 && NAME_PREFIXES.has(tokenKey(parts[0])))
+    parts.shift();
+  while (
+    parts.length > 2 &&
+    NAME_SUFFIXES.has(tokenKey(parts[parts.length - 1]))
+  )
+    parts.pop();
+  return { parts, nickname };
+}
+
+export function surnameOf(name: string) {
+  const parts = nameParts(name).parts.filter((p) => !isInitial(p));
   return (parts[parts.length - 1] || '').toLowerCase();
+}
+
+/**
+ * One spelling per person, used to recognise two register rows as namesakes:
+ * the name without honorifics, suffixes or middle initials.
+ */
+export function canonicalName(name: string) {
+  return nameParts(name)
+    .parts.filter((p) => !isInitial(p))
+    .join(' ')
+    .toLowerCase();
 }
 
 /**
  * The spellings of a name that should count as naming this person outright.
  *
  * The register carries middle initials the newsroom usually drops: stories say
- * "Assemblymember Tina McKinnor", the register says "Tina S. McKinnor". Without
- * the shortened form that falls back to a bare-surname match, which is the weak
- * signal the guard below has to second-guess. Both forms are still whole names,
- * so widening this way adds no new way to pick the wrong person.
+ * "Assemblymember Tina McKinnor", the register says "Tina S. McKinnor". It also
+ * carries middle names ("Rick Chavez Zbur", "Caroline Thomas Jacobs"),
+ * honorifics, suffixes and nicknames. Without the shortened forms a story falls
+ * back to a bare-surname match, which is the weak signal the guards below have
+ * to second-guess. Every form is still two or more words of the person's own
+ * name, so widening this way adds no new way to pick the wrong person.
  */
 export function nameForms(name: string) {
-  const parts = normalizePunctuation(name).trim().split(/\s+/);
-  const full = parts.join(' ').toLowerCase();
+  const { parts, nickname } = nameParts(name);
+  const forms = new Set<string>();
+  const add = (words: string[]) => {
+    if (words.length > 1) forms.add(words.join(' ').toLowerCase());
+  };
+  add(parts);
   const withoutInitials = parts.filter((p) => !isInitial(p));
-  const short = withoutInitials.join(' ').toLowerCase();
-  return short && short !== full && withoutInitials.length > 1
-    ? [full, short]
-    : [full];
+  add(withoutInitials);
+  if (withoutInitials.length > 2)
+    add([withoutInitials[0], withoutInitials[withoutInitials.length - 1]]);
+  if (nickname) add([nickname, withoutInitials[withoutInitials.length - 1]]);
+  // The register's own spelling, exactly, for a story that copies it.
+  forms.add(
+    normalizePunctuation(name).trim().split(/\s+/).join(' ').toLowerCase(),
+  );
+  return [...forms];
 }
 
-const isWordChar = (ch: string) => /[a-z0-9]/i.test(ch);
+const isWordChar = (ch: string) => /[\p{L}\p{N}]/u.test(ch);
 
 /**
  * Whole-word containment, scanned rather than compiled into a pattern. Names
@@ -63,14 +117,19 @@ const isWordChar = (ch: string) => /[a-z0-9]/i.test(ch);
  * keeps "Bass" from firing inside "bassist".
  */
 export function mentions(haystack: string, needle: string) {
-  if (!needle) return false;
+  return firstMention(haystack, needle) !== -1;
+}
+
+/** Where a whole-word `needle` first appears in `haystack`, or -1. */
+export function firstMention(haystack: string, needle: string) {
+  if (!needle) return -1;
   let from = 0;
   for (;;) {
     const at = haystack.indexOf(needle, from);
-    if (at === -1) return false;
+    if (at === -1) return -1;
     const before = at === 0 ? '' : haystack[at - 1];
     const after = haystack[at + needle.length] || '';
-    if (!isWordChar(before) && !isWordChar(after)) return true;
+    if (!isWordChar(before) && !isWordChar(after)) return at;
     from = at + 1;
   }
 }
@@ -172,30 +231,45 @@ export function surnameBelongsToSomeoneElse(
   surname: string,
   ownName: string,
 ) {
-  const own = new Set(
-    ownName
-      .toLowerCase()
-      .split(/\s+/)
-      .map((part) => part.replace(/[.,]+$/, '')),
-  );
-  const isOutsider = (token: string) => {
-    if (!token || !startsCapital(token)) return false;
-    const key = token.toLowerCase().replace(/[.,]+$/, '');
-    return !own.has(key) && !HONORIFICS.has(key);
-  };
+  const isOutsider = outsiderTest(ownName);
+  for (const at of wholeWordOffsets(lower, surname)) {
+    const end = at + surname.length;
+    if (isOutsider(tokenBefore(text, at)) || isOutsider(tokenAfter(text, end)))
+      return true;
+  }
+  return false;
+}
 
+/**
+ * Whether a token beside a surname is another person's name: capitalised, and
+ * neither an honorific nor a part of this person's own name. Periods are
+ * ignored on both sides, so "J.D. Vance" is Vance's own name and "U.S." is the
+ * honorific "us".
+ */
+function outsiderTest(ownName: string) {
+  const { parts, nickname } = nameParts(ownName);
+  const own = new Set(
+    [...parts, ...(nickname ? [nickname] : [])].map(tokenKey),
+  );
+  return (token: string) => {
+    if (!token || !startsCapital(token)) return false;
+    const key = tokenKey(token);
+    return (
+      !own.has(key) &&
+      !HONORIFICS.has(key) &&
+      !HONORIFICS.has(token.toLowerCase().replace(/[.,]+$/, ''))
+    );
+  };
+}
+
+function* wholeWordOffsets(lower: string, word: string) {
   let from = 0;
   for (;;) {
-    const at = lower.indexOf(surname, from);
-    if (at === -1) return false;
-    const end = at + surname.length;
-    const whole =
-      !isWordChar(lower[at - 1] || '') && !isWordChar(lower[end] || '');
-    if (
-      whole &&
-      (isOutsider(tokenBefore(text, at)) || isOutsider(tokenAfter(text, end)))
-    )
-      return true;
+    const at = lower.indexOf(word, from);
+    if (at === -1) return;
+    const end = at + word.length;
+    if (!isWordChar(lower[at - 1] || '') && !isWordChar(lower[end] || ''))
+      yield at;
     from = at + 1;
   }
 }
@@ -345,4 +419,263 @@ export function disambiguateSameName(
     winner = i;
   }
   return winner;
+}
+
+/**
+ * The office a title in the copy points at, as words the register's `office`
+ * contains. A title is evidence both ways: "Secretary Rubio" is the Secretary
+ * of State and plainly not State Sen. Susan Rubio, "Director Jacobs" is not
+ * Rep. Sara Jacobs, and "Prime Minister Sánchez" is nobody in the register.
+ */
+const TITLES = new Map<string, string[]>([
+  ['governor', ['governor']],
+  ['gov', ['governor']],
+  ['president', ['president']],
+  ['senator', ['senator']],
+  ['senators', ['senator']],
+  ['sen', ['senator']],
+  ['sens', ['senator']],
+  ['assemblymember', ['assembly']],
+  ['assemblymembers', ['assembly']],
+  ['assemblywoman', ['assembly']],
+  ['assemblyman', ['assembly']],
+  ['rep', ['u.s. representative']],
+  ['reps', ['u.s. representative']],
+  ['representative', ['u.s. representative']],
+  ['congressman', ['u.s. representative']],
+  ['congresswoman', ['u.s. representative']],
+  ['congressmember', ['u.s. representative']],
+  ['mayor', ['mayor']],
+  ['sheriff', ['sheriff']],
+  ['supervisor', ['supervisor']],
+  ['justice', ['justice']],
+  ['judge', ['judge']],
+  ['secretary', ['secretary']],
+  ['secretary-general', ['secretary-general']],
+  ['director', ['director']],
+  ['administrator', ['administrator']],
+  ['chancellor', ['chancellor']],
+  ['commissioner', ['commissioner']],
+  ['chair', ['chair']],
+  ['chairman', ['chair']],
+  ['chairwoman', ['chair']],
+  ['chairperson', ['chair']],
+  ['superintendent', ['superintendent']],
+  ['controller', ['controller']],
+  ['treasurer', ['treasurer']],
+  ['attorney', ['attorney']],
+  ['councilmember', ['council']],
+  ['councilwoman', ['council']],
+  ['councilman', ['council']],
+  // The register holds no Speaker as such; Robert Rivas is filed as a State
+  // Assembly Member. Mapping this to the Assembly would hand "Speaker Johnson",
+  // the U.S. House Speaker, to Assemblymember Natasha Johnson.
+  ['speaker', ['speaker']],
+  ['ceo', ['chief executive']],
+  ['minister', ['minister']],
+  ['ambassador', ['ambassador']],
+]);
+
+/** Two-word titles that mean something different from their last word. */
+function compoundTitle(first: string, second: string) {
+  if (second === 'president' && first === 'vice') return ['vice president'];
+  if (
+    (second === 'gov' || second === 'governor') &&
+    (first === 'lt' || first === 'lieutenant')
+  )
+    return ['lieutenant governor'];
+  if ((second === 'sen' || second === 'senator') && first === 'state')
+    return ['state senator'];
+  if ((second === 'sen' || second === 'senator') && first === 'us')
+    return ['u.s. senator'];
+  if (second === 'general' && first === 'attorney') return ['attorney general'];
+  if (second === 'justice' && first === 'chief') return ['chief justice'];
+  if (second === 'lady' && first === 'first') return ['first lady'];
+  return null;
+}
+
+/**
+ * California bill authors, as the governor's releases print them: "SB 886
+ * (Padilla and McNerney)", "AB 1577 (Bauer-Kahan)". The house of the bill says
+ * which chamber the names in the parentheses sit in, which is how "Padilla"
+ * there is the state senator and not the U.S. senator of the same surname.
+ */
+const BILL_AUTHORS =
+  /\b(?:(AB|ACA|AJR|ACR|SB|SCA|SJR|SCR)|(Assembly|Senate) (?:Bill|Constitutional Amendment|Joint Resolution|Concurrent Resolution)) ?\d+\s*\(([^()]{1,120})\)/g;
+
+function billAuthorSpans(text: string) {
+  const spans: { start: number; end: number; offices: string[] }[] = [];
+  for (const match of text.matchAll(BILL_AUTHORS)) {
+    const house = (match[1] || match[2])[0];
+    const end = (match.index ?? 0) + match[0].length - 1;
+    spans.push({
+      start: end - match[3].length,
+      end,
+      offices: house === 'A' ? ['assembly'] : ['state senator'],
+    });
+  }
+  return spans;
+}
+
+/**
+ * The office the words in front of a surname name, if they name one. Only a
+ * single space counts as adjacency, as everywhere else in this module.
+ */
+function titleBefore(
+  text: string,
+  at: number,
+  bills: ReturnType<typeof billAuthorSpans>,
+) {
+  const bill = bills.find((span) => at >= span.start && at < span.end);
+  if (bill) return bill.offices;
+  const last = tokenBefore(text, at);
+  if (!last) return null;
+  const second = tokenKey(last);
+  const first = tokenKey(tokenBefore(text, at - 1 - last.length));
+  return compoundTitle(first, second) || TITLES.get(second) || null;
+}
+
+const holds = (office: string | null | undefined, words: string[]) => {
+  const held = normalizePunctuation(office || '').toLowerCase();
+  return words.some((word) => held.includes(word));
+};
+
+/**
+ * Whether a word opens its sentence. A capitalised surname there might just be
+ * a word: "Price caps take effect" is not Pamela Price.
+ */
+function sentenceInitial(text: string, at: number) {
+  let i = at - 1;
+  while (i >= 0 && /[\s"“'‘([]/.test(text[i])) i -= 1;
+  return i < 0 || /[.!?:;]/.test(text[i]);
+}
+
+export type Mention<T> = {
+  row: T;
+  /** 100 named in full, 75 by title and surname, 50 by surname alone. */
+  score: number;
+  /** Offset of the first mention, which is how prominent the person is. */
+  at: number;
+};
+
+/**
+ * The people a story names, most prominent first.
+ *
+ * A full name always counts. A surname counts when a title or a bill number in
+ * front of it points at exactly one person who carries it ("Secretary Rubio",
+ * "SB 886 (Padilla)"), or, with no title, when exactly one person in the
+ * register carries it, it is written with a capital, and nothing beside it
+ * shows it belongs to somebody else. Lower-case "price" is a word, not Pamela
+ * Price, and a capitalised "Price" opening a sentence counts only if the story
+ * never uses the word in lower case.
+ *
+ * Several people sharing a full name are settled by the story's own words, or
+ * not at all (see disambiguateSameName).
+ *
+ * The order is where each person is first named, because the rail shows four
+ * and the homepage shows one: the person in the headline belongs in front of
+ * the co-author in paragraph six. Alphabetical order used to decide it, which
+ * kept Buffy Wicks and Dawn Addis on a story whose lead author, Rebecca
+ * Bauer-Kahan, was cut.
+ *
+ * `rows` should include people without a portrait; they still count as
+ * carriers of a surname. The caller drops them afterwards.
+ */
+export function matchPeople<T extends NameCandidate>(
+  text: string,
+  rows: T[],
+): Mention<T>[] {
+  const original = normalizePunctuation(` ${text} `);
+  const lower = original.toLowerCase();
+  const bills = billAuthorSpans(original);
+
+  const hits: Mention<T>[] = [];
+  const named = new Set<T>();
+  for (const row of rows) {
+    const offsets = nameForms(row.name)
+      .map((form) => firstMention(lower, form))
+      .filter((at) => at !== -1);
+    if (!offsets.length) continue;
+    hits.push({ row, score: 100, at: Math.min(...offsets) });
+    named.add(row);
+  }
+
+  const carriers = new Map<string, T[]>();
+  for (const row of rows) {
+    const surname = surnameOf(row.name);
+    const group = carriers.get(surname);
+    if (group) group.push(row);
+    else carriers.set(surname, [row]);
+  }
+
+  for (const [surname, group] of carriers) {
+    if (surname.length <= 3 || group.every((row) => named.has(row))) continue;
+    const offsets = [...wholeWordOffsets(lower, surname)];
+    if (!offsets.length) continue;
+    const usedAsWord = offsets.some((at) => !startsCapital(original.slice(at)));
+    const outsiders = group.map((row) => outsiderTest(row.name));
+    const titled = new Map<T, number>();
+    const against = new Set<T>();
+    let plainAt = -1;
+
+    for (const at of offsets) {
+      if (!startsCapital(original.slice(at))) continue;
+      const title = titleBefore(original, at, bills);
+      if (title) {
+        // A title settles it without the neighbour check, which would read the
+        // capitalised verb of a headline ("President Trump Proclaims") as
+        // someone else's name.
+        const fits = group.filter((row) => holds(row.office, title));
+        for (const row of group) if (!fits.includes(row)) against.add(row);
+        if (fits.length === 1 && !titled.has(fits[0])) titled.set(fits[0], at);
+        continue;
+      }
+      const before = tokenBefore(original, at);
+      const after = tokenAfter(original, at + surname.length);
+      let flanked = false;
+      group.forEach((row, index) => {
+        if (outsiders[index](before) || outsiders[index](after)) {
+          against.add(row);
+          flanked = true;
+        }
+      });
+      if (flanked || (usedAsWord && sentenceInitial(original, at))) continue;
+      if (plainAt === -1) plainAt = at;
+    }
+
+    for (const row of group) {
+      if (named.has(row)) continue;
+      const at = titled.get(row);
+      if (at !== undefined) hits.push({ row, score: 75, at });
+      else if (group.length === 1 && plainAt !== -1 && !against.has(row))
+        hits.push({ row, score: 50, at: plainAt });
+    }
+  }
+
+  // Namesakes share a canonical spelling and matched on it; the story's own
+  // words have to settle which of them it means.
+  const byName = new Map<string, Mention<T>[]>();
+  for (const hit of hits) {
+    const key = canonicalName(hit.row.name);
+    const group = byName.get(key);
+    if (group) group.push(hit);
+    else byName.set(key, [hit]);
+  }
+  const resolved: Mention<T>[] = [];
+  for (const group of byName.values()) {
+    if (group.length === 1) {
+      resolved.push(group[0]);
+      continue;
+    }
+    const pick = disambiguateSameName(
+      lower,
+      group.map((hit) => hit.row),
+    );
+    if (pick >= 0) resolved.push(group[pick]);
+  }
+
+  return resolved.sort(
+    (a, b) =>
+      a.at - b.at || b.score - a.score || a.row.name.localeCompare(b.row.name),
+  );
 }

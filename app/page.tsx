@@ -16,6 +16,7 @@ import { CaliforniaPulseMap } from '@/components/california-pulse-map';
 import { OfficialChip } from '@/components/official-chip';
 import { MiniBroadcast } from '@/components/mini-broadcast';
 import { StoryDeck } from '@/components/story-deck';
+import { NewsNearMe } from '@/components/news-near-me';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
 import { findMentionedOfficials, peopleInTheNews } from '@/lib/people';
@@ -107,6 +108,7 @@ export default async function Home() {
         className="shell top-stories"
         aria-label="Across the Golden Coast"
       >
+        <NewsNearMe />
         <StoryDeck label="Across the Golden Coast">
           {deckStories.map((article, index) => (
             <article className="image-story" key={article.slug}>

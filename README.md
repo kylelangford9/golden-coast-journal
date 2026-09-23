@@ -69,6 +69,22 @@ identities. Pipeline health includes the latest run, its duration, stale-run cou
 24-hour status totals. It uses the same `Authorization: Bearer $CRON_SECRET` credential
 as the other editorial routes.
 
+## News near Me
+
+The homepage's News near Me button asks the browser for the reader's position only when
+it is tapped. The browser rounds it to two decimal places (about a kilometer) and POSTs
+it to `/api/near-me`, which names the nearest town from `lib/places-data.json`, picks
+the stories with `lib/near-me.ts`, and stores and logs nothing; no geocoding service is
+called. A story's places come from its county-newsroom source and from the towns,
+counties, regions, states and countries its copy names. Stories set within 50 miles come
+first, then those about the reader's state (or country, abroad), then the closest
+coverage with its distance, so a reader outside California still gets an answer.
+
+The gazetteer is GeoNames' `cities15000` (CC BY 4.0, credited in the panel), the Census
+Bureau's county gazetteer and its outlines of California's counties; rebuild it with
+`npm run places:build`. Measurement records `News Near Me` with the outcome only, never
+the place, and `News Near Me Story Selected`.
+
 ## Local development
 
 ```bash

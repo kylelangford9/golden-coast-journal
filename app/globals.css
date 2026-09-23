@@ -4087,3 +4087,192 @@ a.official-chip:focus-visible {
     border-radius: 12px 12px 0 0;
   }
 }
+
+/* News near Me sits in the strip between the ticker and the story deck, which
+   was empty: the top of the deck's padding and its hairline. The button pulls
+   up into that padding so the deck below does not move. */
+.near-me {
+  margin: -24px 0 22px;
+}
+.near-me-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.near-me-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--navy);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.near-me-button:hover:not(:disabled) {
+  background: var(--navy);
+  color: white;
+}
+.near-me-button:focus-visible,
+.near-me-close:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 3px;
+}
+.near-me-button:disabled {
+  cursor: progress;
+}
+.near-me-spinner {
+  animation: near-me-spin 0.9s linear infinite;
+}
+@keyframes near-me-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.near-me-message {
+  margin: 0;
+  color: var(--rust);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.near-me-message:empty {
+  display: none;
+}
+.near-me-panel {
+  padding: 22px 24px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--popover);
+}
+.near-me-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.near-me-head .eyebrow {
+  margin: 0 0 6px;
+}
+.near-me-head h2 {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 560;
+  line-height: 1.1;
+}
+.near-me-head h2:focus {
+  outline: none;
+}
+.near-me-close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.near-me-close:hover {
+  border-color: var(--ink);
+}
+.near-me-empty {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 17px;
+  line-height: 1.4;
+}
+.near-me-group {
+  margin-top: 20px;
+}
+.near-me-group h3 {
+  margin: 0 0 6px;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.near-me-group ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.near-me-group li {
+  border-top: 1px solid var(--line);
+}
+.near-me-group a {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+}
+.near-me-group a:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.near-me-thumb {
+  aspect-ratio: 3 / 2;
+  border-radius: 8px;
+}
+.near-me-copy em {
+  display: block;
+  color: var(--rust);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.near-me-copy strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 17px;
+  font-weight: 560;
+  line-height: 1.2;
+}
+.near-me-note {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 760px) {
+  .near-me {
+    margin: -10px 0 16px;
+  }
+  .near-me-panel {
+    padding: 18px 16px 14px;
+  }
+  .near-me-group ol {
+    grid-template-columns: 1fr;
+  }
+  .near-me-group a {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+  .near-me-copy strong {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .near-me-spinner {
+    animation: none;
+  }
+}

@@ -33,6 +33,16 @@ export default function PrivacyPage() {
             </p>
           </section>
           <section>
+            <h2>Your location</h2>
+            <p>
+              News near Me asks your browser for your location only when you
+              tap it. Your device rounds it to about a kilometer before sending
+              it to the Journal, which uses it once to name the nearest town and
+              choose the stories, then discards it. It is not stored, logged or
+              shared with a mapping service.
+            </p>
+          </section>
+          <section>
             <h2>What we do not do</h2>
             <p>
               We do not sell personal information, build advertising profiles or

@@ -300,6 +300,34 @@ assert.deepEqual(chatbots.slice(0, 4), [
 ]);
 assert.ok(chatbots.includes('Susan Rubio') && chatbots.includes('Steve Padilla'));
 
+// --- Where each person is named, which is where their card opens --------
+
+const spansOf = (text, name) => {
+  const hit = matchPeople(text, REGISTER).find((h) => h.row.name === name);
+  return hit ? hit.spans.map((span) => text.slice(span.start, span.end)) : [];
+};
+const whiteHouse =
+  'President Donald J. Trump and First Lady Melania Trump extended greetings. Trump said the season was a time for renewal.';
+assert.deepEqual(
+  spansOf(whiteHouse, 'Donald J. Trump'),
+  ['Donald J. Trump', 'Trump'],
+  'the later bare surname is his; the First Lady’s surname is not a link to him',
+);
+assert.deepEqual(
+  spansOf('The bills signed are SB 886 (Padilla and McNerney) and AB 1577 (Bauer‑Kahan).', 'Steve Padilla'),
+  ['Padilla'],
+);
+assert.deepEqual(
+  spansOf('The bills signed are SB 886 (Padilla and McNerney) and AB 1577 (Bauer‑Kahan).', 'Rebecca Bauer-Kahan'),
+  ['Bauer‑Kahan'],
+  'offsets are the reader’s own text, non-breaking hyphen and all',
+);
+assert.deepEqual(
+  spansOf('Newsom signs bills\nGovernor Gavin Newsom signed them Friday; Newsom said more would follow.', 'Gavin Newsom'),
+  ['Newsom', 'Gavin Newsom', 'Newsom'],
+  'spans are in reading order, with a full name kept whole rather than split into its surname',
+);
+
 // --- The surface keeps the matcher's order and drops faceless rows last --
 
 const people = readFileSync('lib/people.ts', 'utf8');

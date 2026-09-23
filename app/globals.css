@@ -3449,3 +3449,641 @@ button {
     gap: 6px;
   }
 }
+
+/* People: a name in the text, the card it opens, a person's page and the
+   index of everyone the Journal covers.
+
+   The cards are native popovers. Their closed state is the browser's own
+   `display: none`, so no rule here sets `display` on a card except while it is
+   open; setting it unconditionally would show every card at once. */
+.person-mention {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.person-mention:hover {
+  text-decoration-color: var(--rust);
+}
+.person-mention-glue {
+  white-space: nowrap;
+}
+/* Arriving from the rail's "Where named" link: show the reader which words. */
+.person-mention:target {
+  border-radius: 2px;
+  background: rgba(216, 168, 42, 0.35);
+  scroll-margin-top: 30vh;
+}
+.person-mention:focus-visible,
+.photo-about:focus-visible,
+.person-card-close:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.person-card,
+.photo-card {
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 18px 50px rgba(22, 23, 19, 0.28);
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+}
+.person-card::backdrop,
+.photo-card::backdrop {
+  background: rgba(22, 23, 19, 0.3);
+}
+/* The browser centres an open popover with auto margins; the page's element
+   resets zero them, which pinned the card to the top-left corner. */
+.person-card:popover-open,
+.photo-card:popover-open {
+  margin: auto;
+}
+.photo-card:popover-open {
+  display: grid;
+  gap: 12px;
+}
+.person-card-head {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+}
+.person-card h2 {
+  margin: 3px 0 5px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 24px;
+  line-height: 1.08;
+}
+.person-card .eyebrow,
+.person-card-office,
+.person-card-count,
+.person-card-credit {
+  margin: 0;
+}
+.person-card-office {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.person-card-count {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.person-card-actions {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.person-card-actions a,
+.article-hero .photo-card a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.person-card-credit {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.person-card-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.person-card-close:hover {
+  border-color: var(--ink);
+}
+.person-portrait {
+  position: relative;
+  flex: none;
+  container-type: size;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.person-portrait img {
+  object-fit: cover;
+  object-position: center 22%;
+}
+.person-monogram {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 38cqw;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* The picture's own card, opened from its caption. */
+.photo-credit-line {
+  margin-right: 10px;
+}
+.photo-about {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.photo-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.photo-card-head strong {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 22px;
+}
+.photo-card-alt {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 17px;
+  line-height: 1.45;
+}
+.photo-card-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 10px;
+  font-size: 13px;
+}
+.photo-card-row > span:first-child {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+  text-transform: uppercase;
+}
+.photo-card-note {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* The rail: a name leads to the person's page, and "Where named" to the card
+   in the text. */
+.official-copy strong a {
+  display: inline;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: none;
+}
+.official-copy strong a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.official-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+a.official-chip {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 999px;
+}
+a.official-chip:hover .official-chip-name {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+a.official-chip:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* Faces of the week on the front page. */
+.people-strip {
+  padding-top: 42px;
+  padding-bottom: 42px;
+  border-top: 1px solid var(--line);
+}
+.people-strip-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.people-strip-heading .eyebrow {
+  margin: 0;
+}
+.people-strip h2 {
+  margin: 6px 0 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.05;
+}
+.people-strip-all,
+.person-official,
+.person-method a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.people-strip ul {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(158px, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.people-strip li {
+  scroll-snap-align: start;
+}
+.people-strip li a,
+.people-grid a,
+.person-alongside a {
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--popover);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+.people-strip li a:hover,
+.people-grid a:hover,
+.person-alongside a:hover {
+  border-color: var(--ink);
+}
+.people-strip li a {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 6px;
+  padding: 14px;
+}
+.people-strip strong,
+.people-grid-copy strong,
+.person-alongside strong {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 18px;
+  line-height: 1.12;
+}
+.people-strip small,
+.people-grid-copy small,
+.person-alongside small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.people-strip em,
+.people-grid-copy em,
+.person-alongside em {
+  color: var(--rust);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+/* A person's page. */
+.person-page {
+  padding-top: 34px;
+  padding-bottom: 80px;
+}
+.person-hero {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: clamp(22px, 4vw, 44px);
+  align-items: center;
+  margin: 24px 0 40px;
+  padding-bottom: 34px;
+  border-bottom: 4px solid var(--ink);
+}
+.person-hero-figure {
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+  margin: 0;
+}
+.person-hero-figure figcaption {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+.person-hero-figure figcaption a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+.person-hero-portrait {
+  position: relative;
+  container-type: size;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.person-hero-portrait img {
+  object-fit: cover;
+  object-position: center 22%;
+}
+.person-hero-copy .eyebrow {
+  margin: 0;
+}
+.person-hero h1 {
+  margin: 6px 0 10px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 560;
+  line-height: 1;
+}
+.person-office {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+.person-stat {
+  margin: 14px 0 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 19px;
+}
+.person-official {
+  margin-top: 14px;
+}
+.person-coverage h2,
+.person-alongside h2 {
+  margin: 0 0 16px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 30px;
+  line-height: 1.1;
+}
+.person-coverage ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.person-coverage li {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.person-story-image {
+  aspect-ratio: 3 / 2;
+}
+.person-coverage .eyebrow {
+  margin: 0;
+}
+.person-coverage h3 {
+  margin: 6px 0 10px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 22px;
+  line-height: 1.15;
+}
+.person-coverage h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.person-coverage h3 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.person-coverage blockquote {
+  margin: 0;
+  padding-left: 14px;
+  border-left: 3px solid var(--gold);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.person-coverage mark {
+  padding: 0 2px;
+  border-radius: 2px;
+  background: rgba(216, 168, 42, 0.35);
+  color: inherit;
+}
+.person-coverage small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.person-alongside {
+  margin-top: 48px;
+}
+.person-alongside ul,
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.person-alongside a {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+.person-alongside a > span:last-child,
+.people-grid-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.person-method {
+  max-width: 720px;
+  margin-top: 48px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.person-method a {
+  display: inline;
+  font-size: inherit;
+}
+
+/* The index of everyone the Journal covers. */
+.people-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 30px 0 10px;
+  padding: 16px 0;
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+.people-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.people-groups button {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.people-groups button:hover {
+  border-color: var(--ink);
+}
+.people-groups button[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.people-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.people-search label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.people-search input,
+.people-search select {
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--popover);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+.people-count {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.people-grid a {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+}
+.people-grid .person-portrait {
+  width: 72px;
+  height: 72px;
+}
+.people-grid-copy em {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.people-empty {
+  padding: 30px;
+  background: #ebe4d7;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 18px;
+}
+
+@media (max-width: 760px) {
+  .person-hero {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .person-hero-figure {
+    justify-items: start;
+  }
+  .person-hero-figure figcaption {
+    text-align: left;
+  }
+  .person-coverage li {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 14px;
+  }
+  .person-coverage h3 {
+    font-size: 19px;
+  }
+  .people-strip-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .people-search {
+    width: 100%;
+  }
+  .people-search input {
+    flex: 1 1 160px;
+  }
+}
+
+/* On a phone the cards rise from the bottom of the screen, where a thumb is. */
+@media (max-width: 600px) {
+  .person-card:popover-open,
+  .photo-card:popover-open {
+    width: 100%;
+    max-width: none;
+    margin: auto 0 0;
+    border-radius: 12px 12px 0 0;
+  }
+}

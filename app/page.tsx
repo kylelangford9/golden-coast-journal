@@ -18,7 +18,8 @@ import { MiniBroadcast } from '@/components/mini-broadcast';
 import { StoryDeck } from '@/components/story-deck';
 import { listDevelopingSignals, listPublished } from '@/lib/repository';
 import { selectEditorialAsset } from '@/lib/editorial-assets';
-import { findMentionedOfficials } from '@/lib/people';
+import { findMentionedOfficials, peopleInTheNews } from '@/lib/people';
+import { PersonPortrait } from '@/components/person-card';
 import { formatArticleDate } from '@/lib/content';
 import { editorialAssetLabel, editorialAssetForArticle } from '@/lib/imagery';
 
@@ -57,6 +58,11 @@ export default async function Home() {
     ),
   );
   const leadImage = editorialAssetForArticle(lead);
+  // Faces of the week: the people named in the most stories of the last seven
+  // days, widening to thirty on a quiet week so the row is never a lone face.
+  const weekPeople = await peopleInTheNews(7, 8);
+  const inTheNews =
+    weekPeople.length >= 4 ? weekPeople : await peopleInTheNews(30, 8);
   const [bandImage, promoImage] = await Promise.all([
     selectEditorialAsset({ section: 'California', rotationKey: 'homepage-newsletter-band' }),
     selectEditorialAsset({
@@ -193,6 +199,41 @@ export default async function Home() {
           </span>
         </HomepageStoryLink>
       </section>
+
+      {inTheNews.length ? (
+        <section
+          className="shell people-strip"
+          aria-labelledby="people-strip-title"
+        >
+          <div className="people-strip-heading">
+            <div>
+              <p className="eyebrow">In the news</p>
+              <h2 id="people-strip-title">
+                {weekPeople.length >= 4
+                  ? 'Who the Journal covered this week'
+                  : 'Who the Journal covered this month'}
+              </h2>
+            </div>
+            <Link href="/people" className="people-strip-all">
+              Everyone we cover <ArrowRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+          <ul>
+            {inTheNews.map((person) => (
+              <li key={person.slug}>
+                <Link href={`/people/${person.slug}`}>
+                  <PersonPortrait person={person} size={64} />
+                  <strong>{person.name}</strong>
+                  <small>{person.office}</small>
+                  <em>
+                    {person.stories === 1 ? '1 story' : `${person.stories} stories`}
+                  </em>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="newsletter-band" id="newsletter">
         <div className="shell newsletter-band-inner">

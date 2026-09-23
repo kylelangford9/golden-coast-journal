@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { californiaPropositions } from '@/lib/california-propositions';
 import { effectiveArticleUpdatedAt, sections } from '@/lib/content';
+import { peopleCoverage } from '@/lib/people';
 import { listPublished } from '@/lib/repository';
 
 const origin = process.env.SITE_URL || 'https://www.goldencoastjournal.com';
@@ -47,6 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       '/california-candidates-2026',
       '/california-deadlines',
       '/live',
+      '/people',
       '/authors/kyle-langford',
       '/standards',
       '/corrections',
@@ -101,5 +103,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.7,
     }));
-  return [...staticPages, ...propositionPages, ...sectionPages, ...storyPages];
+  // A person's page changes when a new story names them, so it is dated by the
+  // newest of those stories.
+  const personPages = [...(await peopleCoverage()).values()].map((person) => ({
+    url: `${origin}/people/${person.slug}`,
+    lastModified: new Date(person.stories[0].publishedAt),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }));
+  return [
+    ...staticPages,
+    ...propositionPages,
+    ...sectionPages,
+    ...storyPages,
+    ...personPages,
+  ];
 }

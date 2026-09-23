@@ -229,7 +229,7 @@ export async function listDevelopingSignals(
   }
 }
 
-export async function listPublished(): Promise<Article[]> {
+export async function listPublished(limit = 50): Promise<Article[]> {
   try {
     await seedDatabase();
     const rows = unwrap(
@@ -238,7 +238,7 @@ export async function listPublished(): Promise<Article[]> {
         .select('*')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
-        .limit(50),
+        .limit(limit),
       'Unable to load published stories',
     ) as ArticleRow[];
     return rows.length ? rows.map(fromArticleRow) : articles;

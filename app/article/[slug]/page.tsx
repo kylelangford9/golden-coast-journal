@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
-import { findMentionedOfficials } from '@/lib/people';
+import { peopleInStory } from '@/lib/people';
 import { OfficialMentions } from '@/components/official-mentions';
+import { MentionParagraph, PersonCards } from '@/components/person-card';
+import { PersonCardTracker } from '@/components/person-card-tracker';
+import { PhotoProvenance } from '@/components/photo-provenance';
+import { findAssetByUrl } from '@/lib/editorial-assets';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -66,20 +70,47 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await findPublishedBySlug(slug);
   if (!article) notFound();
-  // Officials this story actually names, with the portraits and official links
-  // already curated in the California Votes representatives register.
-  // Up to four, because a bill story routinely names an author, a co-author and
+  // Everyone the story names, in the order it names them, with where the body
+  // first names each: that is where their card opens. The rail shows up to
+  // four faces, because a bill story routinely names an author, a co-author and
   // the governor, and showing only the first implies the others were not there.
-  // Four is the ceiling rather than the target: the matcher returns full-name
-  // matches ahead of surname matches, so the faces a reader sees are the ones
-  // the story is actually about.
-  const [officials, corrections] = await Promise.all([
-    findMentionedOfficials(
-      `${article.title} ${article.dek} ${article.body.join(' ')}`,
-      4,
-    ),
+  const [people, corrections, imageAsset] = await Promise.all([
+    peopleInStory(article),
     listCorrections(article.id),
+    findAssetByUrl(article.imageUrl),
   ]);
+  const officials = people
+    .filter((person) => person.photoUrl)
+    .slice(0, 4)
+    .map((person) => ({
+      name: person.name,
+      office: person.office,
+      party: person.party,
+      level: person.level,
+      photoUrl: person.photoUrl as string,
+      url: person.url,
+      slug: person.slug,
+      inBody: Boolean(person.firstBodyMention),
+    }));
+  const marksByParagraph = new Map<
+    number,
+    { start: number; end: number; slug: string }[]
+  >();
+  for (const person of people) {
+    const at = person.firstBodyMention;
+    if (!at) continue;
+    const marks = marksByParagraph.get(at.paragraph) || [];
+    // Two people can be named in overlapping words only by a register quirk;
+    // the first keeps the button rather than nesting one inside another.
+    if (!marks.some((mark) => at.start < mark.end && mark.start < at.end))
+      marks.push({ start: at.start, end: at.end, slug: person.slug });
+    marksByParagraph.set(at.paragraph, marks);
+  }
+  const linkedPeople = people.filter((person) =>
+    [...marksByParagraph.values()].some((marks) =>
+      marks.some((mark) => mark.slug === person.slug),
+    ),
+  );
   const approvedImage = editorialAssetForArticle(article);
   const articles = await listPublished();
   // Related stories should not hand the reader a photograph they are already
@@ -119,7 +150,35 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     datePublished: article.publishedAt,
     dateModified: effectiveArticleUpdatedAt(article),
     mainEntityOfPage: `${origin}/article/${article.slug}`,
-    image: [articleImageUrl],
+    // The picture with its credit and the page its licence was read on, so a
+    // search engine can show who made it and under what terms.
+    image: [
+      {
+        '@type': 'ImageObject',
+        url: articleImageUrl,
+        caption: approvedImage.alt,
+        creditText: approvedImage.credit,
+        ...(imageAsset?.provenance_url
+          ? {
+              license: imageAsset.provenance_url,
+              acquireLicensePage: imageAsset.provenance_url,
+            }
+          : {}),
+      },
+    ],
+    // The people the story names, each tied to their page on the Journal and
+    // to the office that speaks for them.
+    ...(people.length
+      ? {
+          mentions: people.map((person) => ({
+            '@type': 'Person',
+            name: person.name,
+            jobTitle: person.office,
+            url: `${origin}/people/${person.slug}`,
+            ...(person.url ? { sameAs: [person.url] } : {}),
+          })),
+        }
+      : {}),
     author: isKyleLangford
       ? {
           '@type': 'Person',
@@ -198,14 +257,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             sizes="(max-width: 1480px) 100vw, 1420px"
           />
           <figcaption>
-            {editorialAssetLabel(approvedImage)} ·{' '}
-            <a
-              href={approvedImage.provenanceUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {approvedImage.credit}
-            </a>
+            <PhotoProvenance
+              label={editorialAssetLabel(approvedImage)}
+              alt={approvedImage.alt}
+              credit={approvedImage.credit}
+              provenanceUrl={
+                imageAsset?.provenance_url || approvedImage.provenanceUrl || null
+              }
+            />
           </figcaption>
         </figure>
         <div className="article-layout shell">
@@ -220,8 +279,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </aside>
           <div className="article-body">
             {article.body.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+              <MentionParagraph
+                key={index}
+                text={paragraph}
+                marks={marksByParagraph.get(index) || []}
+              />
             ))}
+            <PersonCards people={linkedPeople} />
+            <PersonCardTracker articleSlug={article.slug} />
             {article.slug === 'california-2026-general-election-deadlines' && (
               <ElectionCalendarDownload />
             )}

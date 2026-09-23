@@ -55,6 +55,21 @@ async function loadAssets(): Promise<EditorialAssetRow[]> {
   return rows;
 }
 
+/**
+ * The registry row behind a stored article image, for the caption's credit
+ * link and the "About this image" card. Articles store the URL, alt and credit
+ * they were drafted with but not the provenance, so without this lookup the
+ * credit on every registry photograph linked to nowhere.
+ */
+export async function findAssetByUrl(url: string | null | undefined) {
+  if (!url) return null;
+  try {
+    return (await loadAssets()).find((row) => row.url === url) || null;
+  } catch {
+    return null;
+  }
+}
+
 /** Exposed so a run can force a reload after the registry changes. */
 export function clearEditorialAssetCache() {
   cached = null;

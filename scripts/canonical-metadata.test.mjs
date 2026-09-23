@@ -55,6 +55,7 @@ const canonicalRoutes = new Map([
   ['app/about/page.tsx', '/about'],
   ['app/standards/page.tsx', '/standards'],
   ['app/corrections/page.tsx', '/corrections'],
+  ['app/people/page.tsx', '/people'],
   ['app/contact/page.tsx', '/contact'],
   ['app/privacy/page.tsx', '/privacy'],
   ['app/search/page.tsx', '/search'],

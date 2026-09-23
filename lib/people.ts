@@ -1,5 +1,8 @@
-import { matchPeople } from '@/lib/name-matching';
+import type { Article } from '@/lib/content';
+import { canonicalName, matchPeople, type Span } from '@/lib/name-matching';
+import { listPublished } from '@/lib/repository';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
+import { excerptAround } from '@/lib/text';
 
 /**
  * People named in a story, drawn from two registers.
@@ -31,13 +34,40 @@ export type Official = {
   level: string | null;
   photoUrl: string;
   url: string | null;
+  /** The person's page on the Journal: /people/[slug]. */
+  slug: string;
+};
+
+/** A person as a reader meets them: in a card, on their page, in the index. */
+export type Person = {
+  slug: string;
+  name: string;
+  office: string;
+  party: string | null;
+  level: string | null;
+  photoUrl: string | null;
+  url: string | null;
+  /**
+   * Where the portrait came from. The Journal's own register records credit,
+   * licence and the page the licence was read on; the California Votes
+   * register holds official portraits from the legislature and Congress.
+   */
+  portrait: {
+    credit: string;
+    license: string | null;
+    provenanceUrl: string | null;
+  } | null;
 };
 
 type RegisterRow = {
   name: string;
   office: string;
-  /** Only the Journal's own register has one; see displayOffice. */
+  /** Only the Journal's own register has these; see displayOffice. */
   organization?: string | null;
+  id?: string;
+  credit?: string | null;
+  license?: string | null;
+  provenance_url?: string | null;
   party: string | null;
   level: string | null;
   photo_url: string | null;
@@ -45,6 +75,8 @@ type RegisterRow = {
   district: string | null;
   city: string | null;
   county: string | null;
+  /** Assigned once the register is loaded; see assignSlugs. */
+  slug: string;
 };
 
 /**
@@ -85,11 +117,41 @@ async function loadNewsmakers() {
     (unwrap(
       await getSupabase()
         .from('gcj_newsmakers')
-        .select(`${COLUMNS},organization`)
+        .select(`${COLUMNS},id,organization,credit,license,provenance_url`)
         .neq('is_active', false),
       'Unable to load newsmakers',
     ) as RegisterRow[] | null) || []
   );
+}
+
+export function slugify(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * A person's address on the Journal. The Journal's own rows keep the id they
+ * were registered under; everyone else is named by their canonical name, and
+ * two people who share one (California's two Robert Garcias) are told apart by
+ * district, so neither address depends on which row loaded first.
+ */
+function assignSlugs(rows: RegisterRow[]) {
+  const base = (row: RegisterRow) => row.id || slugify(canonicalName(row.name));
+  const counts = new Map<string, number>();
+  for (const row of rows)
+    counts.set(base(row), (counts.get(base(row)) || 0) + 1);
+  for (const row of rows) {
+    const slug = base(row);
+    row.slug =
+      counts.get(slug) === 1
+        ? slug
+        : `${slug}-${slugify(row.district || row.office)}`;
+  }
+  return rows;
 }
 
 /**
@@ -106,8 +168,10 @@ async function loadRegister(): Promise<RegisterRow[]> {
   ]);
   if (settled.every((result) => result.status === 'rejected'))
     throw new Error('Unable to load either portrait register');
-  const rows = settled.flatMap((result) =>
-    result.status === 'fulfilled' ? result.value : [],
+  const rows = assignSlugs(
+    settled.flatMap((result) =>
+      result.status === 'fulfilled' ? result.value : [],
+    ),
   );
   cached = { rows, loadedAt: Date.now() };
   return rows;
@@ -123,6 +187,27 @@ async function loadRegister(): Promise<RegisterRow[]> {
 function displayOffice({ office, organization }: RegisterRow) {
   if (!organization || / (of|for) /i.test(office)) return office;
   return `${office}, ${organization}`;
+}
+
+function toPerson(row: RegisterRow): Person {
+  return {
+    slug: row.slug,
+    name: row.name,
+    office: displayOffice(row),
+    party: row.party,
+    level: row.level,
+    photoUrl: row.photo_url,
+    url: row.urls?.[0] || null,
+    portrait: row.photo_url
+      ? row.credit
+        ? {
+            credit: row.credit,
+            license: row.license || null,
+            provenanceUrl: row.provenance_url || null,
+          }
+        : { credit: 'Official portrait', license: null, provenanceUrl: null }
+      : null,
+  };
 }
 
 /**
@@ -157,5 +242,207 @@ export async function findMentionedOfficials(
       level: row.level,
       photoUrl: row.photo_url as string,
       url: row.urls?.[0] || null,
+      slug: row.slug,
     }));
+}
+
+/** Where a person is first named in a story's body, paragraph by paragraph. */
+export type BodyMention = { paragraph: number; start: number; end: number };
+
+export type StoryPerson = Person & {
+  /** How many times the story refers to them. */
+  mentions: number;
+  /** The first reference in the body, which is where their card opens. */
+  firstBodyMention: BodyMention | null;
+};
+
+/**
+ * The parts of a story, in the order a reader meets them, joined so that a
+ * name can never run across a part boundary.
+ */
+function storyText(article: Pick<Article, 'title' | 'dek' | 'body'>) {
+  const parts = [article.title, article.dek, ...article.body];
+  const starts: number[] = [];
+  let offset = 0;
+  for (const part of parts) {
+    starts.push(offset);
+    offset += part.length + 1;
+  }
+  return { text: parts.join('\n'), parts, starts };
+}
+
+function locate(starts: number[], span: Span) {
+  let part = 0;
+  while (part + 1 < starts.length && starts[part + 1] <= span.start) part += 1;
+  return {
+    part,
+    start: span.start - starts[part],
+    end: span.end - starts[part],
+  };
+}
+
+/**
+ * Everyone a story names, faces or not, with where each is first named in the
+ * body: what the article page needs to put a card on a name.
+ */
+export async function peopleInStory(
+  article: Pick<Article, 'title' | 'dek' | 'body'>,
+): Promise<StoryPerson[]> {
+  let rows: RegisterRow[] = [];
+  try {
+    rows = await loadRegister();
+  } catch {
+    return [];
+  }
+  const { text, starts } = storyText(article);
+  return matchPeople(text, rows).map(({ row, spans }) => {
+    // Parts 0 and 1 are the headline and dek; the body starts at part 2.
+    const inBody = spans
+      .map((span) => locate(starts, span))
+      .find((at) => at.part >= 2);
+    return {
+      ...toPerson(row),
+      mentions: spans.length,
+      firstBodyMention: inBody
+        ? { paragraph: inBody.part - 2, start: inBody.start, end: inBody.end }
+        : null,
+    };
+  });
+}
+
+export type CoverageStory = {
+  slug: string;
+  title: string;
+  section: string;
+  publishedAt: string;
+  imageUrl: string;
+  imageAlt: string;
+  mentions: number;
+  /** The sentence the person first appears in, with their name marked. */
+  excerpt: { text: string; markStart: number; markEnd: number };
+};
+
+export type PersonCoverage = Person & {
+  stories: CoverageStory[];
+  /** Other people named in the same stories, most shared first. */
+  alongside: { person: Person; stories: number }[];
+};
+
+const COVERAGE_MS = 10 * 60_000;
+let coverageCache: {
+  people: Map<string, PersonCoverage>;
+  loadedAt: number;
+} | null = null;
+
+/**
+ * Every person the Journal has named in a published story, with those stories.
+ *
+ * It runs the same matcher the article page runs, over every published story,
+ * so a person's page lists exactly the stories whose cards point to it. Built
+ * once and held for ten minutes, like the register it reads.
+ */
+export async function peopleCoverage(): Promise<Map<string, PersonCoverage>> {
+  if (coverageCache && Date.now() - coverageCache.loadedAt < COVERAGE_MS)
+    return coverageCache.people;
+  let rows: RegisterRow[] = [];
+  try {
+    rows = await loadRegister();
+  } catch {
+    return new Map();
+  }
+  const stories = await listPublished(500);
+  const people = new Map<string, PersonCoverage>();
+  const together = new Map<string, Map<string, number>>();
+
+  for (const story of stories) {
+    const { text, parts, starts } = storyText(story);
+    const found = matchPeople(text, rows);
+    for (const { row, spans } of found) {
+      const located = spans.map((span) => locate(starts, span));
+      const first = located.find((at) => at.part >= 2) || located[0];
+      const entry =
+        people.get(row.slug) ||
+        people
+          .set(row.slug, { ...toPerson(row), stories: [], alongside: [] })
+          .get(row.slug)!;
+      entry.stories.push({
+        slug: story.slug,
+        title: story.title,
+        section: story.section,
+        publishedAt: story.publishedAt,
+        imageUrl: story.imageUrl,
+        imageAlt: story.imageAlt,
+        mentions: spans.length,
+        excerpt: excerptAround(parts[first.part], first.start, first.end),
+      });
+      const partners = together.get(row.slug) || new Map<string, number>();
+      for (const other of found)
+        if (other.row.slug !== row.slug)
+          partners.set(other.row.slug, (partners.get(other.row.slug) || 0) + 1);
+      together.set(row.slug, partners);
+    }
+  }
+
+  for (const [slug, entry] of people) {
+    entry.stories.sort(
+      (a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt),
+    );
+    entry.alongside = [...(together.get(slug) || new Map<string, number>())]
+      .map(([other, count]) => ({ person: people.get(other)!, stories: count }))
+      .filter((item) => item.person)
+      .sort(
+        (a, b) =>
+          b.stories - a.stories || a.person.name.localeCompare(b.person.name),
+      )
+      .slice(0, 8)
+      .map(({ person, stories: count }) => ({
+        person: stripCoverage(person),
+        stories: count,
+      }));
+  }
+
+  coverageCache = { people, loadedAt: Date.now() };
+  return people;
+}
+
+function stripCoverage(person: PersonCoverage): Person {
+  return {
+    slug: person.slug,
+    name: person.name,
+    office: person.office,
+    party: person.party,
+    level: person.level,
+    photoUrl: person.photoUrl,
+    url: person.url,
+    portrait: person.portrait,
+  };
+}
+
+export async function findPersonCoverage(slug: string) {
+  return (await peopleCoverage()).get(slug) || null;
+}
+
+/**
+ * The people most in the news: named in the most stories published within the
+ * window, most recent first on a tie. Faces only, because this is a row of
+ * portraits.
+ */
+export async function peopleInTheNews(days = 7, limit = 8) {
+  const since = Date.now() - days * 86_400_000;
+  return [...(await peopleCoverage()).values()]
+    .map((person) => ({
+      person: stripCoverage(person),
+      recent: person.stories.filter(
+        (story) => Date.parse(story.publishedAt) >= since,
+      ),
+    }))
+    .filter(({ person, recent }) => person.photoUrl && recent.length)
+    .sort(
+      (a, b) =>
+        b.recent.length - a.recent.length ||
+        Date.parse(b.recent[0].publishedAt) -
+          Date.parse(a.recent[0].publishedAt),
+    )
+    .slice(0, limit)
+    .map(({ person, recent }) => ({ ...person, stories: recent.length }));
 }

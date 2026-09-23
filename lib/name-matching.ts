@@ -550,13 +550,36 @@ function sentenceInitial(text: string, at: number) {
   return i < 0 || /[.!?:;]/.test(text[i]);
 }
 
+export type Span = { start: number; end: number };
+
 export type Mention<T> = {
   row: T;
   /** 100 named in full, 75 by title and surname, 50 by surname alone. */
   score: number;
   /** Offset of the first mention, which is how prominent the person is. */
   at: number;
+  /**
+   * Every place in `text` the story refers to this person that the rules
+   * accept: each full name, each titled surname, and each bare surname that
+   * nothing beside it gives to someone else. Offsets are into the caller's
+   * text, which is how a page can put the person's card on the right words.
+   */
+  spans: Span[];
 };
+
+/** Keep the longest of any overlapping spans, in reading order. */
+function tidySpans(spans: Span[]) {
+  const sorted = [...spans].sort(
+    (a, b) => a.start - b.start || b.end - b.start - (a.end - a.start),
+  );
+  const kept: Span[] = [];
+  for (const span of sorted) {
+    const last = kept[kept.length - 1];
+    if (last && span.start < last.end) continue;
+    kept.push(span);
+  }
+  return kept;
+}
 
 /**
  * The people a story names, most prominent first.
@@ -590,14 +613,23 @@ export function matchPeople<T extends NameCandidate>(
   const bills = billAuthorSpans(original);
 
   const hits: Mention<T>[] = [];
-  const named = new Set<T>();
+  const named = new Map<T, Mention<T>>();
   for (const row of rows) {
-    const offsets = nameForms(row.name)
-      .map((form) => firstMention(lower, form))
-      .filter((at) => at !== -1);
-    if (!offsets.length) continue;
-    hits.push({ row, score: 100, at: Math.min(...offsets) });
-    named.add(row);
+    const spans = nameForms(row.name).flatMap((form) =>
+      [...wholeWordOffsets(lower, form)].map((at) => ({
+        start: at,
+        end: at + form.length,
+      })),
+    );
+    if (!spans.length) continue;
+    const hit = {
+      row,
+      score: 100,
+      at: Math.min(...spans.map((span) => span.start)),
+      spans,
+    };
+    hits.push(hit);
+    named.set(row, hit);
   }
 
   const carriers = new Map<string, T[]>();
@@ -609,14 +641,14 @@ export function matchPeople<T extends NameCandidate>(
   }
 
   for (const [surname, group] of carriers) {
-    if (surname.length <= 3 || group.every((row) => named.has(row))) continue;
+    if (surname.length <= 3) continue;
     const offsets = [...wholeWordOffsets(lower, surname)];
     if (!offsets.length) continue;
     const usedAsWord = offsets.some((at) => !startsCapital(original.slice(at)));
     const outsiders = group.map((row) => outsiderTest(row.name));
-    const titled = new Map<T, number>();
+    const titled = new Map<T, number[]>();
     const against = new Set<T>();
-    let plainAt = -1;
+    const plain: number[] = [];
 
     for (const at of offsets) {
       if (!startsCapital(original.slice(at))) continue;
@@ -627,7 +659,8 @@ export function matchPeople<T extends NameCandidate>(
         // someone else's name.
         const fits = group.filter((row) => holds(row.office, title));
         for (const row of group) if (!fits.includes(row)) against.add(row);
-        if (fits.length === 1 && !titled.has(fits[0])) titled.set(fits[0], at);
+        if (fits.length === 1)
+          titled.set(fits[0], [...(titled.get(fits[0]) || []), at]);
         continue;
       }
       const before = tokenBefore(original, at);
@@ -640,15 +673,28 @@ export function matchPeople<T extends NameCandidate>(
         }
       });
       if (flanked || (usedAsWord && sentenceInitial(original, at))) continue;
-      if (plainAt === -1) plainAt = at;
+      plain.push(at);
     }
 
+    const toSpans = (starts: number[]) =>
+      starts.map((at) => ({ start: at, end: at + surname.length }));
     for (const row of group) {
-      if (named.has(row)) continue;
-      const at = titled.get(row);
-      if (at !== undefined) hits.push({ row, score: 75, at });
-      else if (group.length === 1 && plainAt !== -1 && !against.has(row))
-        hits.push({ row, score: 50, at: plainAt });
+      const titledAt = titled.get(row) || [];
+      // A bare surname can only ever be linked to the one person who carries it.
+      const plainAt = group.length === 1 ? plain : [];
+      const existing = named.get(row);
+      if (existing) {
+        // Named in full already: the later "Newsom said" is theirs too.
+        existing.spans.push(...toSpans([...titledAt, ...plainAt]));
+      } else if (titledAt.length)
+        hits.push({
+          row,
+          score: 75,
+          at: titledAt[0],
+          spans: toSpans([...titledAt, ...plainAt]),
+        });
+      else if (plainAt.length && !against.has(row))
+        hits.push({ row, score: 50, at: plainAt[0], spans: toSpans(plainAt) });
     }
   }
 
@@ -674,6 +720,15 @@ export function matchPeople<T extends NameCandidate>(
     if (pick >= 0) resolved.push(group[pick]);
   }
 
+  // Offsets were found in the padded string; the caller's text starts one
+  // character earlier.
+  for (const hit of resolved) {
+    hit.at -= 1;
+    hit.spans = tidySpans(hit.spans).map((span) => ({
+      start: span.start - 1,
+      end: span.end - 1,
+    }));
+  }
   return resolved.sort(
     (a, b) =>
       a.at - b.at || b.score - a.score || a.row.name.localeCompare(b.row.name),

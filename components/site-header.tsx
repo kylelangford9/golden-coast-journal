@@ -7,6 +7,7 @@ const nav = [
   'Latest',
   'Briefing Preview',
   'Live Desk',
+  'People',
   '2026 Election',
   '2026 Candidates',
   '2026 Propositions',
@@ -44,6 +45,7 @@ export function SiteHeader() {
                     {item}
                   </Link>
                 ))}
+                <Link href="/people">People in the Journal</Link>
                 <Link href="/about">About</Link>
                 <Link href="/standards">Standards & AI policy</Link>
                 <Link href="/corrections">Corrections</Link>
@@ -94,6 +96,8 @@ export function SiteHeader() {
                     ? '/briefing'
                     : item === 'Live Desk'
                       ? '/live'
+                      : item === 'People'
+                        ? '/people'
                       : item === '2026 Election'
                         ? '/california-election-2026'
                       : item === '2026 Candidates'

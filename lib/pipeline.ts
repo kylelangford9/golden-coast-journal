@@ -29,6 +29,11 @@ type SourceRow = {
   trust_tier: number;
   active: boolean;
   auto_publish: boolean;
+  /**
+   * Added to every candidate's score, so the newsroom can put California and
+   * local sources ahead of national feeds with an update, not a deploy.
+   */
+  priority: number | null;
   last_fetched_at: string | null;
 };
 type CandidateRow = {
@@ -326,6 +331,11 @@ export async function runEditorialPipeline() {
                     (Date.now() - Date.parse(entry.publishedAt)) / 3600000,
                   )
                 : 48;
+              // Routine notices are recorded, so they are not rediscovered on
+              // the next run, but never drafted.
+              const routine = settings.skipTitlePatterns.some((pattern) =>
+                pattern.test(entry.title),
+              );
               return {
                 id: await stableId(entry.url),
                 source_id: source.id,
@@ -334,11 +344,13 @@ export async function runEditorialPipeline() {
                 summary: entry.summary,
                 published_at: entry.publishedAt || null,
                 discovered_at: new Date().toISOString(),
-                status: 'new',
+                status: routine ? 'rejected' : 'new',
                 score: Math.max(
                   1,
                   Math.round(
-                    source.trust_tier === 1 ? 100 - ageHours : 70 - ageHours,
+                    (source.trust_tier === 1 ? 100 : 70) -
+                      ageHours +
+                      (source.priority || 0),
                   ),
                 ),
               };

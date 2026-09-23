@@ -16,8 +16,8 @@ An independent California newspaper with no paywall, advertising or documentary 
 
 The protected `/api/editorial/run` route:
 
-1. polls seven primary-source feeds;
-2. records and scores new story candidates;
+1. polls its primary-source feeds: the governor, Cal OES and the Attorney General, county newsrooms from Los Angeles to Contra Costa, LADWP, and the White House, NASA, NOAA, the Federal Reserve and UN News;
+2. records and scores new story candidates by trust tier, age and the source's `priority` (local newsrooms 20, state 10, national and world 0), and records routine notices that match `skip_title_patterns` as rejected so they are never drafted;
 3. drafts stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, at the volume set by `drafts_per_run` and only while the review queue sits below `review_queue_limit`;
 4. selects an approved photograph for each draft from `gcj_editorial_assets`, matching the desk first and then the headline and dek against each asset's keywords;
 5. publishes the draft when `auto_publish` is on, the source carries `auto_publish`, and model confidence clears `min_confidence_to_publish`; otherwise it stores the draft in the review queue; and
@@ -36,6 +36,10 @@ update public.gcj_editorial_settings set value = 'false'::jsonb where key = 'aut
 update public.gcj_editorial_settings set value = '92'::jsonb where key = 'min_confidence_to_publish';
 -- withdraw a single source
 update public.gcj_sources set auto_publish = false where id = 'whitehouse';
+-- stop polling a source altogether (the local sources are managed here, not seeded from code)
+update public.gcj_sources set active = false where id = 'sbcounty';
+-- let a desk lead less often
+update public.gcj_sources set priority = 0 where id = 'ladwp';
 ```
 
 A draft publishes only when all three agree: the `auto_publish` setting is true, the originating source is flagged `auto_publish`, and the model's confidence clears `min_confidence_to_publish`. Anything short of that falls to the review queue.

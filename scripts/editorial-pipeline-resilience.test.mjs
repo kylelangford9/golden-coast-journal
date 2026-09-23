@@ -54,4 +54,21 @@ assert.match(readme, /check \(ai_generated = false\)/);
 assert.match(readme, /never hotlinked/);
 assert.match(assets, /self-hosted/i);
 
+// Local news leads: a source's priority is part of every candidate's score,
+// and routine notices are recorded but never drafted.
+assert.match(pipeline, /-\s*ageHours \+\s*\(source\.priority \|\| 0\)/);
+assert.match(pipeline, /status: routine \? 'rejected' : 'new'/);
+assert.match(settings, /skipTitlePatterns: asPatterns\(byKey\.get\('skip_title_patterns'\)\)/);
+assert.match(settings, /skipTitlePatterns: \[\],/, 'no patterns by default: nothing is filtered unless the newsroom says so');
+const migration = await readFile(
+  'supabase/migrations/20260923180000_gcj_local_sources.sql',
+  'utf8',
+);
+assert.match(migration, /add column if not exists priority integer not null default 0/);
+assert.doesNotMatch(
+  migration,
+  /sanfranciscopolice|lapdonline|sheriff/i,
+  'police newsrooms stay out until the publisher sets a policy for releases that name the unconvicted',
+);
+
 console.log('Editorial pipeline resilience contract verified.');

@@ -11,6 +11,12 @@ export type EditorialSettings = {
   minConfidenceToPublish: number;
   reviewQueueLimit: number;
   draftsPerRun: number;
+  /**
+   * Feed items whose titles match are recorded as rejected and never drafted:
+   * the routine notices local newsrooms mix in with their news ("Pet of the
+   * Week", holiday closures). Case-insensitive; an invalid pattern is ignored.
+   */
+  skipTitlePatterns: RegExp[];
 };
 
 export const EDITORIAL_SETTING_DEFAULTS: EditorialSettings = {
@@ -18,6 +24,7 @@ export const EDITORIAL_SETTING_DEFAULTS: EditorialSettings = {
   minConfidenceToPublish: 92,
   reviewQueueLimit: 12,
   draftsPerRun: 1,
+  skipTitlePatterns: [],
 };
 
 const SETTINGS_CACHE_MS = 60_000;
@@ -38,6 +45,18 @@ function asBoundedInteger(
   const parsed = typeof value === 'string' ? Number(value) : value;
   if (typeof parsed !== 'number' || !Number.isFinite(parsed)) return fallback;
   return Math.min(max, Math.max(min, Math.trunc(parsed)));
+}
+
+function asPatterns(value: unknown): RegExp[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((pattern) => {
+    if (typeof pattern !== 'string' || !pattern.trim()) return [];
+    try {
+      return [new RegExp(pattern, 'i')];
+    } catch {
+      return [];
+    }
+  });
 }
 
 /** Exposed so a run can force a reload after the settings change. */
@@ -88,6 +107,7 @@ export async function getEditorialSettings(): Promise<EditorialSettings> {
       1,
       10,
     ),
+    skipTitlePatterns: asPatterns(byKey.get('skip_title_patterns')),
   };
 
   cached = { value, loadedAt: Date.now() };

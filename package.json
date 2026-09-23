@@ -29,6 +29,7 @@
     "test:propositions": "node scripts/california-propositions.test.mjs",
     "test:candidates": "node scripts/california-candidates.test.mjs",
     "test:election-hub": "node scripts/california-election-hub.test.mjs",
+    "test:ca-districts": "node scripts/ca-districts.test.mjs",
     "test:contact": "node scripts/editorial-contact.test.mjs",
     "test:mentions": "node scripts/official-mentions.test.mjs",
     "test:namesakes": "node scripts/namesake-portraits.test.mjs",
@@ -39,6 +40,7 @@
     "test:discovery": "node scripts/websub-discovery.test.mjs",
     "test:near-me": "node scripts/near-me.test.mjs && node scripts/near-me-map.test.mjs",
     "places:build": "node scripts/build-places.mjs",
+    "districts:build": "node scripts/build-ca-districts.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

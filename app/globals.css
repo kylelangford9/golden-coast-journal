@@ -3179,17 +3179,10 @@ button {
   }
 }
 
-/* A mini California: 52 real congressional districts, each the colour of the
-   party holding it. Pulse and palette from the Democrat Domination map. */
-@keyframes gcj-map-pulse {
-  0%,
-  100% {
-    fill-opacity: 0.5;
-  }
-  50% {
-    fill-opacity: 0.8;
-  }
-}
+/* A mini California: the 52 congressional districts Proposition 50 set, each
+   the colour of the party holding it. Palette from the Democrat Domination
+   map. The districts themselves, with their steady fill and the lit district,
+   are styled in components/district-map.module.css. */
 .ca-map {
   margin: 0;
   display: grid;
@@ -3200,18 +3193,6 @@ button {
   width: 100%;
   max-width: 116px;
   height: auto;
-}
-.ca-district {
-  stroke: rgba(255, 255, 255, 0.28);
-  stroke-width: 0.6;
-  animation: gcj-map-pulse 2s ease-in-out infinite;
-}
-.ca-district.is-r {
-  animation-delay: 0.5s;
-}
-.ca-district.is-none {
-  fill-opacity: 0.35;
-  animation: none;
 }
 .ca-map figcaption {
   display: grid;
@@ -3237,12 +3218,6 @@ button {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: #b3c4cc;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ca-district {
-    animation: none;
-    fill-opacity: 0.72;
-  }
 }
 
 /* Every card is the same height, so dealing one does not resize the section
@@ -3428,12 +3403,6 @@ button {
    oklch(from currentColor ...) relative-colour syntax that some engines reject,
    and everything after that point is dropped. A module keeps the widget out of
    that blast radius. */
-
-.ca-district.is-called,
-.ca-map.is-settled .ca-district {
-  animation: none;
-  fill-opacity: 0.82;
-}
 
 /* The map with a race either side of it, using width the map never needed.
    Fixed columns so a cycling name cannot resize the card. */

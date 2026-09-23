@@ -10,7 +10,19 @@
 .flag { color: #9fb4c0; font-size: 7.5px; letter-spacing: .09em; text-transform: uppercase; }
 .isD .face { box-shadow: 0 0 0 2px #7aa8ff; }
 .isR .face { box-shadow: 0 0 0 2px #ff9a9a; }
-.middle { display: grid; justify-items: center; gap: 5px; }
-.seat { display: flex; align-items: center; gap: 4px; color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; transition: opacity .3s ease; }
+.isO .face { box-shadow: 0 0 0 2px #c4b5fd; }
+.middle { display: grid; justify-items: center; gap: 3px; }
+
+/* The seat on show, with a step either side of it: the sure way to reach a
+   Los Angeles district a finger cannot pick out on a map this size. The
+   selectors carry two classes to outrank `.newsletter-form button`, since the
+   map sits inside the signup form. */
+.seat { display: flex; align-items: center; justify-content: center; gap: 1px; color: #b3c4cc; font: 700 9px/1 ui-monospace, monospace; letter-spacing: .06em; }
+.seatLabel { display: flex; align-items: center; gap: 4px; min-width: 6.5ch; justify-content: center; transition: opacity .3s ease; }
+.seat .step { display: grid; place-items: center; width: 26px; height: 26px; padding: 0 0 2px; border: 0; border-radius: 50%; background: transparent; color: #cfe0e8; font: 400 17px/1 system-ui, sans-serif; letter-spacing: 0; text-transform: none; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.seat .step:hover { background: rgba(255, 255, 255, .08); }
+.seat .step:focus-visible { outline: 2px solid #f1b58e; outline-offset: 0; }
 .called { color: #5fe0a0; font-style: normal; font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }
-@media (prefers-reduced-motion: reduce) { .slot, .seat { transition: none; } }
+/* Heard, not seen. Two classes again, to outrank `.newsletter-form output`. */
+.middle .srOnly { position: absolute; min-height: 0; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { .slot, .seatLabel { transition: none; } }

@@ -92,8 +92,10 @@ export async function getCongressionalRaces(): Promise<CongressionalRace[]> {
   return races;
 }
 
+export type PartySide = 'D' | 'R' | 'O';
+
 /** The side a district is shown as: the winner once called, else the holder. */
-export function sideOf(race: CongressionalRace): 'D' | 'R' | 'O' | null {
+export function sideOf(race: CongressionalRace): PartySide | null {
   const party = race.winnerParty || race.incumbentParty;
   if (!party) return null;
   if (party === 'Democrat') return 'D';

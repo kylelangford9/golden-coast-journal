@@ -1,0 +1,82 @@
+/* The 52 districts hold a steady colour. The only change in brightness is the
+   district whose race is on show lighting up while the rest dim a little, and
+   that change is a short fade, never a loop. */
+.map {
+  display: block;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.district {
+  fill-opacity: 0.82;
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+  outline: none;
+  transition: fill-opacity 0.35s ease;
+}
+.hasLit .district {
+  fill-opacity: 0.55;
+}
+.hasLit .district[aria-checked='true'] {
+  fill-opacity: 1;
+}
+/* A seat with no holder yet stays grey and faint unless it is the one lit. */
+.map .noSide {
+  fill-opacity: 0.35;
+}
+
+/* The lit district's outline, raised over its neighbours: a dark halo under a
+   white edge, both a constant width on screen whatever the map's size. */
+.glow {
+  pointer-events: none;
+  animation: gcj-district-light 0.35s ease-out;
+}
+.halo,
+.edge,
+.ring {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.halo {
+  stroke: rgba(4, 16, 28, 0.85);
+  stroke-width: 3.4px;
+}
+.edge {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+.ring {
+  stroke: #fff;
+  stroke-width: 1.2px;
+}
+@keyframes gcj-district-light {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The districts are one radio group, so keyboard focus rings the whole map;
+   the focused district is the lit one. A tap off the coast focuses the group
+   itself, which should not draw a box round the map. */
+.map:focus {
+  outline: none;
+}
+.map:has(.district:focus-visible) {
+  outline: 2px solid #f1b58e;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .district {
+    transition: none;
+  }
+  .glow {
+    animation: none;
+  }
+}

@@ -4212,7 +4212,7 @@ a.official-chip:focus-visible {
 .near-me-map {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 9;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #dfe7e6;
@@ -4224,6 +4224,54 @@ a.official-chip:focus-visible {
 }
 .near-me-map:active {
   cursor: grabbing;
+}
+/* Opened full screen, as a map app's map is: the map fills the screen and
+   the chosen stories sit in a panel along its foot. */
+.near-me-body.is-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  background: var(--popover);
+}
+.near-me-body.is-expanded .near-me-map {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+}
+.near-me-body.is-expanded .near-me-detail {
+  max-height: 38vh;
+  overflow-y: auto;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.near-me-sheet-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 18px;
+}
+.near-me-sheet-bar button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--navy);
+  border-radius: 999px;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 .near-me-map:focus-visible {
   outline: 2px solid var(--navy);
@@ -4635,7 +4683,7 @@ a.official-chip:focus-visible {
     gap: 14px;
   }
   .near-me-map {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
   }
   .near-me-story {
     grid-template-columns: 72px minmax(0, 1fr);

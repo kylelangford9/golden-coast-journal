@@ -10,7 +10,16 @@ import {
 } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LoaderCircle, LocateFixed, MapPin, Minus, Plus, X } from 'lucide-react';
+import {
+  LoaderCircle,
+  LocateFixed,
+  MapPin,
+  Maximize2,
+  Minimize2,
+  Minus,
+  Plus,
+  X,
+} from 'lucide-react';
 import { track } from '@vercel/analytics/react';
 import {
   chooseLabels,
@@ -120,11 +129,13 @@ export function NewsNearMe() {
 
   async function load(lat: number, lon: number) {
     setStatus({ kind: 'loading' });
-    // The map is square on a phone and wide beside the stories on a desk;
-    // the server draws it for the width it will have.
+    // The map is a box in the page, 4:3 on a phone and 16:9 beside the
+    // stories on a desk, and opens full screen when asked; the server draws
+    // it for the width it will have.
     const phone = window.matchMedia(PHONE).matches;
     const shell = root.current?.clientWidth || 360;
     const pixels = Math.round(phone ? shell - 34 : ((shell - 74) * 1.5) / 2.5);
+    const aspect = phone ? 4 / 3 : 16 / 9;
     try {
       const response = await fetch('/api/near-me', {
         method: 'POST',
@@ -132,7 +143,7 @@ export function NewsNearMe() {
         body: JSON.stringify({
           lat: round(lat),
           lon: round(lon),
-          aspect: phone ? 1 : 1.5,
+          aspect,
           pixels,
         }),
       });
@@ -248,7 +259,7 @@ export function NewsNearMe() {
 
 const MAX_PAGES = 7;
 // The zoom buttons' corner, which pages, names and the reader's dot keep out of.
-const CONTROLS = { w: 58, h: 140 };
+const CONTROLS = { w: 58, h: 180 };
 const MIN_WIDTH = 30; // world units across at the closest zoom: about two miles
 const TAP_SLOP = 6;
 
@@ -299,6 +310,22 @@ function NearMap({ result }: { result: NearResult }) {
   const gesture = useRef<Gesture | null>(null);
   const lastTap = useRef<{ t: number; x: number; y: number } | null>(null);
   const nudged = useRef(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setExpanded(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      root.style.overflow = overflow;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [expanded]);
 
   const maxWidth = 360 * result.projection.cos * 1000;
   const page = size ? Math.round(Math.min(128, Math.max(92, size.w * 0.27))) : 100;
@@ -705,7 +732,15 @@ function NearMap({ result }: { result: NearResult }) {
   };
 
   return (
-    <div className="near-me-body">
+    <div className={`near-me-body${expanded ? ' is-expanded' : ''}`}>
+      {expanded ? (
+        <div className="near-me-sheet-bar">
+          <strong>Stories near {result.town}</strong>
+          <button type="button" onClick={() => setExpanded(false)}>
+            Done
+          </button>
+        </div>
+      ) : null}
       <div
         className="near-me-map"
         ref={box}
@@ -720,20 +755,35 @@ function NearMap({ result }: { result: NearResult }) {
           className="near-me-drawing"
           viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
           preserveAspectRatio="none"
+          width="100%"
+          height="100%"
           aria-hidden="true"
         >
           <rect
             className="near-me-water"
+            fill="#dfe7e6"
             x={view.x - view.w}
             y={view.y - view.h}
             width={view.w * 3}
             height={view.h * 3}
           />
-          <path className="near-me-land" d={geometry.land} />
-          {geometry.highlight ? <path className="near-me-highlight" d={geometry.highlight} /> : null}
-          {geometry.counties ? <path className="near-me-counties" d={geometry.counties} /> : null}
-          {geometry.states ? <path className="near-me-states" d={geometry.states} /> : null}
-          <circle className="near-me-ring" cx={result.you.x} cy={result.you.y} r={result.ring} />
+          <path className="near-me-land" d={geometry.land} fill="#f1eadc" />
+          {geometry.highlight ? (
+            <path className="near-me-highlight" d={geometry.highlight} fill="none" />
+          ) : null}
+          {geometry.counties ? (
+            <path className="near-me-counties" d={geometry.counties} fill="none" />
+          ) : null}
+          {geometry.states ? (
+            <path className="near-me-states" d={geometry.states} fill="none" />
+          ) : null}
+          <circle
+            className="near-me-ring"
+            cx={result.you.x}
+            cy={result.you.y}
+            r={result.ring}
+            fill="none"
+          />
         </svg>
 
         {size ? (
@@ -860,6 +910,19 @@ function NearMap({ result }: { result: NearResult }) {
             onClick={() => animateTo(result.view)}
           >
             <LocateFixed size={16} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label={expanded ? 'Shrink the map' : 'Open the map full screen'}
+            aria-pressed={expanded}
+            onKeyDown={onKeyDown}
+            onClick={() => setExpanded((open) => !open)}
+          >
+            {expanded ? (
+              <Minimize2 size={16} aria-hidden="true" />
+            ) : (
+              <Maximize2 size={16} aria-hidden="true" />
+            )}
           </button>
         </div>
       </div>

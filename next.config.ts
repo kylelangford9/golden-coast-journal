@@ -2,6 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Turbopack's build cache, on by default since Next 16.3, carried the
+    // previous deploy's compiled globals.css into the next one: the News near
+    // Me map shipped with none of its styles and drew as a black box. Every
+    // production build compiles from scratch until that is fixed upstream.
+    turbopackFileSystemCacheForBuild: false,
+  },
   images: {
     remotePatterns: [
       // Editorial imagery is copied into our own storage, so the Journal's
@@ -47,8 +54,11 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           {
+            // Location for the Journal's own pages only, for News near Me,
+            // which asks for it when the reader taps it; never for anything
+            // embedded in them.
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value: 'camera=(), microphone=(), geolocation=(self)',
           },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           {

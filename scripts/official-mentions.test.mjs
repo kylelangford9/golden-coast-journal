@@ -421,6 +421,64 @@ assert.deepEqual(worldSpans(qatar, 'Sheikh Tamim bin Hamad Al Thani'), [
   'Sheikh Tamim bin Hamad Al Thani',
 ]);
 
+// Local officials likewise: their surnames are places and common words.
+const LOCAL = [
+  ...WORLD,
+  {
+    name: 'Chuck Washington',
+    office: 'Supervisor, Third District',
+    level: 'Local',
+    county: 'Riverside',
+  },
+  {
+    name: 'Ken Houston',
+    office: 'Councilmember, District 7',
+    level: 'Local',
+    city: 'Oakland',
+  },
+  {
+    name: 'John Lee',
+    office: 'Los Angeles City Councilmember, District 12',
+    level: 'Local',
+    city: 'Los Angeles',
+    county: 'Los Angeles',
+  },
+];
+const localNamed = (text) =>
+  matchPeople(text, LOCAL).map((hit) => hit.row.name);
+assert.deepEqual(
+  localNamed('The accords were signed in Washington on Tuesday.'),
+  [],
+  'a published NASA story drew the Riverside supervisor this way',
+);
+assert.deepEqual(localNamed('Crews from Houston joined the search.'), []);
+assert.deepEqual(
+  localNamed(
+    'Riverside County Supervisor Chuck Washington called the vote. Washington said the county would appeal.',
+  ),
+  ['Chuck Washington'],
+);
+assert.deepEqual(
+  localNamed('In Oakland, Councilmember Houston opposed the budget.'),
+  ['Ken Houston'],
+);
+
+// And a local official's full name is shared well beyond their city: the
+// story has to be set there.
+assert.deepEqual(
+  localNamed('Hong Kong Chief Executive John Lee addressed the assembly.'),
+  [],
+);
+assert.deepEqual(
+  localNamed('Supervisor Chuck Washington called the vote.'),
+  [],
+  'no place named, so no way to know which Washington',
+);
+assert.deepEqual(
+  localNamed('Los Angeles City Councilmember John Lee proposed the motion.'),
+  ['John Lee'],
+);
+
 // --- Where each person is named, which is where their card opens --------
 
 const spansOf = (text, name) => {

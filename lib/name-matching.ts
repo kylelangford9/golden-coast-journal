@@ -35,7 +35,7 @@ export function normalizePunctuation(value: string) {
  * other. A letter with no plain form ("ß", "ø") stays as it is.
  */
 export function foldAccents(value: string) {
-  return value.replace(/[\u0080-￿]/g, (ch) => {
+  return value.replace(/[^\p{ASCII}]/gu, (ch) => {
     const base = ch.normalize('NFD');
     return base.length > 1 && /^\p{M}+$/u.test(base.slice(1)) ? base[0] : ch;
   });
@@ -651,6 +651,37 @@ function sentenceInitial(text: string, at: number) {
   return i < 0 || /[.!?:;]/.test(text[i]);
 }
 
+/**
+ * Whether a bare surname alone can bring this person into a story.
+ *
+ * Copy shortens a governor or a senator freely ("Newsom said"). It never
+ * shortens a city councilmember or a foreign leader before naming them in full
+ * or by title, and their surnames alone are too often something else in
+ * American copy: a place ("in Washington", "in Houston" are Riverside and
+ * Oakland officials' names), a company ("Nielsen data"), or the other Al Thani
+ * in Qatar's government. Once such a person is named, their bare surname still
+ * counts for the rest of the story.
+ */
+const introducedBySurname = (row: NameCandidate) =>
+  row.level !== 'International' && row.level !== 'Local';
+
+/**
+ * Whether a story is set where this local official serves.
+ *
+ * California's councils and boards seat people whose names are shared well
+ * beyond them: Los Angeles has a councilmember John Lee and Hong Kong a chief
+ * executive, San Jose a councilmember David Cohen and the CIA had a deputy
+ * director. A story that means the councilmember names the city or county,
+ * so a local official counts only when it does. A row with no place recorded
+ * is left to the other rules.
+ */
+function inTheirPlace(row: NameCandidate, lower: string) {
+  if (row.level !== 'Local' || (!row.city && !row.county)) return true;
+  return [row.city, row.county].some(
+    (place) => place && mentions(lower, place.toLowerCase()),
+  );
+}
+
 export type Span = { start: number; end: number };
 
 export type Mention<T> = {
@@ -807,12 +838,7 @@ export function matchPeople<T extends NameCandidate>(
       else if (
         plainAt.length &&
         !against.has(row) &&
-        (existing ||
-          // Wire copy names a foreign leader in full, or by title, before it
-          // shortens the name, and a foreign surname alone is too often
-          // something else in American copy: "Nielsen ratings", or the other Al
-          // Thani in Qatar's government.
-          row.level !== 'International')
+        (existing || introducedBySurname(row))
       )
         credit(row, 50, plainAt[0], toSpans(plainAt));
     }
@@ -822,6 +848,7 @@ export function matchPeople<T extends NameCandidate>(
   // words have to settle which of them it means.
   const byName = new Map<string, Mention<T>[]>();
   for (const hit of hits) {
+    if (!inTheirPlace(hit.row, lower)) continue;
     const key = canonicalName(hit.row.name);
     const group = byName.get(key);
     if (group) group.push(hit);

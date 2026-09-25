@@ -90,6 +90,64 @@ function rotate<T>(pool: T[], key: string) {
   return pool.length > 1 && key ? pool[stableHash(key) % pool.length] : pool[0];
 }
 
+function keywordHits(row: AssetCandidate, haystack: string) {
+  return row.keywords.filter((keyword) => hasKeyword(haystack, keyword));
+}
+
+/**
+ * The registry marks a picture it no longer wants on stories, such as one
+ * whose subject is a person, by lowering its priority to this or below.
+ */
+const DEMOTED_PRIORITY = 5;
+
+/**
+ * The photographs the drafting model is shown, by id and description, to
+ * choose the story's picture from.
+ *
+ * Keywords alone chose the pictures until Sept. 24, 2026, when they put the
+ * U.S. Supreme Court on a California Supreme Court ruling, the Sacramento
+ * riverfront on Lake Gregory and a Los Angeles school on a San Bernardino
+ * County photo contest: a keyword says what story a picture was bought for,
+ * not what it shows. The description does say what it shows, so the model,
+ * which has read the source, makes the choice, and may choose none.
+ *
+ * `text` is everything known about the story before it is written: the feed
+ * title and summary and the opening of the source page. Every picture any of
+ * it names is a candidate, best first, then the desk's generic pictures,
+ * which suit a story only when they happen to show its place.
+ */
+export function shortlistEditorialAssets<
+  T extends AssetCandidate & { id: string },
+>(rows: T[], input: { section: string; text: string; limit?: number }): T[] {
+  const desk = input.section.toLowerCase();
+  const onDesk = (row: T) => row.section?.toLowerCase() === desk;
+  const haystack = ` ${normalizeForKeywords(input.text)} `;
+  const eligible = rows.filter((row) => row.priority > DEMOTED_PRIORITY);
+  const named = eligible
+    .map((row) => {
+      const hits = keywordHits(row, haystack);
+      const phrases = hits.filter((hit) => hit.trim().includes(' ')).length;
+      return {
+        row,
+        score:
+          phrases * PHRASE +
+          (hits.length - phrases) * WORD +
+          (hits.length && onDesk(row) ? DESK : 0),
+      };
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || b.row.priority - a.row.priority)
+    .slice(0, input.limit ?? 12)
+    .map((entry) => entry.row);
+  const generic = eligible
+    .filter(
+      (row) => onDesk(row) && row.is_section_default && !named.includes(row),
+    )
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, 4);
+  return [...named, ...generic];
+}
+
 /**
  * Pick the photograph for a story, in two steps.
  *
@@ -136,9 +194,7 @@ export function pickEditorialAsset<T extends AssetCandidate>(
 
   const scored: { row: T; score: number }[] = [];
   for (const row of rows) {
-    const hits = row.keywords.filter((keyword) =>
-      hasKeyword(haystack, keyword),
-    );
+    const hits = keywordHits(row, haystack);
     if (!hits.length) continue;
     const phrases = hits.filter((hit) => hit.trim().includes(' ')).length;
     const loose = hits.length < 2 && !phrases;

@@ -31,8 +31,27 @@ assert.match(pipeline, /source\.auto_publish === true/);
 assert.match(settings, /gcj_editorial_settings/);
 assert.match(settings, /autoPublish: false/);
 
-// Imagery is selected per story from the approved registry, never a constant.
-assert.match(pipeline, /const image = await selectEditorialAsset\(\{/);
+// Imagery is selected per story from the approved registry, never a constant:
+// the model chooses from a shortlist by what each picture shows, and the
+// keyword pick only fills in for a draft held for review.
+assert.match(pipeline, /await photoOptionsForStory\(\{/);
+assert.match(
+  pipeline,
+  /const image = draft\.photo\s*\?\s*toAsset\(draft\.photo\)\s*:\s*await selectEditorialAsset\(\{/,
+);
+assert.match(pipeline, /if \(!photo\) problems\.push\('no approved photograph shows this story'\)/);
+
+// A draft publishes itself only if it passes lib/draft-checks.ts, checked as
+// the model wrote it, and does not repeat a story already published.
+assert.match(pipeline, /const problems = draftProblems\(draft, sourceText\)/);
+assert.match(pipeline, /!draft\.problems\.length/);
+assert.match(pipeline, /problems\.push\(`may repeat \/article\/\$\{duplicateOf\}`\)/);
+assert.match(pipeline, /Checks: \$\{draft\.problems\.join\('; '\)\}/);
+
+// A full queue pauses only sources that cannot publish themselves; all
+// drafting stops at twice the limit.
+assert.match(pipeline, /reviewBacklog >= settings\.reviewQueueLimit \* 2/);
+assert.match(pipeline, /if \(reviewOnlyPaused && !canPublishItself\(source\)\) continue;/);
 assert.doesNotMatch(pipeline, /editorialAssets\.californiaCoast/);
 assert.match(assets, /gcj_editorial_assets/);
 assert.match(assets, /article_eligible/);
@@ -65,7 +84,8 @@ assert.match(
 assert.match(metrics, /automation: \{/);
 assert.match(metrics, /staleRunning/);
 assert.match(metrics, /last24Hours/);
-assert.match(readme, /only while the review queue sits below `review_queue_limit`/);
+assert.match(readme, /once the review queue reaches `review_queue_limit` only sources whose drafts can publish themselves keep drafting/);
+assert.match(readme, /lib\/draft-checks\.ts/);
 assert.match(readme, /check \(ai_generated = false\)/);
 assert.match(readme, /never hotlinked/);
 assert.match(assets, /self-hosted/i);

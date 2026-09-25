@@ -18,12 +18,13 @@ The protected `/api/editorial/run` route:
 
 1. polls its primary-source feeds: the governor, Cal OES and the Attorney General, county newsrooms from Los Angeles to Contra Costa, LADWP, and the White House, NASA, NOAA, the Federal Reserve and UN News;
 2. records and scores new story candidates by trust tier, age and the source's `priority` (local newsrooms 20, state 10, national and world 0), and records routine notices that match `skip_title_patterns` as rejected so they are never drafted;
-3. drafts stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, at the volume set by `drafts_per_run` and only while the review queue sits below `review_queue_limit`;
-4. selects an approved photograph for each draft from `gcj_editorial_assets`, matching the desk first and then the headline and dek against each asset's keywords;
-5. publishes the draft when `auto_publish` is on, the source carries `auto_publish`, and model confidence clears `min_confidence_to_publish`; otherwise it stores the draft in the review queue; and
-6. records every drafting, publishing, rejection and reopening action.
+3. drafts stories through `openai/gpt-5-mini` on Vercel AI Gateway in Kyle Langford’s authorized, professional newsroom voice, at the volume set by `drafts_per_run`; once the review queue reaches `review_queue_limit` only sources whose drafts can publish themselves keep drafting, and at twice the limit drafting stops;
+4. shows the model a shortlist of approved photographs from `gcj_editorial_assets` (the pictures whose keywords the item names, then the desk's generic ones) by id and description, and has it choose the one that shows the story's subject or place, or none;
+5. checks the draft (`lib/draft-checks.ts`): no worksheet labels such as "Verified:" or "Practical consequence:", every quotation word for word in the source, every figure in the source, no quotation with a dash that house punctuation would alter, a headline of at most 110 characters, a photograph chosen and no repeat of a story published in the last two days;
+6. publishes the draft when `auto_publish` is on, the source carries `auto_publish`, model confidence clears `min_confidence_to_publish` and the checks pass; otherwise it stores the draft in the review queue, with the failed checks in its editorial action note; and
+7. records every drafting, publishing, rejection and reopening action.
 
-Feed polling runs concurrently with an eight-second limit per source. Source-page reads and AI drafting are separately bounded, so a slow upstream cannot consume the full function lifetime. A later run closes any stale `running` ledger entry before beginning. Queue pressure pauses drafting without pausing source discovery; this keeps the review workload finite and preserves human review as a meaningful quality gate.
+Feed polling runs concurrently with an eight-second limit per source. Source-page reads and AI drafting are separately bounded, so a slow upstream cannot consume the full function lifetime. A later run closes any stale `running` ledger entry before beginning. Queue pressure pauses drafting without pausing source discovery; this keeps the review workload finite and preserves human review as a meaningful quality gate. It pauses the review-only sources (the White House, NASA, UN News and the Federal Reserve) first, so their drafts cannot fill the queue overnight and stop the county newsrooms with them.
 
 Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`. The same bearer credential protects the review queue and editorial action routes.
 
@@ -42,7 +43,7 @@ update public.gcj_sources set active = false where id = 'noaa';
 update public.gcj_sources set priority = 0 where id = 'ladwp';
 ```
 
-A draft publishes only when all three agree: the `auto_publish` setting is true, the originating source is flagged `auto_publish`, and the model's confidence clears `min_confidence_to_publish`. Anything short of that falls to the review queue.
+A draft publishes only when all four agree: the `auto_publish` setting is true, the originating source is flagged `auto_publish`, the model's confidence clears `min_confidence_to_publish`, and the draft passes `lib/draft-checks.ts` with a photograph chosen. Anything short of that falls to the review queue.
 
 Imagery is never generated. `gcj_editorial_assets` carries a `check (ai_generated = false)` constraint, so an AI image cannot be stored even by direct SQL, and every row requires a credit and a provenance URL.
 

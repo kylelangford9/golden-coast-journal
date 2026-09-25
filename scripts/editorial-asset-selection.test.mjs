@@ -5,6 +5,7 @@ import {
   hasKeyword,
   normalizeForKeywords,
   pickEditorialAsset,
+  shortlistEditorialAssets,
 } from '../lib/asset-matching.ts';
 
 /**
@@ -245,6 +246,36 @@ for (const id of [
     !REGISTRY.find((row) => row.id === id)?.is_section_default,
     `${id} shows people; it must not be a desk default`,
   );
+
+// --- The shortlist the drafting model chooses from ------------------------
+
+const shortlist = (section, text) =>
+  shortlistEditorialAssets(REGISTRY, { section, text }).map((row) => row.id);
+
+const ballots = shortlist(
+  'California',
+  'Governor Newsom on the California Supreme Court ruling Sheriff Bianco illegally seized ballots. Riverside County Sheriff Chad Bianco illegally seized hundreds of thousands of ballots from last year’s special election.',
+);
+assert.ok(
+  ballots.includes('ca-supreme-court-sf'),
+  'the state court’s own building is offered; keywords alone chose the U.S. Supreme Court',
+);
+assert.ok(
+  shortlist(
+    'California',
+    'Family Preparedness Day brings hands-on emergency preparedness to Highland',
+  ).every((id) => id !== 'ca-emergency-operations-center'),
+  'a picture the registry demoted for showing people is never offered',
+);
+const unmatched = shortlist('California', 'Pet of the Week: Mikey');
+assert.ok(
+  unmatched.length && unmatched.every((id) => genericCalifornia.has(id)),
+  'with nothing named, only the desk’s generic pictures are offered, for the model to decline',
+);
+assert.ok(
+  shortlist('California', 'court '.repeat(40) + ' ballots election voter').length <= 16,
+  'the list stays short enough to read',
+);
 
 console.log(
   'PASS each story draws a photograph about it, or its desk’s generic one',

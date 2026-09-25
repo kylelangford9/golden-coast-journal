@@ -1,4 +1,7 @@
-import { pickEditorialAsset } from '@/lib/asset-matching';
+import {
+  pickEditorialAsset,
+  shortlistEditorialAssets,
+} from '@/lib/asset-matching';
 import { getApprovedEditorialAsset, type EditorialAsset } from '@/lib/imagery';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
 
@@ -75,7 +78,23 @@ export function clearEditorialAssetCache() {
   cached = null;
 }
 
-function toAsset(row: EditorialAssetRow): EditorialAsset {
+/**
+ * The photographs the drafting model may choose a story's picture from; see
+ * shortlistEditorialAssets. Empty if the registry is unreachable, in which
+ * case the model can only answer "none" and the story waits for review.
+ */
+export async function photoOptionsForStory(input: {
+  section: string;
+  text: string;
+}): Promise<EditorialAssetRow[]> {
+  try {
+    return shortlistEditorialAssets(await loadAssets(), input);
+  } catch {
+    return [];
+  }
+}
+
+export function toAsset(row: EditorialAssetRow): EditorialAsset {
   return {
     url: row.url,
     alt: row.alt,

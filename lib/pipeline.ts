@@ -1,5 +1,10 @@
 import { getVercelOidcToken } from '@vercel/oidc';
-import { selectEditorialAsset } from '@/lib/editorial-assets';
+import {
+  photoOptionsForStory,
+  selectEditorialAsset,
+  toAsset,
+} from '@/lib/editorial-assets';
+import { draftProblems } from '@/lib/draft-checks';
 import { getEditorialSettings, getVoiceFromPlaybook } from '@/lib/editorial-settings';
 import { ingestAssetRequests } from '@/lib/asset-intake';
 import {
@@ -61,6 +66,8 @@ const STALE_RUN_AFTER_MS = 15 * 60_000;
 const DRAFTING_BUDGET_MS = 180_000;
 /** A few failed drafts may be replaced by the next candidate in the same run. */
 const EXTRA_DRAFT_ATTEMPTS = 2;
+/** How far back a draft is compared with published stories for a repeat. */
+const RECENT_STORY_MS = 48 * 3_600_000;
 
 function textFromTag(block: string, tag: string) {
   const match = block.match(
@@ -127,15 +134,20 @@ async function fetchReadablePage(url: string) {
   });
   if (!response.ok) throw new Error(`Source returned ${response.status}`);
   const html = (await response.text()).slice(0, 500000);
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
+  // Entities are decoded, not just &nbsp; and &amp;, so a quotation the model
+  // copies reads as the speaker's words (“Today’s”, not &#8220;Today&#8217;s)
+  // and can be checked against this same text.
+  return decodeHtmlEntities(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' '),
+  )
     .replace(/\s+/g, ' ')
     .slice(0, 18000);
 }
+
+type RecentStory = { slug: string; title: string };
 
 function extractOutputText(payload: unknown): string {
   const data = payload as {
@@ -152,13 +164,28 @@ function extractOutputText(payload: unknown): string {
   throw new Error('The model returned no article text');
 }
 
-async function draftCandidate(
+/**
+ * Exported so a change to the instructions or checks can be dry-run against
+ * real source pages without storing anything.
+ */
+export async function draftCandidate(
   candidate: CandidateRow,
   source: SourceRow,
   gatewayToken: string,
   voiceOverride: string | null,
+  recent: RecentStory[],
 ) {
   const sourceText = await fetchReadablePage(candidate.external_url);
+  const photos = await photoOptionsForStory({
+    section: source.section,
+    text: `${candidate.title} ${candidate.summary} ${sourceText}`,
+  });
+  const photoList = photos.length
+    ? photos.map((photo) => `- ${photo.id}: ${photo.alt}`).join('\n')
+    : '(none available)';
+  const recentList = recent.length
+    ? recent.map((story) => `- ${story.slug}: ${story.title}`).join('\n')
+    : '(none)';
   const response = await fetch('https://ai-gateway.vercel.sh/v1/responses', {
     method: 'POST',
     headers: {
@@ -176,7 +203,7 @@ async function draftCandidate(
             voiceOverride,
           )
         : JOURNAL_DRAFT_INSTRUCTIONS,
-      input: `SOURCE NAME: ${source.name}\nSOURCE URL: ${candidate.external_url}\nSOURCE MATERIAL:\n${sourceText}`,
+      input: `SOURCE NAME: ${source.name}\nSOURCE URL: ${candidate.external_url}\nSOURCE MATERIAL:\n${sourceText}\n\nPHOTOGRAPHS (id: what it shows):\n${photoList}\n\nALREADY PUBLISHED IN THE LAST TWO DAYS (slug: headline):\n${recentList}`,
       text: {
         format: {
           type: 'json_schema',
@@ -192,6 +219,8 @@ async function draftCandidate(
               'keyPoints',
               'section',
               'confidence',
+              'photoId',
+              'duplicateOf',
             ],
             properties: {
               title: { type: 'string' },
@@ -222,6 +251,14 @@ async function draftCandidate(
                 ],
               },
               confidence: { type: 'integer', minimum: 0, maximum: 100 },
+              photoId: {
+                type: 'string',
+                enum: [...photos.map((photo) => photo.id), 'none'],
+              },
+              duplicateOf: {
+                type: 'string',
+                enum: [...recent.map((story) => story.slug), 'none'],
+              },
             },
           },
         },
@@ -242,13 +279,26 @@ async function draftCandidate(
     keyPoints: string[];
     section: string;
     confidence: number;
+    photoId: string;
+    duplicateOf: string;
   };
+  // Checked as the model wrote it, before house punctuation turns its dashes
+  // into semicolons, so a quotation with a dash is caught rather than altered.
+  const problems = draftProblems(draft, sourceText);
+  const photo = photos.find((option) => option.id === draft.photoId) || null;
+  if (!photo) problems.push('no approved photograph shows this story');
+  const duplicateOf = recent.some((story) => story.slug === draft.duplicateOf)
+    ? draft.duplicateOf
+    : null;
+  if (duplicateOf) problems.push(`may repeat /article/${duplicateOf}`);
   return {
     ...draft,
     title: normalizeJournalPunctuation(draft.title),
     dek: normalizeJournalPunctuation(draft.dek),
     body: draft.body.map(normalizeJournalPunctuation),
     keyPoints: draft.keyPoints.map(normalizeJournalPunctuation),
+    photo,
+    problems,
   };
 }
 
@@ -302,6 +352,8 @@ export async function runEditorialPipeline() {
   let feedsSucceeded = 0;
   let reviewBacklog = 0;
   let draftingSkipped: string | null = null;
+  let heldByChecks = 0;
+  let reviewOnlyPaused = false;
   let webSubNotifications = 0;
   let webSubFailures = 0;
   const failures: string[] = [];
@@ -413,7 +465,19 @@ export async function runEditorialPipeline() {
     if (reviewCount.error)
       throw new Error(`Unable to count review queue: ${reviewCount.error.message}`);
     reviewBacklog = reviewCount.count || 0;
-    if (reviewBacklog >= settings.reviewQueueLimit)
+    // A full queue pauses only the sources whose drafts always wait for a
+    // person. On Sept. 25, 2026 overnight UN and NASA drafts filled it, and the
+    // county newsrooms, whose drafts publish themselves, were stopped with them
+    // until morning. Drafts from those sources can still be held by the checks,
+    // so everything stops at twice the limit and the queue cannot grow without
+    // bound while nobody is reading it.
+    reviewOnlyPaused = reviewBacklog >= settings.reviewQueueLimit;
+    const canPublishItself = (source: SourceRow) =>
+      settings.autoPublish && source.auto_publish === true;
+    if (
+      reviewBacklog >= settings.reviewQueueLimit * 2 ||
+      (reviewOnlyPaused && !activeSources.some(canPublishItself))
+    )
       draftingSkipped = 'review_queue_limit';
     else if (!gatewayToken) draftingSkipped = 'ai_unavailable';
 
@@ -450,6 +514,19 @@ export async function runEditorialPipeline() {
       const sourcesById = new Map(
         activeSources.map((source) => [source.id, source]),
       );
+      // What the model compares each draft with, so the same event reported
+      // by the governor and by the attorney general is not published twice.
+      const recent =
+        (unwrap(
+          await db
+            .from('gcj_articles')
+            .select('slug,title')
+            .eq('status', 'published')
+            .gte('published_at', new Date(Date.now() - RECENT_STORY_MS).toISOString())
+            .order('published_at', { ascending: false })
+            .limit(60),
+          'Unable to load recent stories',
+        ) as RecentStory[] | null) || [];
       let attempts = 0;
       for (const candidate of ranked) {
         if (drafted >= settings.draftsPerRun) break;
@@ -457,6 +534,7 @@ export async function runEditorialPipeline() {
         if (Date.now() - Date.parse(startedAt) > DRAFTING_BUDGET_MS) break;
         const source = sourcesById.get(candidate.source_id);
         if (!source) continue;
+        if (reviewOnlyPaused && !canPublishItself(source)) continue;
         attempts++;
         try {
           const claimed = unwrap(
@@ -469,18 +547,30 @@ export async function runEditorialPipeline() {
             'Unable to claim drafting candidate',
           );
           if (!(claimed || []).length) continue;
-          const draft = await draftCandidate(candidate, source, gatewayToken, voice);
+          const draft = await draftCandidate(
+            candidate,
+            source,
+            gatewayToken,
+            voice,
+            recent,
+          );
           const now = new Date().toISOString();
           const publish =
-            settings.autoPublish &&
-            source.auto_publish === true &&
-            draft.confidence >= settings.minConfidenceToPublish;
-          const image = await selectEditorialAsset({
-            section: draft.section,
-            title: draft.title,
-            dek: draft.dek,
-            rotationKey: candidate.external_url,
-          });
+            canPublishItself(source) &&
+            draft.confidence >= settings.minConfidenceToPublish &&
+            !draft.problems.length;
+          if (canPublishItself(source) && draft.problems.length) heldByChecks++;
+          // The model's choice when it made one; otherwise the keyword pick,
+          // so the review queue still shows a picture, on a draft that cannot
+          // publish itself without a person choosing a better one.
+          const image = draft.photo
+            ? toAsset(draft.photo)
+            : await selectEditorialAsset({
+                section: draft.section,
+                title: draft.title,
+                dek: draft.dek,
+                rotationKey: candidate.external_url,
+              });
           const articleId = crypto.randomUUID();
           // Held in a variable rather than built inline, because a published
           // draft has to be named to IndexNow by the same slug it was stored
@@ -524,13 +614,17 @@ export async function runEditorialPipeline() {
                 article_id: articleId,
                 action: 'drafted',
                 actor: 'scheduled-newsroom',
-                note: `Candidate ${candidate.id}`,
+                // The reviewer reads here why a draft did not publish itself.
+                note: draft.problems.length
+                  ? `Candidate ${candidate.id}. Checks: ${draft.problems.join('; ')}`
+                  : `Candidate ${candidate.id}`,
                 created_at: now,
               }),
               'Unable to record draft action',
             );
             drafted++;
             if (publish) {
+              recent.unshift({ slug: articleSlug, title: draft.title });
               const notification = await notifyWebSubHub();
               if (notification.ok) webSubNotifications++;
               else webSubFailures++;
@@ -574,6 +668,8 @@ export async function runEditorialPipeline() {
       reviewBacklog,
       reviewQueueLimit: settings.reviewQueueLimit,
       draftingSkipped,
+      reviewOnlyPaused,
+      heldByChecks,
       durationMs: Date.now() - Date.parse(startedAt),
       aiConfigured: Boolean(gatewayToken),
       autoPublish: settings.autoPublish,

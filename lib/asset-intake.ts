@@ -128,6 +128,10 @@ export async function ingestAssetRequests(limit = 4) {
             authorization: `Bearer ${serviceKey}`,
             'content-type': contentType,
             'x-upsert': 'true',
+            // Without this, storage serves the file with `no-cache` and every
+            // reader re-asks for it on every view. An hour, not longer: the
+            // upsert above means a corrected photo keeps this file name.
+            'cache-control': 'max-age=3600',
           },
           body: bytes,
         },

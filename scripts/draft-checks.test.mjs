@@ -147,7 +147,7 @@ assert.deepEqual(
 );
 assert.deepEqual(
   unsourcedJurisdictionCounts(
-    'Buildings will be lit Nov. 4–11 county-wide, and on Nov. 11 county offices close.',
+    'Buildings will be lit Nov. 4–11 county-wide, and on Nov. 11 county offices close. Falls led ER visits in 2024 – County data shows.',
     'Lit from Nov. 4-11.',
   ),
   [],

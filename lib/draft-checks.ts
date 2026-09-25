@@ -137,9 +137,11 @@ export function unsourcedJurisdictionCounts(text: string, sourceText: string) {
         'giu',
       ),
     )) {
-      // "Nov. 4–11 county buildings" is a date, not eleven counties.
+      // "Nov. 4–11 county buildings" and "in 2024 County data" are dates, not
+      // counts of counties.
       const before = value.slice(Math.max(0, match.index - 12), match.index);
       if (
+        /^(?:1[89]|20)\d\d$/.test(match[1]) ||
         /\d\s*[‐‑–-]\s*$/.test(before) ||
         /\b(?:jan|feb|mar|apr|may|june?|july?|aug|sept?|oct|nov|dec)[a-z]*\.?\s*$/i.test(
           before,

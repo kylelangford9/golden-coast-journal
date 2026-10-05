@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
+import { sendConfirmationEmail } from '@/lib/newsletter-email';
 import { getSupabase, unwrap } from '@/lib/supabase-server';
+
+type SubscriberRow = {
+  id: string;
+  email: string;
+  status: string;
+};
 
 async function rateLimited(request: Request) {
   const address = (
@@ -53,26 +60,75 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    const result = unwrap(
-      await getSupabase()
+
+    const db = getSupabase();
+    const existing = unwrap(
+      await db
         .from('gcj_subscribers')
-        .upsert(
-          {
+        .select('id,email,status')
+        .eq('email', email)
+        .maybeSingle(),
+      'Unable to look up subscriber',
+    ) as SubscriberRow | null;
+
+    if (existing && (existing.status === 'confirmed' || existing.status === 'active')) {
+      return NextResponse.json({ ok: true, created: false }, { status: 201 });
+    }
+
+    let subscriberId = existing?.id;
+    let created = false;
+
+    if (!existing) {
+      const inserted = unwrap(
+        await db
+          .from('gcj_subscribers')
+          .insert({
             id: crypto.randomUUID(),
             email,
             status: 'pending',
             created_at: new Date().toISOString(),
-          },
-          { onConflict: 'email', ignoreDuplicates: true },
-        )
-        .select('id')
-        .maybeSingle(),
-      'Unable to add subscriber',
-    );
-    return NextResponse.json(
-      { ok: true, created: Boolean(result) },
-      { status: 201 },
-    );
+          })
+          .select('id')
+          .single(),
+        'Unable to add subscriber',
+      ) as { id: string };
+      subscriberId = inserted.id;
+      created = true;
+    } else if (existing.status === 'unsubscribed') {
+      unwrap(
+        await db
+          .from('gcj_subscribers')
+          .update({
+            status: 'pending',
+            confirmed_at: null,
+          })
+          .eq('id', existing.id),
+        'Unable to reopen subscriber',
+      );
+      created = true;
+    }
+
+    if (!subscriberId) {
+      return NextResponse.json(
+        { error: 'Subscription service is unavailable' },
+        { status: 503 },
+      );
+    }
+
+    // Email failures must not fail the signup response.
+    await sendConfirmationEmail({ email, subscriberId }).catch((error) => {
+      console.error(
+        JSON.stringify({
+          level: 'error',
+          message: 'Confirmation email helper failed',
+          route: '/api/newsletter',
+          subscriber_id: subscriberId,
+          error: error instanceof Error ? error.message : 'unknown',
+        }),
+      );
+    });
+
+    return NextResponse.json({ ok: true, created }, { status: 201 });
   } catch {
     return NextResponse.json(
       { error: 'Subscription service is unavailable' },

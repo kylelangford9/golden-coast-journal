@@ -51,7 +51,10 @@ export async function GET(request: Request) {
         db
           .from('gcj_story_candidates')
           .select('*', { count: 'exact', head: true }),
-        db.from('gcj_subscribers').select('*', { count: 'exact', head: true }),
+        db
+          .from('gcj_subscribers')
+          .select('*', { count: 'exact', head: true })
+          .in('status', ['confirmed', 'active']),
         db
           .from('gcj_articles')
           .select('published_at')

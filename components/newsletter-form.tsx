@@ -225,7 +225,7 @@ export function NewsletterForm({
       />
       <output aria-live="polite">
         {state === 'created' &&
-          'Thanks; your address is saved for the next briefing.'}
+          'Thanks; check your email to confirm the subscription.'}
         {state === 'existing' && 'You’re already on the reader list.'}
         {state === 'error' && 'We couldn’t add you just now. Please try again.'}
       </output>

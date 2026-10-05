@@ -10,7 +10,10 @@ const header = readFileSync('components/site-header.tsx', 'utf8');
 const footer = readFileSync('components/site-footer.tsx', 'utf8');
 
 assert.match(contact, /alternates: \{ canonical: '\/contact' \}/);
-assert.match(contact, /kyle@kylelangford\.org/);
+// The Journal answers from its own domain; the address is a Workspace alias
+// that lands in the publisher's inbox.
+assert.match(contact, /const publisherEmail = 'kyle@goldencoastjournal\.com'/);
+assert.match(layout, /email: 'kyle@goldencoastjournal\.com'/);
 assert.match(contact, /correction/);
 assert.match(contact, /privacy request/);
 assert.match(contact, /unsubscribe/);

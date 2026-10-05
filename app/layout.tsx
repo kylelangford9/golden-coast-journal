@@ -94,7 +94,7 @@ export default function RootLayout({
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'newsroom, corrections and privacy',
-      email: 'kyle@kylelangford.org',
+      email: 'kyle@goldencoastjournal.com',
       url: `${origin}/contact`,
     },
     isAccessibleForFree: true,

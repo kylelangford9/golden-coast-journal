@@ -57,7 +57,13 @@ export function confirmationEmailContent(confirmUrl: string, unsubscribeUrl: str
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#fffdf8;border:1px solid #c9c1b2;border-top:3px solid #d8a82a;">
           <tr>
             <td style="padding:28px 28px 8px;text-align:center;">
-              <img src="${logo}" width="64" height="64" alt="The Golden Coast Journal" style="display:block;margin:0 auto 16px;border:0;" />
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto 16px;border-collapse:separate;">
+                <tr>
+                  <td style="border-radius:12px;overflow:hidden;line-height:0;">
+                    <img src="${logo}" width="64" height="64" alt="The Golden Coast Journal" style="display:block;border:0;border-radius:12px;" />
+                  </td>
+                </tr>
+              </table>
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#545148;">The Golden Coast Journal</p>
               <h1 style="margin:12px 0 0;font-size:28px;line-height:1.2;font-weight:normal;color:#161713;">Confirm your subscription</h1>
             </td>

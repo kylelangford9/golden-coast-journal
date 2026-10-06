@@ -274,6 +274,36 @@ export async function findPublishedBySlug(
   }
 }
 
+/**
+ * Resolves the slug in an old or hand-built link to the published story it
+ * means: the exact slug first, then the newest published slug that starts
+ * with it, so a link missing its hash suffix still lands on the story.
+ */
+export async function resolvePublishedSlug(
+  slug: string,
+): Promise<string | undefined> {
+  if (!/^[a-z0-9-]+$/.test(slug)) return undefined;
+  const exact = await findPublishedBySlug(slug);
+  if (exact) return exact.slug;
+  if (slug.length < 12) return undefined;
+  try {
+    const rows = unwrap(
+      await getSupabase()
+        .from('gcj_articles')
+        .select('slug')
+        .like('slug', `${slug}%`)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(1),
+      'Unable to resolve story slug',
+    ) as Array<{ slug: string }>;
+    return rows[0]?.slug;
+  } catch (error) {
+    reportFallback('resolvePublishedSlug', error);
+    return articles.find((article) => article.slug.startsWith(slug))?.slug;
+  }
+}
+
 export type Correction = {
   id: string;
   note: string;
